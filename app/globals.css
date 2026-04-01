@@ -1,26 +1,1209 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: dark;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  min-height: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 46%, rgba(21, 88, 118, 0.72) 0%, rgba(3, 20, 40, 0.92) 48%, #010611 100%),
+    #010611;
+  color: #e7fbff;
+  font-family: "Trebuchet MS", "Segoe UI", Verdana, sans-serif;
+}
+
+/* ─── Scene container ─── */
+.scene {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* ─── Stars ─── */
+.sky {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.star {
+  position: absolute;
+  left: calc(var(--x) * 1%);
+  top: calc(var(--y) * 1%);
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: #8eeeff;
+  opacity: 0.3;
+  box-shadow: 0 0 10px rgba(137, 244, 255, 0.9);
+  animation: twinkle 3.8s ease-in-out infinite;
+  animation-delay: var(--delay);
+}
+
+/* ─── Mist ─── */
+.mist {
+  position: absolute;
+  left: -14%;
+  right: -14%;
+  bottom: 8%;
+  height: 34%;
+  background: radial-gradient(ellipse at center, rgba(42, 190, 218, 0.16), rgba(2, 8, 19, 0) 72%);
+  filter: blur(22px);
+}
+
+/* ─── Garden ─── */
+.garden {
+  position: absolute;
+  inset: 0;
+  perspective: 900px;
+}
+
+/* ─── Edge grass (curved blades on sides — matches original style) ─── */
+.edge-grass {
+  position: absolute;
+  bottom: 0;
+  width: 160px;
+  height: 280px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.edge-grass--left {
+  left: 3%;
+}
+
+.edge-grass--right {
+  right: 3%;
+  transform: scaleX(-1);
+}
+
+/* Each blade is a curved arc: tall narrow box with one-sided border-radius + border trick */
+.edge-grass__blade {
+  position: absolute;
+  bottom: 0;
+  transform-origin: bottom center;
+  opacity: 0;
+  animation-name: edge-grass-bloom, edge-grass-sway;
+  animation-duration: 1.2s, 3.9s;
+  animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1), ease-in-out;
+  animation-iteration-count: 1, infinite;
+  animation-fill-mode: both, none;
+  animation-delay: var(--grow-delay, 0s), calc(var(--grow-delay, 0s) + 1.2s);
+}
+
+/* Blade 1: tall curved left-leaning */
+.edge-grass__blade--1 {
+  left: 6px;
+  width: 28px;
+  height: 260px;
+  border-top-left-radius: 100%;
+  border-left: 4px solid #1aaa15;
+  background: transparent;
+  -webkit-mask-image: linear-gradient(to top, transparent 10%, #000 50%);
+  mask-image: linear-gradient(to top, transparent 10%, #000 50%);
+  --sway-from: -6deg;
+  --sway-to: -2deg;
+  --grow-delay: 0.18s;
+}
+
+/* Blade 2: medium, slight right curve */
+.edge-grass__blade--2 {
+  left: 30px;
+  width: 22px;
+  height: 200px;
+  border-top-right-radius: 100%;
+  border-right: 3.5px solid #1db828;
+  background: transparent;
+  -webkit-mask-image: linear-gradient(to top, transparent 15%, #000 55%);
+  mask-image: linear-gradient(to top, transparent 15%, #000 55%);
+  --sway-from: 5deg;
+  --sway-to: 9deg;
+  --grow-delay: 0.36s;
+}
+
+/* Blade 3: shorter, curving left */
+.edge-grass__blade--3 {
+  left: 56px;
+  width: 24px;
+  height: 170px;
+  border-top-left-radius: 100%;
+  border-left: 3px solid #28c940;
+  background: transparent;
+  -webkit-mask-image: linear-gradient(to top, transparent 18%, #000 60%);
+  mask-image: linear-gradient(to top, transparent 18%, #000 60%);
+  --sway-from: -3deg;
+  --sway-to: 1deg;
+  --grow-delay: 0.52s;
+}
+
+/* Blade 4: short right curve */
+.edge-grass__blade--4 {
+  left: 80px;
+  width: 20px;
+  height: 140px;
+  border-top-right-radius: 100%;
+  border-right: 3px solid #22b535;
+  background: transparent;
+  -webkit-mask-image: linear-gradient(to top, transparent 20%, #000 55%);
+  mask-image: linear-gradient(to top, transparent 20%, #000 55%);
+  --sway-from: 8deg;
+  --sway-to: 12deg;
+  --grow-delay: 0.68s;
+}
+
+/* Blade 5 */
+.edge-grass__blade--5 {
+  left: 104px;
+  width: 26px;
+  height: 190px;
+  border-top-left-radius: 100%;
+  border-left: 3.5px solid #1aaa15;
+  background: transparent;
+  -webkit-mask-image: linear-gradient(to top, transparent 12%, #000 50%);
+  mask-image: linear-gradient(to top, transparent 12%, #000 50%);
+  --sway-from: -4deg;
+  --sway-to: 0deg;
+  --grow-delay: 0.28s;
+}
+
+/* Blade 6 */
+.edge-grass__blade--6 {
+  left: 128px;
+  width: 18px;
+  height: 155px;
+  border-top-right-radius: 100%;
+  border-right: 3px solid #28c940;
+  background: transparent;
+  -webkit-mask-image: linear-gradient(to top, transparent 20%, #000 60%);
+  mask-image: linear-gradient(to top, transparent 20%, #000 60%);
+  --sway-from: 6deg;
+  --sway-to: 10deg;
+  --grow-delay: 0.58s;
+}
+
+/* ─── Meadow grass tufts (curved organic blades) ─── */
+.meadow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.spread-grass {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.spread-grass__group {
+  position: absolute;
+  left: var(--gx);
+  bottom: var(--gy);
+  width: 120px;
+  height: 220px;
+  transform: translateX(-50%) scale(var(--gs));
+  transform-origin: bottom center;
+  opacity: 0;
+  animation: spread-grass-bloom 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation-delay: var(--gd);
+}
+
+.spread-grass__blade {
+  position: absolute;
+  bottom: 0;
+  background: transparent;
+  transform-origin: bottom center;
+}
+
+.spread-grass__blade--1 {
+  left: 8px;
+  width: 24px;
+  height: 190px;
+  border-top-left-radius: 100%;
+  border-left: 3.5px solid #1db828;
+  -webkit-mask-image: linear-gradient(to top, transparent 8%, #000 45%);
+  mask-image: linear-gradient(to top, transparent 8%, #000 45%);
+  --base-rot: -10deg;
+  transform: rotate(var(--base-rot));
+  animation: spread-blade-sway-left 4s ease-in-out infinite;
+}
+
+.spread-grass__blade--2 {
+  left: 34px;
+  width: 20px;
+  height: 150px;
+  border-top-right-radius: 100%;
+  border-right: 3px solid #28c940;
+  -webkit-mask-image: linear-gradient(to top, transparent 12%, #000 50%);
+  mask-image: linear-gradient(to top, transparent 12%, #000 50%);
+  --base-rot: 7deg;
+  transform: rotate(var(--base-rot));
+  animation: spread-blade-sway-right 4.4s ease-in-out infinite;
+  animation-delay: 0.15s;
+}
+
+.spread-grass__blade--3 {
+  left: 58px;
+  width: 22px;
+  height: 172px;
+  border-top-right-radius: 100%;
+  border-right: 3px solid #22b535;
+  -webkit-mask-image: linear-gradient(to top, transparent 10%, #000 48%);
+  mask-image: linear-gradient(to top, transparent 10%, #000 48%);
+  --base-rot: 13deg;
+  transform: rotate(var(--base-rot));
+  animation: spread-blade-sway-right 4.8s ease-in-out infinite;
+  animation-delay: 0.3s;
+}
+
+.spread-grass__blade--4 {
+  left: 82px;
+  width: 18px;
+  height: 130px;
+  border-top-left-radius: 100%;
+  border-left: 2.5px solid #1aaa15;
+  -webkit-mask-image: linear-gradient(to top, transparent 15%, #000 55%);
+  mask-image: linear-gradient(to top, transparent 15%, #000 55%);
+  --base-rot: -5deg;
+  transform: rotate(var(--base-rot));
+  animation: spread-blade-sway-left 3.8s ease-in-out infinite;
+  animation-delay: 0.2s;
+}
+
+.grass-tuft {
+  position: absolute;
+  left: var(--x);
+  bottom: var(--y);
+  width: 80px;
+  height: 180px;
+  transform: translateX(-50%) scale(var(--scale));
+  transform-origin: bottom center;
+  opacity: 0;
+  animation: tuft-bloom 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation-delay: var(--delay);
+}
+
+/* Curved blade style: border + border-radius on one side, transparent fill */
+.tuft-blade {
+  position: absolute;
+  bottom: 0;
+  background: transparent;
+  transform-origin: bottom center;
+}
+
+/* Blade 1: tall left-curving arc */
+.tuft-blade--1 {
+  left: 0;
+  width: 24px;
+  height: 170px;
+  border-top-left-radius: 100%;
+  border-left: 3.5px solid #1db828;
+  -webkit-mask-image: linear-gradient(to top, transparent 8%, #000 45%);
+  mask-image: linear-gradient(to top, transparent 8%, #000 45%);
+  --base-rot: -8deg;
+  transform: rotate(var(--base-rot));
+  animation: blade-sway-left 3.6s ease-in-out infinite;
+}
+
+/* Blade 2: medium right-curving */
+.tuft-blade--2 {
+  left: 18px;
+  width: 20px;
+  height: 135px;
+  border-top-right-radius: 100%;
+  border-right: 3px solid #28c940;
+  -webkit-mask-image: linear-gradient(to top, transparent 12%, #000 50%);
+  mask-image: linear-gradient(to top, transparent 12%, #000 50%);
+  --base-rot: 6deg;
+  transform: rotate(var(--base-rot));
+  animation: blade-sway-right 3.3s ease-in-out infinite;
+  animation-delay: 0.15s;
+}
+
+/* Blade 3: tall right-curving */
+.tuft-blade--3 {
+  left: 38px;
+  width: 22px;
+  height: 155px;
+  border-top-right-radius: 100%;
+  border-right: 3px solid #22b535;
+  -webkit-mask-image: linear-gradient(to top, transparent 10%, #000 48%);
+  mask-image: linear-gradient(to top, transparent 10%, #000 48%);
+  --base-rot: 12deg;
+  transform: rotate(var(--base-rot));
+  animation: blade-sway-right 3.8s ease-in-out infinite;
+  animation-delay: 0.3s;
+}
+
+/* Blade 4: shorter left-curving */
+.tuft-blade--4 {
+  left: 56px;
+  width: 18px;
+  height: 115px;
+  border-top-left-radius: 100%;
+  border-left: 2.5px solid #1aaa15;
+  -webkit-mask-image: linear-gradient(to top, transparent 15%, #000 55%);
+  mask-image: linear-gradient(to top, transparent 15%, #000 55%);
+  --base-rot: -4deg;
+  transform: rotate(var(--base-rot));
+  animation: blade-sway-left 3.1s ease-in-out infinite;
+  animation-delay: 0.45s;
+}
+
+/* ═══════════════════════════════════════════════════════
+   PLANT BASE — Multiple plant types
+   ═══════════════════════════════════════════════════════ */
+
+.plant-base {
+  position: absolute;
+  left: var(--cluster-x, 50%);
+  bottom: var(--cluster-y, 0);
+  width: min(560px, 96vw);
+  height: 320px;
+  transform: translateX(-50%) rotate(var(--cluster-rot, 0deg)) scale(var(--cluster-scale, 1));
+  transform-origin: bottom center;
+  opacity: var(--cluster-alpha, 1);
+  pointer-events: none;
+  z-index: 3;
+  animation: plant-cluster-sway var(--cluster-sway, 4.2s) ease-in-out infinite;
+  animation-delay: var(--cluster-delay, 0s);
+}
+
+/* ── Type 1: Large curved vine arcs ── */
+.vine-arc {
+  position: absolute;
+  bottom: 10px;
+  background: transparent;
+  transform-origin: bottom left;
+}
+
+.vine-arc--left {
+  left: calc(50% - 20px);
+  width: 120px;
+  height: 220px;
+  border-top-left-radius: 100%;
+  border-left: 5px solid #079097;
+  background: linear-gradient(to bottom, transparent, rgba(1, 6, 17, 0.5) 60%);
+  -webkit-mask-image: linear-gradient(to top, transparent 30%, #079097 60%);
+  mask-image: linear-gradient(to top, transparent 30%, #079097 60%);
+  transform: rotate(20deg);
+  animation: vine-sway-l 2.5s ease-in-out infinite;
+  animation-delay: calc(var(--cluster-delay, 0s) + 0.1s);
+}
+
+.vine-arc--right {
+  left: calc(50% + 20px);
+  width: 120px;
+  height: 280px;
+  border-top-left-radius: 100%;
+  border-left: 5px solid #079097;
+  background: linear-gradient(to bottom, transparent, rgba(1, 6, 17, 0.5) 60%);
+  -webkit-mask-image: linear-gradient(to top, transparent 30%, #079097 55%);
+  mask-image: linear-gradient(to top, transparent 30%, #079097 55%);
+  transform: rotateY(-180deg);
+  filter: blur(0.3px);
+  opacity: 0.8;
+  animation: vine-sway-r 3s ease-in-out infinite;
+  animation-delay: calc(var(--cluster-delay, 0s) + 0.3s);
+}
+
+/* ── Type 2: Front stem with alternating leaf pairs ── */
+.front-stem {
+  position: absolute;
+  left: calc(50% + 10px);
+  bottom: 10px;
+  z-index: 10;
+  transform-origin: bottom center;
+  transform: rotate(-28deg) rotateY(30deg) scale(1.04);
+  animation: front-stem-sway 2s ease-in-out infinite;
+  animation-delay: calc(var(--cluster-delay, 0s) + 0.2s);
+}
+
+.front-stem__line {
+  width: 2px;
+  height: 100px;
+  background: linear-gradient(to top, transparent, #079097, transparent 100%);
+  position: relative;
+}
+
+.front-stem__leaf-wrap {
+  position: absolute;
+  top: var(--top);
+  left: 0;
+  transform-origin: bottom left;
+}
+
+.front-stem__leaf-wrap--right {
+  animation: front-leaf-r 1s ease-in backwards;
+  animation-delay: var(--ad);
+}
+
+.front-stem__leaf-wrap--left {
+  animation: front-leaf-l 1s ease-in backwards;
+  animation-delay: var(--ad);
+}
+
+.front-stem__leaf {
+  width: 42px;
+  height: 42px;
+  border-radius: 100% 0% 0% 100% / 100% 100% 0% 0%;
+  box-shadow: inset 0 2px 6px hsla(184, 97%, 58%, 0.2);
+  background-image:
+    linear-gradient(to bottom left, transparent, rgba(1, 6, 17, 0.5)),
+    linear-gradient(to bottom right, #159faa 50%, transparent 50%);
+  -webkit-mask-image: linear-gradient(to bottom right, #159faa 50%, transparent 50%);
+  mask-image: linear-gradient(to bottom right, #159faa 50%, transparent 50%);
+}
+
+/* ── Type 3: Scattered accent leaves ── */
+.accent-leaf {
+  position: absolute;
+  width: var(--s);
+  height: var(--s);
+  border-radius: 100% 0% 0% 100% / 100% 100% 0% 0%;
+  box-shadow: inset 0 2px 6px hsla(184, 97%, 58%, 0.2);
+  background-image:
+    linear-gradient(to bottom left, transparent, rgba(1, 6, 17, 0.7) 98%),
+    linear-gradient(to bottom right, #23f0ff 45%, transparent 50%);
+  -webkit-mask-image: linear-gradient(135deg, #159faa 40%, transparent 50%);
+  mask-image: linear-gradient(135deg, #159faa 40%, transparent 50%);
+  transform: rotate(var(--rot));
+  animation: accent-pop 0.5s linear backwards;
+  animation-delay: var(--ad);
+}
+
+.accent-leaf--flip {
+  transform: rotate(var(--rot)) rotateY(-180deg);
+}
+
+/* ── Type 4: Long curved stem behind ── */
+.long-stem {
+  position: absolute;
+  left: calc(50% - 12px);
+  bottom: 10px;
+  transform-origin: bottom center;
+  transform: rotate(-30deg) rotateY(-20deg);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  animation: long-stem-sway 3s ease-in-out infinite;
+  animation-delay: calc(var(--cluster-delay, 0s) + 0.15s);
+}
+
+.long-stem__top {
+  width: 16px;
+  height: 24px;
+  border-top-right-radius: 100%;
+  border-right: 3px solid #159faa;
+  transform: translate(-3px, 4px);
+}
+
+.long-stem__bottom {
+  width: 8px;
+  height: 200px;
+  background: linear-gradient(to top, transparent 30%, #159faa);
+  clip-path: polygon(35% 0, 65% 1%, 100% 100%, 0% 100%);
+}
+
+/* ── Type 5: Grass fern with half-circle leaves ── */
+.grass-fern {
+  --c: #159faa;
+  position: absolute;
+  bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  z-index: 20;
+  transform-origin: bottom center;
+  will-change: transform, opacity;
+}
+
+.grass-fern--1 {
+  left: calc(50% - 30px);
+  transform: rotate(-48deg) rotateY(40deg);
+  animation: fern-sway-1 4.2s ease-in-out infinite;
+  animation-delay: calc(var(--cluster-delay, 0s) + 0.12s);
+}
+
+.grass-fern--2 {
+  left: calc(50% + 8px);
+  bottom: 34px;
+  transform: scale(0.5) rotate(75deg) rotateX(10deg) rotateY(-200deg);
+  opacity: 0.92;
+  z-index: 0;
+  animation: fern-sway-2 4.6s ease-in-out infinite;
+  animation-delay: calc(var(--cluster-delay, 0s) + 0.28s);
+}
+
+.grass-fern__top {
+  width: 28px;
+  height: 38px;
+  border-top-right-radius: 100%;
+  border-right: 5px solid var(--c);
+  transform-origin: bottom center;
+  transform: rotate(-2deg);
+}
+
+.grass-fern__bottom {
+  margin-top: -2px;
+  width: 5px;
+  height: 100px;
+  background: linear-gradient(to top, transparent, var(--c));
+}
+
+.grass-fern__leaf {
+  --size: 40px;
+  position: absolute;
+  width: calc(var(--size) * 2.1);
+  height: var(--size);
+  border-top-left-radius: var(--size);
+  border-top-right-radius: var(--size);
+  background: linear-gradient(to top, transparent, transparent 30%, var(--c));
+  z-index: 100;
+  opacity: 0.95;
+}
+
+.grass-fern__overlay {
+  position: absolute;
+  top: -10%;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.12);
+  filter: blur(2px);
+  z-index: 100;
+  pointer-events: none;
+}
+
+/* ─── Bouquet (roses) ─── */
+.bouquet {
+  position: absolute;
+  left: 50%;
+  bottom: 4.8vh;
+  width: min(500px, 94vw);
+  height: min(530px, 82vh);
+  transform: translateX(-50%);
+  z-index: 4;
+}
+
+.rose {
+  --offset: 0px;
+  --angle: 0deg;
+  --stem-h: 34vh;
+  --bud-size: 88px;
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 148px;
+  height: calc(var(--stem-h) + var(--bud-size) + 52px);
+  transform: translateX(calc(-50% + var(--offset))) rotate(var(--angle));
+  transform-origin: bottom center;
+  animation: rose-sway 3.9s ease-in-out infinite;
+}
+
+.rose--1 {
+  --offset: -156px;
+  --angle: -15deg;
+  --stem-h: 30vh;
+  --bud-size: 82px;
+  --bloom-delay: 0.6s;
+}
+
+.rose--2 {
+  --offset: -78px;
+  --angle: -8deg;
+  --stem-h: 33vh;
+  --bud-size: 88px;
+  --bloom-delay: 0.3s;
+}
+
+.rose--3 {
+  --offset: 0px;
+  --angle: 0deg;
+  --stem-h: 36vh;
+  --bud-size: 98px;
+  --bloom-delay: 0s;
+}
+
+.rose--4 {
+  --offset: 82px;
+  --angle: 8deg;
+  --stem-h: 33vh;
+  --bud-size: 88px;
+  --bloom-delay: 0.4s;
+}
+
+.rose--5 {
+  --offset: 160px;
+  --angle: 15deg;
+  --stem-h: 30vh;
+  --bud-size: 82px;
+  --bloom-delay: 0.7s;
+}
+
+/* Stem grows upward */
+.rose__stem {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 11px;
+  height: var(--stem-h);
+  border-radius: 999px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, #a8fbff 0%, #51d7ed 60%, #247d96 100%);
+  filter: drop-shadow(0 0 12px rgba(119, 236, 255, 0.55));
+  animation: grow-stem 2.5s cubic-bezier(0.22, 0.61, 0.36, 1) backwards;
+  animation-delay: var(--bloom-delay, 0s);
+}
+
+/* Leaves along stem */
+.rose__leaf {
+  position: absolute;
+  left: 50%;
+  width: 54px;
+  height: 24px;
+  border-radius: 100% 0 100% 0;
+  background: linear-gradient(145deg, #92f8ff 0%, #3ebad4 54%, #176d84 100%);
+  opacity: 0;
+  box-shadow: inset 0 -4px 8px rgba(0, 0, 0, 0.2), 0 0 12px rgba(88, 217, 243, 0.3);
+  animation: leaf-appear 0.8s ease-out forwards;
+}
+
+.rose__leaf--1 {
+  bottom: calc(var(--stem-h) * 0.16);
+  transform: translateX(-98%) rotate(34deg);
+  animation-delay: calc(var(--bloom-delay, 0s) + 1.6s);
+}
+
+.rose__leaf--2 {
+  bottom: calc(var(--stem-h) * 0.24);
+  border-radius: 0 100% 0 100%;
+  transform: translateX(-2%) rotate(-34deg);
+  animation-delay: calc(var(--bloom-delay, 0s) + 1.4s);
+}
+
+.rose__leaf--3 {
+  bottom: calc(var(--stem-h) * 0.36);
+  transform: translateX(-104%) rotate(28deg) scale(0.95);
+  animation-delay: calc(var(--bloom-delay, 0s) + 1.2s);
+}
+
+.rose__leaf--4 {
+  bottom: calc(var(--stem-h) * 0.45);
+  border-radius: 0 100% 0 100%;
+  transform: translateX(2%) rotate(-28deg) scale(0.95);
+  animation-delay: calc(var(--bloom-delay, 0s) + 1s);
+}
+
+.rose__leaf--5 {
+  bottom: calc(var(--stem-h) * 0.56);
+  transform: translateX(-102%) rotate(22deg) scale(0.86);
+  animation-delay: calc(var(--bloom-delay, 0s) + 0.8s);
+}
+
+.rose__leaf--6 {
+  bottom: calc(var(--stem-h) * 0.66);
+  border-radius: 0 100% 0 100%;
+  transform: translateX(2%) rotate(-22deg) scale(0.86);
+  animation-delay: calc(var(--bloom-delay, 0s) + 0.6s);
+}
+
+/* Rose bud blooms open */
+.rose__bud {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--stem-h) - 8px);
+  width: var(--bud-size);
+  height: var(--bud-size);
+  transform: translateX(-50%);
+  animation: bloom-bud 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+  animation-delay: calc(var(--bloom-delay, 0s) + 2s);
+}
+
+.rose__petal {
+  --rot: 0deg;
+  --lift: 0%;
+  --w: 0.62;
+  --h: 0.7;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(var(--bud-size) * var(--w));
+  height: calc(var(--bud-size) * var(--h));
+  transform-origin: 50% 88%;
+  transform: translate(-50%, calc(-50% + var(--lift))) rotate(var(--rot));
+  border-radius: 64% 64% 52% 52%;
+  background: linear-gradient(180deg, #ffe6eb 0%, #ff6782 26%, #dc143d 65%, #700015 100%);
+  box-shadow: inset 0 -8px 10px rgba(255, 226, 231, 0.36), 0 0 18px rgba(255, 50, 95, 0.75);
+}
+
+.rose__petal--1 { --rot: -30deg; --lift: 8%; }
+.rose__petal--2 { --rot: 30deg; --lift: 8%; }
+.rose__petal--3 { --rot: -8deg; --lift: -6%; --w: 0.58; --h: 0.68; }
+.rose__petal--4 { --rot: 8deg; --lift: -6%; --w: 0.58; --h: 0.68; }
+.rose__petal--5 { --rot: -46deg; --lift: 14%; --w: 0.54; --h: 0.62; }
+.rose__petal--6 { --rot: 46deg; --lift: 14%; --w: 0.54; --h: 0.62; }
+.rose__petal--7 { --rot: 0deg; --lift: -18%; --w: 0.46; --h: 0.58; }
+
+.rose__core {
+  position: absolute;
+  left: 50%;
+  top: 43%;
+  width: 22%;
+  height: 22%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #fff9ce, #ffd767 64%, #ffad27 100%);
+  box-shadow: 0 0 16px rgba(255, 209, 106, 0.92);
+}
+
+/* ─── Bud glow (after-element via a wrapper) ─── */
+.rose__bud-glow {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--stem-h) - 8px);
+  width: calc(var(--bud-size) * 1.8);
+  height: calc(var(--bud-size) * 1.8);
+  transform: translateX(-50%) translateY(20%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 60, 100, 0.3) 0%, transparent 70%);
+  filter: blur(12px);
+  pointer-events: none;
+  animation: glow-pulse 3s ease-in-out infinite;
+  animation-delay: calc(var(--bloom-delay, 0s) + 2.5s);
+  opacity: 0;
+}
+
+/* ─── Floating light particles (from flower tops) ─── */
+.light-particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  filter: blur(0.5px);
+  animation: light-float 4s linear infinite backwards;
+  animation-delay: var(--ld, 0s);
+  z-index: 10;
+}
+
+.light-particle--warm {
+  background-color: rgb(255, 251, 0);
+  box-shadow: 0 0 8px rgba(255, 251, 0, 0.8);
+}
+
+.light-particle--cool {
+  background-color: #23f0ff;
+  box-shadow: 0 0 8px rgba(35, 240, 255, 0.8);
+}
+
+/* ─── Particle layers ─── */
+.particle-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.particle {
+  position: absolute;
+  left: calc(var(--x) * 1%);
+  top: calc(var(--y) * 1%);
+  border-radius: 50%;
+  animation-delay: var(--delay);
+  animation-duration: var(--duration);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.particle--petal {
+  width: 5px;
+  height: 5px;
+  background: #ffc5d0;
+  box-shadow: 0 0 14px rgba(255, 121, 146, 0.95), 0 0 28px rgba(255, 80, 120, 0.4);
+  animation-name: flow-up-petal;
+}
+
+.particle--green {
+  width: 4px;
+  height: 4px;
+  background: #7bff9a;
+  box-shadow: 0 0 12px rgba(123, 255, 154, 0.82), 0 0 24px rgba(80, 255, 130, 0.3);
+  animation-name: flow-up-green;
+}
+
+/* ═══════════════════════════════════════════
+   KEYFRAMES
+   ═══════════════════════════════════════════ */
+
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(0.7);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.3);
+  }
+}
+
+@keyframes edge-grass-bloom {
+  0% {
+    opacity: 0;
+    transform: rotate(var(--sway-from, 0deg)) scaleY(0);
+    filter: blur(1.5px);
+  }
+  70% {
+    opacity: 1;
+    transform: rotate(var(--sway-from, 0deg)) scaleY(1.08);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(var(--sway-from, 0deg)) scaleY(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes tuft-bloom {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scale(var(--scale)) scaleY(0);
+    filter: blur(1.5px);
+  }
+  72% {
+    opacity: 1;
+    transform: translateX(-50%) scale(var(--scale)) scaleY(1.08);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) scale(var(--scale)) scaleY(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes spread-grass-bloom {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scale(var(--gs)) scaleY(0);
+    filter: blur(1.5px);
+  }
+  72% {
+    opacity: 1;
+    transform: translateX(-50%) scale(var(--gs)) scaleY(1.08);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) scale(var(--gs)) scaleY(1);
+    filter: blur(0);
+  }
+}
+
+/* Grass tuft sway — preserves the parent positioning */
+@keyframes tuft-sway {
+  0%, 100% {
+    transform: translateX(-50%) scale(var(--scale)) rotate(0deg);
+  }
+  50% {
+    transform: translateX(-50%) scale(var(--scale)) rotate(1.5deg);
+  }
+}
+
+@keyframes spread-grass-sway {
+  0%, 100% {
+    transform: translateX(-50%) scale(var(--gs)) rotate(-1deg);
+  }
+  50% {
+    transform: translateX(-50%) scale(var(--gs)) rotate(1deg);
+  }
+}
+
+/* Individual blade sway */
+@keyframes blade-sway-left {
+  0%, 100% { transform: rotate(var(--base-rot, -12deg)); }
+  50% { transform: rotate(calc(var(--base-rot, -12deg) + 4deg)); }
+}
+
+@keyframes blade-sway-right {
+  0%, 100% { transform: rotate(var(--base-rot, 9deg)); }
+  50% { transform: rotate(calc(var(--base-rot, 9deg) + 4deg)); }
+}
+
+@keyframes spread-blade-sway-left {
+  0%, 100% { transform: rotate(var(--base-rot, -8deg)); }
+  50% { transform: rotate(calc(var(--base-rot, -8deg) + 3deg)); }
+}
+
+@keyframes spread-blade-sway-right {
+  0%, 100% { transform: rotate(var(--base-rot, 8deg)); }
+  50% { transform: rotate(calc(var(--base-rot, 8deg) - 3deg)); }
+}
+
+/* Edge grass sway — uses from/to values per blade */
+@keyframes edge-grass-sway {
+  0%, 100% {
+    transform: rotate(var(--sway-from, 0deg));
+  }
+  50% {
+    transform: rotate(var(--sway-to, 4deg));
+  }
+}
+
+/* Rose gentle sway */
+@keyframes rose-sway {
+  0%, 100% {
+    transform: translateX(calc(-50% + var(--offset))) rotate(calc(var(--angle) - 1.1deg));
+  }
+  50% {
+    transform: translateX(calc(-50% + var(--offset))) rotate(calc(var(--angle) + 1.1deg));
+  }
+}
+
+/* Stem grows from bottom */
+@keyframes grow-stem {
+  0% {
+    height: 0;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+}
+
+/* Leaves pop in along stem */
+@keyframes leaf-appear {
+  0% {
+    opacity: 0;
+    transform: var(--leaf-start, scale(0));
+  }
+  100% {
+    opacity: 0.96;
+  }
+}
+
+/* Rose__leaf specific: we use a class-based approach instead of var for transforms */
+.rose__leaf--1 { --leaf-start: translateX(-98%) rotate(34deg) scale(0); }
+.rose__leaf--2 { --leaf-start: translateX(-2%) rotate(-34deg) scale(0); }
+.rose__leaf--3 { --leaf-start: translateX(-104%) rotate(28deg) scale(0); }
+.rose__leaf--4 { --leaf-start: translateX(2%) rotate(-28deg) scale(0); }
+.rose__leaf--5 { --leaf-start: translateX(-102%) rotate(22deg) scale(0); }
+.rose__leaf--6 { --leaf-start: translateX(2%) rotate(-22deg) scale(0); }
+
+/* Bud blooms in */
+@keyframes bloom-bud {
+  0% {
+    transform: translateX(-50%) scale(0);
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+}
+
+/* Bud glow pulse */
+@keyframes glow-pulse {
+  0% { opacity: 0; }
+  15% { opacity: 0.6; }
+  50% { opacity: 1; }
+  85% { opacity: 0.6; }
+  100% { opacity: 0; }
+}
+
+/* Plant base keyframes */
+@keyframes vine-sway-l {
+  0%, 100% { transform: rotate(20deg); }
+  50% { transform: rotate(24deg) rotateX(-20deg); }
+}
+
+@keyframes vine-sway-r {
+  0%, 100% { transform: rotateY(-180deg) rotate(0deg) rotateX(-20deg); }
+  50% { transform: rotateY(-180deg) rotate(6deg) rotateX(-20deg); }
+}
+
+@keyframes front-stem-sway {
+  0%, 100% { transform: rotate(-28deg) rotateY(30deg) scale(1.04); }
+  50% { transform: rotate(-35deg) rotateY(40deg) scale(1.04); }
+}
+
+@keyframes front-leaf-r {
+  0% { transform: rotate(10deg) scale(0); }
+}
+
+@keyframes front-leaf-l {
+  0% { transform: rotateY(-180deg) rotate(5deg) scale(0); }
+}
+
+@keyframes accent-pop {
+  0% { transform: rotate(var(--rot)) scale(0); }
+}
+
+@keyframes long-stem-sway {
+  0%, 100% { transform: rotate(-30deg) rotateY(-20deg); }
+  50% { transform: rotate(-32deg) rotateY(-20deg); }
+}
+
+@keyframes fern-sway-1 {
+  0%, 100% { transform: rotate(-48deg) rotateY(40deg); }
+  50% { transform: rotate(-49deg) rotateY(40deg); }
+}
+
+@keyframes fern-sway-2 {
+  0%, 100% { transform: scale(0.5) rotate(75deg) rotateX(10deg) rotateY(-200deg); }
+  50% { transform: scale(0.5) rotate(77deg) rotateX(10deg) rotateY(-200deg); }
+}
+
+@keyframes plant-cluster-sway {
+  0%, 100% {
+    transform: translateX(-50%) rotate(calc(var(--cluster-rot, 0deg) - 0.8deg)) scale(var(--cluster-scale, 1));
+  }
+  50% {
+    transform: translateX(-50%) rotate(calc(var(--cluster-rot, 0deg) + 0.8deg)) scale(var(--cluster-scale, 1));
+  }
+}
+
+/* Petal particles: float upward with drift — MUCH bigger movement */
+@keyframes flow-up-petal {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(0.3);
+  }
+  12% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.95;
+    transform: translate3d(12px, -80px, 0) scale(1);
+  }
+  80% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(20px, -160px, 0) scale(0.4);
+  }
+}
+
+/* Green particles: float upward */
+@keyframes flow-up-green {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(0.3);
+  }
+  15% {
+    opacity: 1;
+  }
+  45% {
+    opacity: 0.9;
+    transform: translate3d(-8px, -60px, 0) scale(1.1);
+  }
+  75% {
+    opacity: 0.5;
+    transform: translate3d(6px, -120px, 0) scale(0.8);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(10px, -180px, 0) scale(0.3);
+  }
+}
+
+/* Floating light particles from buds */
+@keyframes light-float {
+  0% {
+    opacity: 0;
+    transform: translateY(0) translateX(0);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(-20px) translateX(-6px);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-60px) translateX(8px);
+  }
+  75% {
+    opacity: 0.6;
+    transform: translateY(-90px) translateX(-4px);
+    filter: blur(0.5px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-130px) translateX(2px);
+    filter: blur(2px);
+  }
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 900px) {
+  .rose--1 { --offset: -120px; }
+  .rose--5 { --offset: 120px; }
+  .rose--2 { --offset: -62px; }
+  .rose--4 { --offset: 62px; }
+
+  .edge-grass {
+    width: 120px;
+    height: 210px;
+  }
+
+  .plant-base {
+    width: min(460px, 96vw);
+    height: 280px;
+  }
+}
+
+@media (max-width: 640px) {
+  .bouquet {
+    height: min(470px, 78vh);
+  }
+
+  .rose {
+    width: 112px;
+    --bud-size: 74px;
+  }
+
+  .rose--1 { --offset: -88px; }
+  .rose--5 { --offset: 88px; }
+  .rose--2 { --offset: -42px; }
+  .rose--4 { --offset: 42px; }
+
+  .grass-tuft {
+    height: 140px;
+  }
+
+  .tuft-blade--1 { height: 130px; }
+  .tuft-blade--2 { height: 100px; }
+  .tuft-blade--3 { height: 118px; }
+  .tuft-blade--4 { height: 88px; }
+
+  .plant-base {
+    width: min(360px, 98vw);
+    height: 230px;
+  }
+
+  .edge-grass {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }

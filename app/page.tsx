@@ -1,65 +1,379 @@
-import Image from "next/image";
+import type { CSSProperties } from "react";
+
+/* ─── Stars ─── */
+const stars = Array.from({ length: 70 }, (_, i) => ({
+  x: (i * 17) % 100,
+  y: (i * 29) % 68,
+  delay: `${(i % 8) * 0.5}s`,
+}));
+
+/* ─── Roses ─── */
+const roses = [1, 2, 3, 4, 5] as const;
+
+/* ─── Grass tufts ─── */
+const grassTufts = [
+  { x: 8, y: 8, s: 1.05, delay: "0.1s" },
+  { x: 16, y: 10, s: 1.2, delay: "0s" },
+  { x: 27, y: 8, s: 1.05, delay: "0.25s" },
+  { x: 38, y: 6, s: 0.95, delay: "0.4s" },
+  { x: 50, y: 5, s: 0.9, delay: "0.15s" },
+  { x: 62, y: 6, s: 0.95, delay: "0.35s" },
+  { x: 73, y: 8, s: 1.05, delay: "0.2s" },
+  { x: 84, y: 10, s: 1.2, delay: "0.5s" },
+  { x: 92, y: 8, s: 1.05, delay: "0.3s" },
+] as const;
+
+const sideGrassGroups = [
+  { x: "18%", y: "3vh", scale: 0.95, delay: "0.2s" },
+  { x: "32%", y: "2vh", scale: 0.8, delay: "0.5s" },
+  { x: "68%", y: "2vh", scale: 0.8, delay: "0.8s" },
+  { x: "82%", y: "3vh", scale: 0.95, delay: "1.1s" },
+] as const;
+
+const plantClusters = [
+  { x: "32%", y: "1.5vh", rot: "-4deg", scale: 0.9, alpha: 0.9, sway: "3.5s", delay: "-0.8s" },
+  { x: "50%", y: "0vh", rot: "0deg", scale: 1, alpha: 1, sway: "4.2s", delay: "0s" },
+  { x: "68%", y: "1.5vh", rot: "4deg", scale: 0.9, alpha: 0.9, sway: "3.8s", delay: "-1.4s" },
+] as const;
+
+/* ─── Accent leaves (scattered at different positions/sizes/angles) ─── */
+const accentLeaves = [
+  { left: "calc(50% + 80px)", bottom: "60px", s: 42, rot: 45, flip: false, ad: "5.2s" },
+  { left: "calc(50% + 48px)", bottom: "90px", s: 38, rot: 25, flip: true, ad: "5.0s" },
+  { left: "calc(50% + 60px)", bottom: "30px", s: 44, rot: 55, flip: false, ad: "4.8s" },
+  { left: "calc(50% + 24px)", bottom: "70px", s: 36, rot: 25, flip: true, ad: "4.6s" },
+  { left: "calc(50% + 40px)", bottom: "120px", s: 42, rot: 55, flip: false, ad: "4.4s" },
+  { left: "calc(50% - 8px)", bottom: "46px", s: 38, rot: 25, flip: true, ad: "4.2s" },
+  { left: "calc(50% + 20px)", bottom: "150px", s: 40, rot: 45, flip: false, ad: "4.0s" },
+  { left: "calc(50% - 16px)", bottom: "100px", s: 36, rot: 15, flip: true, ad: "3.8s" },
+] as const;
+
+/* ─── Front stem leaf pair positions ─── */
+const frontStemLeaves = [
+  { top: "-30px", right: true, ad: "5.5s", scale: 0.7 },
+  { top: "-30px", right: false, ad: "5.2s", scale: 0.7 },
+  { top: "-10px", right: true, ad: "4.9s", scale: 1 },
+  { top: "-10px", right: false, ad: "4.6s", scale: 0.9 },
+  { top: "10px", right: true, ad: "4.3s", scale: 1 },
+  { top: "10px", right: false, ad: "4.1s", scale: 1 },
+  { top: "30px", right: true, ad: "3.8s", scale: 1 },
+  { top: "30px", right: false, ad: "3.5s", scale: 1 },
+] as const;
+
+/* ─── Grass fern leaves (half-circle leaves on curved stems) ─── */
+const fernLeaves1 = [
+  { top: "-6%", left: "30%", size: 24, rot: -20 },
+  { top: "-5%", left: "-110%", size: 24, rot: 10 },
+  { top: "5%", left: "60%", size: 32, rot: -18 },
+  { top: "6%", left: "-135%", size: 32, rot: 2 },
+  { top: "20%", left: "60%", size: 40, rot: -24 },
+  { top: "22%", left: "-180%", size: 40, rot: 10 },
+  { top: "39%", left: "70%", size: 40, rot: -10 },
+  { top: "40%", left: "-215%", size: 44, rot: 10 },
+] as const;
+
+/* ─── Light particles floating up from each rose bud ─── */
+const roseHeadPositions = [
+  { left: "calc(50% - 156px)", bottom: "30vh" },
+  { left: "calc(50% - 78px)", bottom: "33vh" },
+  { left: "50%", bottom: "36vh" },
+  { left: "calc(50% + 82px)", bottom: "33vh" },
+  { left: "calc(50% + 160px)", bottom: "30vh" },
+] as const;
+
+const lightParticles = roseHeadPositions.flatMap((pos, roseIdx) =>
+  Array.from({ length: 6 }, (_, i) => ({
+    left: pos.left,
+    bottom: pos.bottom,
+    offsetX: `${(i % 3 - 1) * 14}px`,
+    delay: `${(i * 0.6 + roseIdx * 0.3).toFixed(2)}s`,
+    cool: i % 2 === 0,
+  })),
+);
+
+/* ─── Petal particles (pink, floating upward near roses) ─── */
+const roseHeadXs = [38, 45, 50, 55, 62] as const;
+const petalFlow = roseHeadXs.flatMap((x, roseIndex) =>
+  Array.from({ length: 5 }, (_, i) => ({
+    x: x + ((i % 3) - 1) * 3,
+    y: 28 + ((i * 4 + roseIndex) % 12),
+    delay: `${(i * 0.35 + roseIndex * 0.2).toFixed(2)}s`,
+    duration: `${3.5 + ((i + roseIndex) % 4) * 0.4}s`,
+  })),
+);
+
+/* ─── Green particles (floating up from grass area) ─── */
+const greenFlow = Array.from({ length: 22 }, (_, i) => ({
+  x: 18 + ((i * 19) % 64),
+  y: 60 + ((i * 7) % 22),
+  delay: `${(i % 10) * 0.32}s`,
+  duration: `${3.8 + ((i * 0.22) % 1.4)}s`,
+}));
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="scene" aria-label="Red roses with magical grass and flowing particles at night">
+      <div className="sky" aria-hidden>
+        {stars.map((star, index) => (
+          <span
+            key={`star-${index}`}
+            className="star"
+            style={
+              {
+                "--x": star.x,
+                "--y": star.y,
+                "--delay": star.delay,
+              } as CSSProperties
+            }
+          />
+        ))}
+      </div>
+
+      <div className="mist" aria-hidden />
+
+      <section className="garden" aria-hidden>
+        <div className="edge-grass edge-grass--left">
+          <span className="edge-grass__blade edge-grass__blade--1" />
+          <span className="edge-grass__blade edge-grass__blade--2" />
+          <span className="edge-grass__blade edge-grass__blade--3" />
+          <span className="edge-grass__blade edge-grass__blade--4" />
+          <span className="edge-grass__blade edge-grass__blade--5" />
+          <span className="edge-grass__blade edge-grass__blade--6" />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+        <div className="edge-grass edge-grass--right">
+          <span className="edge-grass__blade edge-grass__blade--1" />
+          <span className="edge-grass__blade edge-grass__blade--2" />
+          <span className="edge-grass__blade edge-grass__blade--3" />
+          <span className="edge-grass__blade edge-grass__blade--4" />
+          <span className="edge-grass__blade edge-grass__blade--5" />
+          <span className="edge-grass__blade edge-grass__blade--6" />
+        </div>
+
+        <div className="meadow">
+          {grassTufts.map((tuft, index) => (
+            <span
+              key={`tuft-${index}`}
+              className="grass-tuft"
+              style={
+                {
+                  "--x": `${tuft.x}%`,
+                  "--y": `${tuft.y}%`,
+                  "--scale": tuft.s,
+                  "--delay": tuft.delay,
+                } as CSSProperties
+              }
+            >
+              <span className="tuft-blade tuft-blade--1" />
+              <span className="tuft-blade tuft-blade--2" />
+              <span className="tuft-blade tuft-blade--3" />
+              <span className="tuft-blade tuft-blade--4" />
+            </span>
+          ))}
+        </div>
+
+        <div className="spread-grass">
+          {sideGrassGroups.map((g, i) => (
+            <div
+              key={`spread-grass-${i}`}
+              className="spread-grass__group"
+              style={
+                {
+                  "--gx": g.x,
+                  "--gy": g.y,
+                  "--gs": g.scale,
+                  "--gd": g.delay,
+                } as CSSProperties
+              }
+            >
+              <span className="spread-grass__blade spread-grass__blade--1" />
+              <span className="spread-grass__blade spread-grass__blade--2" />
+              <span className="spread-grass__blade spread-grass__blade--3" />
+              <span className="spread-grass__blade spread-grass__blade--4" />
+            </div>
+          ))}
+        </div>
+
+        {plantClusters.map((cluster, clusterIndex) => (
+          <div
+            key={`plant-cluster-${clusterIndex}`}
+            className="plant-base"
+            style={
+              {
+                "--cluster-x": cluster.x,
+                "--cluster-y": cluster.y,
+                "--cluster-rot": cluster.rot,
+                "--cluster-scale": cluster.scale,
+                "--cluster-alpha": cluster.alpha,
+                "--cluster-sway": cluster.sway,
+                "--cluster-delay": cluster.delay,
+              } as CSSProperties
+            }
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+            <div className="long-stem">
+              <div className="long-stem__top" />
+              <div className="long-stem__bottom" />
+            </div>
+
+            <div className="vine-arc vine-arc--left" />
+            <div className="vine-arc vine-arc--right" />
+
+            <div className="grass-fern grass-fern--1">
+              <div className="grass-fern__top" />
+              <div className="grass-fern__bottom" />
+              {fernLeaves1.map((fl, i) => (
+                <span
+                  key={`fern1-${clusterIndex}-${i}`}
+                  className="grass-fern__leaf"
+                  style={
+                    {
+                      top: fl.top,
+                      left: fl.left,
+                      "--size": `${fl.size}px`,
+                      transform: `rotate(${fl.rot}deg)`,
+                    } as CSSProperties
+                  }
+                />
+              ))}
+              <div className="grass-fern__overlay" />
+            </div>
+
+            <div className="grass-fern grass-fern--2">
+              <div className="grass-fern__top" />
+              <div className="grass-fern__bottom" />
+              {fernLeaves1.slice(0, 6).map((fl, i) => (
+                <span
+                  key={`fern2-${clusterIndex}-${i}`}
+                  className="grass-fern__leaf"
+                  style={
+                    {
+                      top: fl.top,
+                      left: fl.left,
+                      "--size": `${fl.size}px`,
+                      transform: `rotate(${fl.rot}deg)`,
+                    } as CSSProperties
+                  }
+                />
+              ))}
+              <div className="grass-fern__overlay" />
+            </div>
+
+            <div className="front-stem">
+              {frontStemLeaves.map((leaf, i) => (
+                <div
+                  key={`fstem-${clusterIndex}-${i}`}
+                  className={`front-stem__leaf-wrap ${leaf.right ? "front-stem__leaf-wrap--right" : "front-stem__leaf-wrap--left"}`}
+                  style={
+                    {
+                      "--top": leaf.top,
+                      "--ad": leaf.ad,
+                      transform: leaf.right
+                        ? `rotate(10deg) scale(${leaf.scale})`
+                        : `rotateY(-180deg) rotate(5deg) scale(${leaf.scale})`,
+                    } as CSSProperties
+                  }
+                >
+                  <div className="front-stem__leaf" />
+                </div>
+              ))}
+              <div className="front-stem__line" />
+            </div>
+
+            {accentLeaves.map((al, i) => (
+              <span
+                key={`accent-${clusterIndex}-${i}`}
+                className={`accent-leaf${al.flip ? " accent-leaf--flip" : ""}`}
+                style={
+                  {
+                    left: al.left,
+                    bottom: al.bottom,
+                    "--s": `${al.s}px`,
+                    "--rot": `${al.rot}deg`,
+                    "--ad": al.ad,
+                  } as CSSProperties
+                }
+              />
+            ))}
+          </div>
+        ))}
+
+        <div className="bouquet">
+          {roses.map((number) => (
+            <article key={number} className={`rose rose--${number}`}>
+              <div className="rose__stem" />
+              <span className="rose__leaf rose__leaf--1" />
+              <span className="rose__leaf rose__leaf--2" />
+              <span className="rose__leaf rose__leaf--3" />
+              <span className="rose__leaf rose__leaf--4" />
+              <span className="rose__leaf rose__leaf--5" />
+              <span className="rose__leaf rose__leaf--6" />
+
+              <div className="rose__bud-glow" />
+
+              <div className="rose__bud">
+                <span className="rose__petal rose__petal--1" />
+                <span className="rose__petal rose__petal--2" />
+                <span className="rose__petal rose__petal--3" />
+                <span className="rose__petal rose__petal--4" />
+                <span className="rose__petal rose__petal--5" />
+                <span className="rose__petal rose__petal--6" />
+                <span className="rose__petal rose__petal--7" />
+                <span className="rose__core" />
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <div className="particle-layer" style={{ zIndex: 6 }}>
+          {lightParticles.map((lp, index) => (
+            <span
+              key={`light-${index}`}
+              className={`light-particle ${lp.cool ? "light-particle--cool" : "light-particle--warm"}`}
+              style={
+                {
+                  left: lp.left,
+                  bottom: lp.bottom,
+                  marginLeft: lp.offsetX,
+                  "--ld": lp.delay,
+                } as CSSProperties
+              }
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          ))}
         </div>
-      </main>
-    </div>
+
+        <div className="particle-layer">
+          {petalFlow.map((p, index) => (
+            <span
+              key={`petal-flow-${index}`}
+              className="particle particle--petal"
+              style={
+                {
+                  "--x": p.x,
+                  "--y": p.y,
+                  "--delay": p.delay,
+                  "--duration": p.duration,
+                } as CSSProperties
+              }
+            />
+          ))}
+        </div>
+
+        <div className="particle-layer">
+          {greenFlow.map((p, index) => (
+            <span
+              key={`green-flow-${index}`}
+              className="particle particle--green"
+              style={
+                {
+                  "--x": p.x,
+                  "--y": p.y,
+                  "--delay": p.delay,
+                  "--duration": p.duration,
+                } as CSSProperties
+              }
+            />
+          ))}
+        </div>
+      </section>
+    </main>
   );
 }
