@@ -54,6 +54,45 @@ body {
   animation-delay: var(--delay);
 }
 
+/* ─── Crescent Moon ─── */
+.moon {
+  position: absolute;
+  top: 7%;
+  left: 6%;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 58% 42%, #fffde4 0%, #f5e07a 40%, #d4a843 100%);
+  box-shadow:
+    0 0 28px rgba(245, 224, 122, 0.62),
+    0 0 72px rgba(240, 210, 100, 0.28);
+  animation: moon-glow 5s ease-in-out infinite;
+  z-index: 1;
+}
+
+.moon__cover {
+  position: absolute;
+  top: -8px;
+  left: -17px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #010611;
+}
+
+@keyframes moon-glow {
+  0%, 100% {
+    box-shadow:
+      0 0 28px rgba(245, 224, 122, 0.62),
+      0 0 72px rgba(240, 210, 100, 0.28);
+  }
+  50% {
+    box-shadow:
+      0 0 40px rgba(245, 224, 122, 0.82),
+      0 0 100px rgba(240, 210, 100, 0.4);
+  }
+}
+
 /* ─── Mist ─── */
 .mist {
   position: absolute;
@@ -831,6 +870,7 @@ body {
 }
 
 .particle--petal {
+  top: auto;
   width: 5px;
   height: 5px;
   background: #ffc5d0;
@@ -1145,6 +1185,100 @@ body {
     opacity: 0;
     transform: translateY(-130px) translateX(2px);
     filter: blur(2px);
+  }
+}
+
+/* ─── Hero text ─── */
+.hero {
+  position: absolute;
+  top: 12%;
+  left: 0;
+  right: 0;
+  text-align: center;
+  z-index: 50;
+  pointer-events: none;
+  padding: 0 2rem;
+}
+
+.hero__title {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: clamp(0.95rem, 1.7vw, 1.5rem);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  line-height: 1.7;
+  color: rgba(255, 238, 215, 0.88);
+  text-shadow:
+    0 0 12px rgba(255, 180, 110, 0.65),
+    0 0 36px rgba(255, 120, 70, 0.28),
+    0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.hero__subtitle {
+  margin-top: 0.15em;
+  font-family: var(--font-dancing), cursive;
+  font-size: clamp(3rem, 7vw, 6rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  color: #ffb8c6;
+  text-shadow:
+    0 0 22px rgba(255, 110, 145, 0.85),
+    0 0 55px rgba(255, 65, 110, 0.45),
+    0 0 100px rgba(220, 40, 85, 0.22),
+    0 2px 8px rgba(0, 0, 0, 0.4);
+  animation: subtitle-glow 3.5s ease-in-out infinite;
+  animation-delay: 5.5s;
+  animation-fill-mode: backwards;
+}
+
+@keyframes subtitle-glow {
+  0%, 100% {
+    text-shadow:
+      0 0 22px rgba(255, 110, 145, 0.85),
+      0 0 55px rgba(255, 65, 110, 0.45),
+      0 0 100px rgba(220, 40, 85, 0.22),
+      0 2px 8px rgba(0, 0, 0, 0.4);
+  }
+  50% {
+    text-shadow:
+      0 0 32px rgba(255, 140, 165, 1),
+      0 0 80px rgba(255, 90, 135, 0.65),
+      0 0 140px rgba(230, 55, 100, 0.35),
+      0 2px 8px rgba(0, 0, 0, 0.4);
+  }
+}
+
+.hero__char {
+  display: inline-block;
+  opacity: 0;
+  animation: blossom-in 0.78s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation-delay: calc(0.5s + var(--ci) * 0.055s);
+}
+
+.hero__char--sub {
+  animation: blossom-in 0.9s cubic-bezier(0.34, 1.6, 0.64, 1) forwards;
+  animation-delay: calc(3.5s + var(--ci) * 0.16s);
+}
+
+@keyframes blossom-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.05) rotate(-22deg) translateY(18px);
+    filter: blur(7px);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.3) rotate(6deg) translateY(-7px);
+    filter: blur(0);
+  }
+  75% {
+    transform: scale(0.9) rotate(-2deg) translateY(3px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg) translateY(0);
+    filter: blur(0);
   }
 }
 

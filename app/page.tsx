@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { siteText } from "@/lib/content";
 
 /* ─── Stars ─── */
 const stars = Array.from({ length: 70 }, (_, i) => ({
@@ -31,9 +32,9 @@ const sideGrassGroups = [
 ] as const;
 
 const plantClusters = [
-  { x: "32%", y: "1.5vh", rot: "-4deg", scale: 0.9, alpha: 0.9, sway: "3.5s", delay: "-0.8s" },
-  { x: "50%", y: "0vh", rot: "0deg", scale: 1, alpha: 1, sway: "4.2s", delay: "0s" },
-  { x: "68%", y: "1.5vh", rot: "4deg", scale: 0.9, alpha: 0.9, sway: "3.8s", delay: "-1.4s" },
+  { x: "34%", y: "1.5vh", rot: "-4deg", scale: 1.0,  alpha: 0.9, sway: "3.5s", delay: "-0.8s" },
+  { x: "50%", y: "0vh",   rot: "0deg",  scale: 1.15, alpha: 1.0, sway: "4.2s", delay: "0s" },
+  { x: "66%", y: "1.5vh", rot: "4deg",  scale: 1.0,  alpha: 0.9, sway: "3.8s", delay: "-1.4s" },
 ] as const;
 
 /* ─── Accent leaves (scattered at different positions/sizes/angles) ─── */
@@ -62,23 +63,27 @@ const frontStemLeaves = [
 
 /* ─── Grass fern leaves (half-circle leaves on curved stems) ─── */
 const fernLeaves1 = [
-  { top: "-6%", left: "30%", size: 24, rot: -20 },
-  { top: "-5%", left: "-110%", size: 24, rot: 10 },
-  { top: "5%", left: "60%", size: 32, rot: -18 },
-  { top: "6%", left: "-135%", size: 32, rot: 2 },
-  { top: "20%", left: "60%", size: 40, rot: -24 },
-  { top: "22%", left: "-180%", size: 40, rot: 10 },
-  { top: "39%", left: "70%", size: 40, rot: -10 },
-  { top: "40%", left: "-215%", size: 44, rot: 10 },
+  { top: "-6%", left: "30%",   size: 30, rot: -20 },
+  { top: "-5%", left: "-110%", size: 30, rot: 10 },
+  { top: "5%",  left: "60%",   size: 40, rot: -18 },
+  { top: "6%",  left: "-135%", size: 40, rot: 2 },
+  { top: "20%", left: "60%",   size: 50, rot: -24 },
+  { top: "22%", left: "-180%", size: 50, rot: 10 },
+  { top: "39%", left: "70%",   size: 50, rot: -10 },
+  { top: "40%", left: "-215%", size: 54, rot: 10 },
 ] as const;
 
-/* ─── Light particles floating up from each rose bud ─── */
+/* ─── Light particles floating up from each rose bud ───
+ *  Each rose is rotated around its bottom-centre pivot.
+ *  left  = 50% + offset + stem-h × sin(angle)
+ *  bottom = bouquet-bottom(4.8vh) + stem-h × cos(angle)
+ */
 const roseHeadPositions = [
-  { left: "calc(50% - 156px)", bottom: "30vh" },
-  { left: "calc(50% - 78px)", bottom: "33vh" },
-  { left: "50%", bottom: "36vh" },
-  { left: "calc(50% + 82px)", bottom: "33vh" },
-  { left: "calc(50% + 160px)", bottom: "30vh" },
+  { left: "calc(50% - 156px + 30vh * sin(-15deg))", bottom: "calc(4.8vh + 30vh * cos(15deg))" },
+  { left: "calc(50% - 78px + 33vh * sin(-8deg))",  bottom: "calc(4.8vh + 33vh * cos(8deg))" },
+  { left: "50%",                                    bottom: "calc(4.8vh + 36vh)" },
+  { left: "calc(50% + 82px + 33vh * sin(8deg))",   bottom: "calc(4.8vh + 33vh * cos(8deg))" },
+  { left: "calc(50% + 160px + 30vh * sin(15deg))", bottom: "calc(4.8vh + 30vh * cos(15deg))" },
 ] as const;
 
 const lightParticles = roseHeadPositions.flatMap((pos, roseIdx) =>
@@ -91,12 +96,12 @@ const lightParticles = roseHeadPositions.flatMap((pos, roseIdx) =>
   })),
 );
 
-/* ─── Petal particles (pink, floating upward near roses) ─── */
-const roseHeadXs = [38, 45, 50, 55, 62] as const;
-const petalFlow = roseHeadXs.flatMap((x, roseIndex) =>
+/* ─── Petal particles (pink, floating upward from each petal top) ─── */
+const petalFlow = roseHeadPositions.flatMap((pos, roseIndex) =>
   Array.from({ length: 5 }, (_, i) => ({
-    x: x + ((i % 3) - 1) * 3,
-    y: 28 + ((i * 4 + roseIndex) % 12),
+    left: pos.left,
+    bottom: pos.bottom,
+    offsetX: `${((i % 3) - 1) * 12}px`,
     delay: `${(i * 0.35 + roseIndex * 0.2).toFixed(2)}s`,
     duration: `${3.5 + ((i + roseIndex) % 4) * 0.4}s`,
   })),
@@ -127,6 +132,10 @@ export default function Home() {
             }
           />
         ))}
+      </div>
+
+      <div className="moon" aria-hidden>
+        <div className="moon__cover" />
       </div>
 
       <div className="mist" aria-hidden />
@@ -347,8 +356,9 @@ export default function Home() {
               className="particle particle--petal"
               style={
                 {
-                  "--x": p.x,
-                  "--y": p.y,
+                  left: p.left,
+                  bottom: p.bottom,
+                  marginLeft: p.offsetX,
                   "--delay": p.delay,
                   "--duration": p.duration,
                 } as CSSProperties
@@ -374,6 +384,31 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      <div className="hero">
+        <h1 className="hero__title">
+          {[...siteText.title].map((char, i) => (
+            <span
+              key={`t-${i}`}
+              className="hero__char"
+              style={{ "--ci": i } as CSSProperties}
+            >
+              {char === " " ? "\u00A0" : char}
+            </span>
+          ))}
+        </h1>
+        <p className="hero__subtitle">
+          {[...siteText.subtitle].map((char, i) => (
+            <span
+              key={`s-${i}`}
+              className="hero__char hero__char--sub"
+              style={{ "--ci": i } as CSSProperties}
+            >
+              {char === " " ? "\u00A0" : char}
+            </span>
+          ))}
+        </p>
+      </div>
     </main>
   );
 }
