@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import Link from "next/link";
+import TransitionLink from "../components/TransitionLink";
 
 const stars = Array.from({ length: 70 }, (_, i) => ({
   x: (i * 17) % 100,
@@ -9,7 +9,7 @@ const stars = Array.from({ length: 70 }, (_, i) => ({
 
 export default function MoonPage() {
   return (
-    <main className="scene" aria-label="Night sky with crescent moon">
+    <main className="scene moon-scene" aria-label="Night sky with moon becoming full at the center">
       <div className="sky" aria-hidden>
         {stars.map((star, index) => (
           <span
@@ -26,18 +26,18 @@ export default function MoonPage() {
         ))}
       </div>
 
-      <div className="moon-wrap" aria-hidden>
-        <div className="moon">
+      <div className="moon-wrap moon-wrap--journey" aria-hidden>
+        <div className="moon moon--fullrise">
           <div className="moon__cover" />
         </div>
       </div>
 
       <div className="mist" aria-hidden />
 
-      <div className="hero">
-        <Link className="hero__btn" href="/">
+      <div className="moon-actions">
+        <TransitionLink className="hero__btn moon-actions__btn" href="/">
           Back To Flowers
-        </Link>
+        </TransitionLink>
       </div>
     </main>
   );

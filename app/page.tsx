@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import Link from "next/link";
+import TransitionLink from "./components/TransitionLink";
 import { siteText } from "@/lib/content";
 
 /* ─── Stars ─── */
@@ -412,9 +412,9 @@ export default function Home() {
             </span>
           ))}
         </p>
-        <Link className="hero__btn" href="/moon">
+        <TransitionLink className="hero__btn" href="/moon">
           {siteText.buttonOne}
-        </Link>
+        </TransitionLink>
       </div>
     </main>
   );
