@@ -8,5 +8,6 @@ export const siteText = {
   buttonOne: "Click Here 💞",
   buttonTwo: "",
   buttonThree: "",
+  moonText: "You are like a moon, so pretty & so tiny, to the moon & back?"
 
 };
