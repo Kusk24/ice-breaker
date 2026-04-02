@@ -777,8 +777,15 @@ body {
   height: var(--stem-h);
   border-radius: 999px;
   transform: translateX(-50%);
-  background: linear-gradient(180deg, #5fc86a 0%, #2e8b3a 55%, #1a5c25 100%);
-  filter: drop-shadow(0 0 8px rgba(50, 160, 70, 0.4));
+  background: linear-gradient(
+    180deg,
+    rgba(95, 200, 106, 0.98) 0%,
+    rgba(46, 139, 58, 0.92) 56%,
+    rgba(26, 92, 37, 0.58) 86%,
+    rgba(12, 46, 20, 0.18) 100%
+  );
+  filter: drop-shadow(0 0 8px rgba(50, 160, 70, 0.28));
+  mask-image: linear-gradient(to top, transparent 0%, rgba(0, 0, 0, 0.48) 16%, #000 36%);
   animation: grow-stem 2.5s cubic-bezier(0.22, 0.61, 0.36, 1) backwards;
   animation-delay: var(--bloom-delay, 0s);
 }
