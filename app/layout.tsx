@@ -16,7 +16,7 @@ const dancing = Dancing_Script({
 });
 
 export const metadata: Metadata = {
-  title: "Blossoming Flowers at Night",
+  title: "A Special Gift for Tiny Thae Thu",
   description: "A CSS-animated flower blossoming scene built with Next.js",
 };
 
