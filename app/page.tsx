@@ -39,38 +39,38 @@ const plantClusters = [
 
 /* ─── Accent leaves (scattered at different positions/sizes/angles) ─── */
 const accentLeaves = [
-  { left: "calc(50% + 80px)", bottom: "60px", s: 42, rot: 45, flip: false, ad: "5.2s" },
-  { left: "calc(50% + 48px)", bottom: "90px", s: 38, rot: 25, flip: true, ad: "5.0s" },
-  { left: "calc(50% + 60px)", bottom: "30px", s: 44, rot: 55, flip: false, ad: "4.8s" },
-  { left: "calc(50% + 24px)", bottom: "70px", s: 36, rot: 25, flip: true, ad: "4.6s" },
-  { left: "calc(50% + 40px)", bottom: "120px", s: 42, rot: 55, flip: false, ad: "4.4s" },
-  { left: "calc(50% - 8px)", bottom: "46px", s: 38, rot: 25, flip: true, ad: "4.2s" },
-  { left: "calc(50% + 20px)", bottom: "150px", s: 40, rot: 45, flip: false, ad: "4.0s" },
-  { left: "calc(50% - 16px)", bottom: "100px", s: 36, rot: 15, flip: true, ad: "3.8s" },
+  { left: "calc(50% + 88px)",  bottom: "72px",  s: 44, rot: 48,  flip: false, ad: "5.2s" },
+  { left: "calc(50% + 52px)",  bottom: "104px", s: 40, rot: 28,  flip: true,  ad: "5.0s" },
+  { left: "calc(50% + 68px)",  bottom: "38px",  s: 46, rot: 58,  flip: false, ad: "4.8s" },
+  { left: "calc(50% + 28px)",  bottom: "82px",  s: 38, rot: 28,  flip: true,  ad: "4.6s" },
+  { left: "calc(50% + 46px)",  bottom: "136px", s: 44, rot: 52,  flip: false, ad: "4.4s" },
+  { left: "calc(50% - 4px)",   bottom: "54px",  s: 40, rot: 22,  flip: true,  ad: "4.2s" },
+  { left: "calc(50% + 24px)",  bottom: "164px", s: 42, rot: 44,  flip: false, ad: "4.0s" },
+  { left: "calc(50% - 12px)",  bottom: "112px", s: 38, rot: 18,  flip: true,  ad: "3.8s" },
 ] as const;
 
 /* ─── Front stem leaf pair positions ─── */
 const frontStemLeaves = [
-  { top: "-30px", right: true, ad: "5.5s", scale: 0.7 },
-  { top: "-30px", right: false, ad: "5.2s", scale: 0.7 },
-  { top: "-10px", right: true, ad: "4.9s", scale: 1 },
-  { top: "-10px", right: false, ad: "4.6s", scale: 0.9 },
-  { top: "10px", right: true, ad: "4.3s", scale: 1 },
-  { top: "10px", right: false, ad: "4.1s", scale: 1 },
-  { top: "30px", right: true, ad: "3.8s", scale: 1 },
-  { top: "30px", right: false, ad: "3.5s", scale: 1 },
+  { top: "-40px", right: true,  ad: "5.5s", scale: 0.65 },
+  { top: "-40px", right: false, ad: "5.2s", scale: 0.65 },
+  { top: "-18px", right: true,  ad: "4.9s", scale: 0.85 },
+  { top: "-18px", right: false, ad: "4.6s", scale: 0.85 },
+  { top: "8px",   right: true,  ad: "4.3s", scale: 1.0 },
+  { top: "8px",   right: false, ad: "4.1s", scale: 1.0 },
+  { top: "34px",  right: true,  ad: "3.8s", scale: 1.0 },
+  { top: "34px",  right: false, ad: "3.5s", scale: 1.0 },
 ] as const;
 
 /* ─── Grass fern leaves (half-circle leaves on curved stems) ─── */
 const fernLeaves1 = [
-  { top: "-6%", left: "30%",   size: 30, rot: -20 },
-  { top: "-5%", left: "-110%", size: 30, rot: 10 },
-  { top: "5%",  left: "60%",   size: 40, rot: -18 },
-  { top: "6%",  left: "-135%", size: 40, rot: 2 },
-  { top: "20%", left: "60%",   size: 50, rot: -24 },
-  { top: "22%", left: "-180%", size: 50, rot: 10 },
-  { top: "39%", left: "70%",   size: 50, rot: -10 },
-  { top: "40%", left: "-215%", size: 54, rot: 10 },
+  { top: "-8%",  left: "28%",   size: 28, rot: -22 },
+  { top: "-7%",  left: "-118%", size: 28, rot: 12 },
+  { top: "4%",   left: "55%",   size: 36, rot: -20 },
+  { top: "5%",   left: "-148%", size: 36, rot: 4 },
+  { top: "18%",  left: "62%",   size: 46, rot: -26 },
+  { top: "20%",  left: "-190%", size: 46, rot: 8 },
+  { top: "36%",  left: "72%",   size: 48, rot: -12 },
+  { top: "38%",  left: "-228%", size: 52, rot: 12 },
 ] as const;
 
 /* ─── Light particles floating up from each rose bud ───
@@ -240,6 +240,7 @@ export default function Home() {
                       top: fl.top,
                       left: fl.left,
                       "--size": `${fl.size}px`,
+                      "--li": i,
                       transform: `rotate(${fl.rot}deg)`,
                     } as CSSProperties
                   }
@@ -260,6 +261,7 @@ export default function Home() {
                       top: fl.top,
                       left: fl.left,
                       "--size": `${fl.size}px`,
+                      "--li": i,
                       transform: `rotate(${fl.rot}deg)`,
                     } as CSSProperties
                   }
@@ -410,6 +412,9 @@ export default function Home() {
             </span>
           ))}
         </p>
+        <button className="hero__btn" type="button">
+          {siteText.buttonOne}
+        </button>
       </div>
     </main>
   );

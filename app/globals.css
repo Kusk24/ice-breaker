@@ -460,7 +460,7 @@ body {
   left: var(--cluster-x, 50%);
   bottom: var(--cluster-y, 0);
   width: min(560px, 96vw);
-  height: 320px;
+  height: 360px;
   transform: translateX(-50%) rotate(var(--cluster-rot, 0deg)) scale(var(--cluster-scale, 1));
   transform-origin: bottom center;
   opacity: var(--cluster-alpha, 1);
@@ -488,8 +488,10 @@ body {
   -webkit-mask-image: linear-gradient(to top, transparent 30%, #079097 60%);
   mask-image: linear-gradient(to top, transparent 30%, #079097 60%);
   transform: rotate(20deg);
-  animation: vine-sway-l 2.5s ease-in-out infinite;
-  animation-delay: calc(var(--cluster-delay, 0s) + 0.1s);
+  animation:
+    vine-grow-in 2s calc(var(--cluster-delay, 0s) + 1.8s) backwards,
+    vine-sway-l 2.5s ease-in-out infinite;
+  animation-delay: calc(var(--cluster-delay, 0s) + 1.8s), calc(var(--cluster-delay, 0s) + 3.8s);
 }
 
 .vine-arc--right {
@@ -504,8 +506,10 @@ body {
   transform: rotateY(-180deg);
   filter: blur(0.3px);
   opacity: 0.8;
-  animation: vine-sway-r 3s ease-in-out infinite;
-  animation-delay: calc(var(--cluster-delay, 0s) + 0.3s);
+  animation:
+    vine-grow-in 2s calc(var(--cluster-delay, 0s) + 2s) backwards,
+    vine-sway-r 3s ease-in-out infinite;
+  animation-delay: calc(var(--cluster-delay, 0s) + 2s), calc(var(--cluster-delay, 0s) + 4s);
 }
 
 /* ── Type 2: Front stem with alternating leaf pairs ── */
@@ -522,7 +526,7 @@ body {
 
 .front-stem__line {
   width: 2px;
-  height: 100px;
+  height: 130px;
   background: linear-gradient(to top, transparent, #079097, transparent 100%);
   position: relative;
 }
@@ -575,6 +579,8 @@ body {
 
 .accent-leaf--flip {
   transform: rotate(var(--rot)) rotateY(-180deg);
+  animation: accent-pop-flip 0.5s linear backwards;
+  animation-delay: var(--ad);
 }
 
 /* ── Type 4: Long curved stem behind ── */
@@ -587,8 +593,10 @@ body {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  animation: long-stem-sway 3s ease-in-out infinite;
-  animation-delay: calc(var(--cluster-delay, 0s) + 0.15s);
+  animation:
+    element-grow-in 2s calc(var(--cluster-delay, 0s) + 1.2s) backwards,
+    long-stem-sway 3s ease-in-out infinite;
+  animation-delay: calc(var(--cluster-delay, 0s) + 1.2s), calc(var(--cluster-delay, 0s) + 3.2s);
 }
 
 .long-stem__top {
@@ -601,7 +609,7 @@ body {
 
 .long-stem__bottom {
   width: 8px;
-  height: 200px;
+  height: 240px;
   background: linear-gradient(to top, transparent 30%, #159faa);
   clip-path: polygon(35% 0, 65% 1%, 100% 100%, 0% 100%);
 }
@@ -620,10 +628,12 @@ body {
 }
 
 .grass-fern--1 {
-  left: calc(50% - 30px);
+  left: calc(50% - 24px);
   transform: rotate(-48deg) rotateY(40deg);
-  animation: fern-sway-1 4.2s ease-in-out infinite;
-  animation-delay: calc(var(--cluster-delay, 0s) + 0.12s);
+  animation:
+    element-grow-in 1s calc(var(--cluster-delay, 0s) + 2s) backwards,
+    fern-sway-1 4.2s ease-in-out infinite;
+  animation-delay: calc(var(--cluster-delay, 0s) + 2s), calc(var(--cluster-delay, 0s) + 3s);
 }
 
 .grass-fern--2 {
@@ -632,8 +642,10 @@ body {
   transform: scale(0.5) rotate(75deg) rotateX(10deg) rotateY(-200deg);
   opacity: 0.92;
   z-index: 0;
-  animation: fern-sway-2 4.6s ease-in-out infinite;
-  animation-delay: calc(var(--cluster-delay, 0s) + 0.28s);
+  animation:
+    element-grow-in 1s calc(var(--cluster-delay, 0s) + 2.2s) backwards,
+    fern-sway-2 4.6s ease-in-out infinite;
+  animation-delay: calc(var(--cluster-delay, 0s) + 2.2s), calc(var(--cluster-delay, 0s) + 3.2s);
 }
 
 .grass-fern__top {
@@ -648,7 +660,7 @@ body {
 .grass-fern__bottom {
   margin-top: -2px;
   width: 5px;
-  height: 100px;
+  height: 130px;
   background: linear-gradient(to top, transparent, var(--c));
 }
 
@@ -662,6 +674,20 @@ body {
   background: linear-gradient(to top, transparent, transparent 30%, var(--c));
   z-index: 100;
   opacity: 0.95;
+}
+
+/* Each leaf blooms from its own origin with a staggered delay — like the SCSS image */
+/* odd children (1,3,5,7 = positions 0,2,4,6 in data) → right-side leaves, grow from bottom-left */
+.grass-fern__leaf:nth-child(odd) {
+  transform-origin: bottom left;
+  animation: fern-leaf-grow-left 2s linear backwards;
+  animation-delay: calc(2.6s - var(--li, 0) * 0.2s);
+}
+/* even children (2,4,6,8 = positions 1,3,5,7) → left-side leaves, grow from bottom-right */
+.grass-fern__leaf:nth-child(even) {
+  transform-origin: bottom right;
+  animation: fern-leaf-grow-right 2s linear backwards;
+  animation-delay: calc(2.5s - var(--li, 0) * 0.2s);
 }
 
 .grass-fern__overlay {
@@ -1140,6 +1166,43 @@ body {
   0% { transform: rotate(var(--rot)) scale(0); }
 }
 
+@keyframes accent-pop-flip {
+  0% { transform: rotate(var(--rot)) rotateY(-180deg) scale(0); }
+}
+
+@keyframes fern-leaf-grow-left {
+  0% {
+    transform-origin: bottom left;
+    transform: rotate(var(--rot, 0deg)) scale(0);
+    opacity: 0;
+  }
+  60% { opacity: 1; }
+}
+
+@keyframes fern-leaf-grow-right {
+  0% {
+    transform-origin: bottom right;
+    transform: rotate(var(--rot, 0deg)) scale(0);
+    opacity: 0;
+  }
+  60% { opacity: 1; }
+}
+
+@keyframes element-grow-in {
+  0% {
+    scale: 0;
+    opacity: 0;
+  }
+}
+
+@keyframes vine-grow-in {
+  0% {
+    scale: 0;
+    opacity: 0;
+    transform-origin: bottom center;
+  }
+}
+
 @keyframes long-stem-sway {
   0%, 100% { transform: rotate(-30deg) rotateY(-20deg); }
   50% { transform: rotate(-32deg) rotateY(-20deg); }
@@ -1306,6 +1369,58 @@ body {
 .hero__char--sub {
   animation: blossom-in 0.9s cubic-bezier(0.34, 1.6, 0.64, 1) forwards;
   animation-delay: calc(3.5s + var(--ci) * 0.16s);
+}
+
+.hero__btn {
+  display: block;
+  margin: 2.2em auto 0;
+  padding: 0.72em 2.4em;
+  font-family: var(--font-dancing), cursive;
+  font-size: clamp(1rem, 2vw, 1.4rem);
+  font-weight: 700;
+  color: #fff0f5;
+  background: linear-gradient(135deg, #b81a42 0%, #e03468 50%, #c0224e 100%);
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  letter-spacing: 0.06em;
+  pointer-events: auto;
+  text-shadow: 0 1px 4px rgba(80, 0, 20, 0.5);
+  box-shadow:
+    0 4px 18px rgba(180, 20, 60, 0.55),
+    0 1px 0 rgba(255, 180, 200, 0.18) inset;
+  opacity: 0;
+  animation:
+    blossom-in 1s cubic-bezier(0.34, 1.56, 0.64, 1) 5.6s forwards,
+    btn-pulse 3s ease-in-out 6.6s infinite;
+  transition: background 0.25s, box-shadow 0.25s, transform 0.18s;
+}
+
+.hero__btn:hover {
+  background: linear-gradient(135deg, #d12055 0%, #f04078 50%, #d42860 100%);
+  box-shadow:
+    0 6px 28px rgba(200, 30, 75, 0.7),
+    0 1px 0 rgba(255, 190, 210, 0.22) inset;
+  transform: scale(1.06) translateY(-2px);
+}
+
+.hero__btn:active {
+  transform: scale(0.97) translateY(1px);
+  box-shadow: 0 2px 10px rgba(180, 20, 60, 0.45);
+}
+
+@keyframes btn-pulse {
+  0%, 100% {
+    box-shadow:
+      0 4px 18px rgba(180, 20, 60, 0.55),
+      0 1px 0 rgba(255, 180, 200, 0.18) inset;
+  }
+  50% {
+    box-shadow:
+      0 4px 32px rgba(200, 30, 75, 0.8),
+      0 0 18px rgba(220, 50, 90, 0.35),
+      0 1px 0 rgba(255, 180, 200, 0.18) inset;
+  }
 }
 
 @keyframes blossom-in {
