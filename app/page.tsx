@@ -11,42 +11,41 @@ const stars = Array.from({ length: 70 }, (_, i) => ({
 /* ─── Roses ─── */
 const roses = [1, 2, 3, 4, 5] as const;
 
-/* ─── Grass tufts ─── */
+/* ─── Grass tufts — flanking left & right sides only, like reference ─── */
 const grassTufts = [
-  { x: 8, y: 8, s: 1.05, delay: "0.1s" },
-  { x: 16, y: 10, s: 1.2, delay: "0s" },
-  { x: 27, y: 8, s: 1.05, delay: "0.25s" },
-  { x: 38, y: 6, s: 0.95, delay: "0.4s" },
-  { x: 50, y: 5, s: 0.9, delay: "0.15s" },
-  { x: 62, y: 6, s: 0.95, delay: "0.35s" },
-  { x: 73, y: 8, s: 1.05, delay: "0.2s" },
-  { x: 84, y: 10, s: 1.2, delay: "0.5s" },
-  { x: 92, y: 8, s: 1.05, delay: "0.3s" },
+  { x:  3, y: 6,  s: 1.15, delay: "0s"    },
+  { x:  8, y: 8,  s: 1.05, delay: "0.15s" },
+  { x: 14, y: 7,  s: 1.1,  delay: "0.3s"  },
+  { x: 20, y: 6,  s: 0.9,  delay: "0.45s" },
+  { x: 80, y: 6,  s: 0.9,  delay: "0.4s"  },
+  { x: 86, y: 7,  s: 1.1,  delay: "0.2s"  },
+  { x: 92, y: 8,  s: 1.05, delay: "0.1s"  },
+  { x: 97, y: 6,  s: 1.15, delay: "0.35s" },
 ] as const;
 
 const sideGrassGroups = [
-  { x: "18%", y: "3vh", scale: 0.95, delay: "0.2s" },
-  { x: "32%", y: "2vh", scale: 0.8, delay: "0.5s" },
-  { x: "68%", y: "2vh", scale: 0.8, delay: "0.8s" },
-  { x: "82%", y: "3vh", scale: 0.95, delay: "1.1s" },
+  { x: "28%", y: "2vh", scale: 1.0,  delay: "0.2s" },
+  { x: "36%", y: "1vh", scale: 0.85, delay: "0.5s" },
+  { x: "64%", y: "1vh", scale: 0.85, delay: "0.8s" },
+  { x: "72%", y: "2vh", scale: 1.0,  delay: "1.1s" },
 ] as const;
 
 const plantClusters = [
-  { x: "34%", y: "1.5vh", rot: "-4deg", scale: 1.0,  alpha: 0.9, sway: "3.5s", delay: "-0.8s" },
-  { x: "50%", y: "0vh",   rot: "0deg",  scale: 1.15, alpha: 1.0, sway: "4.2s", delay: "0s" },
-  { x: "66%", y: "1.5vh", rot: "4deg",  scale: 1.0,  alpha: 0.9, sway: "3.8s", delay: "-1.4s" },
+  { x: "42%", y: "0vh",   rot: "-5deg", scale: 0.95, alpha: 0.88, sway: "3.5s", delay: "-0.8s" },
+  { x: "50%", y: "0vh",   rot: "0deg",  scale: 1.15, alpha: 1.0,  sway: "4.2s", delay: "0s" },
+  { x: "58%", y: "0vh",   rot: "5deg",  scale: 0.95, alpha: 0.88, sway: "3.8s", delay: "-1.4s" },
 ] as const;
 
 /* ─── Accent leaves (scattered at different positions/sizes/angles) ─── */
 const accentLeaves = [
-  { left: "calc(50% + 88px)",  bottom: "72px",  s: 44, rot: 48,  flip: false, ad: "5.2s" },
-  { left: "calc(50% + 52px)",  bottom: "104px", s: 40, rot: 28,  flip: true,  ad: "5.0s" },
-  { left: "calc(50% + 68px)",  bottom: "38px",  s: 46, rot: 58,  flip: false, ad: "4.8s" },
-  { left: "calc(50% + 28px)",  bottom: "82px",  s: 38, rot: 28,  flip: true,  ad: "4.6s" },
-  { left: "calc(50% + 46px)",  bottom: "136px", s: 44, rot: 52,  flip: false, ad: "4.4s" },
-  { left: "calc(50% - 4px)",   bottom: "54px",  s: 40, rot: 22,  flip: true,  ad: "4.2s" },
-  { left: "calc(50% + 24px)",  bottom: "164px", s: 42, rot: 44,  flip: false, ad: "4.0s" },
-  { left: "calc(50% - 12px)",  bottom: "112px", s: 38, rot: 18,  flip: true,  ad: "3.8s" },
+  { left: "calc(50% + 64px)",  bottom: "60px",  s: 44, rot: 48,  flip: false, ad: "5.2s" },
+  { left: "calc(50% - 64px)",  bottom: "60px",  s: 44, rot: 48,  flip: true,  ad: "5.0s" },
+  { left: "calc(50% + 88px)",  bottom: "28px",  s: 40, rot: 58,  flip: false, ad: "4.8s" },
+  { left: "calc(50% - 88px)",  bottom: "28px",  s: 40, rot: 58,  flip: true,  ad: "4.6s" },
+  { left: "calc(50% + 48px)",  bottom: "110px", s: 42, rot: 38,  flip: false, ad: "4.4s" },
+  { left: "calc(50% - 48px)",  bottom: "110px", s: 42, rot: 38,  flip: true,  ad: "4.2s" },
+  { left: "calc(50% + 20px)",  bottom: "155px", s: 38, rot: 22,  flip: false, ad: "4.0s" },
+  { left: "calc(50% - 20px)",  bottom: "155px", s: 38, rot: 22,  flip: true,  ad: "3.8s" },
 ] as const;
 
 /* ─── Front stem leaf pair positions ─── */
@@ -63,14 +62,14 @@ const frontStemLeaves = [
 
 /* ─── Grass fern leaves (half-circle leaves on curved stems) ─── */
 const fernLeaves1 = [
-  { top: "-8%",  left: "28%",   size: 28, rot: -22 },
-  { top: "-7%",  left: "-118%", size: 28, rot: 12 },
-  { top: "4%",   left: "55%",   size: 36, rot: -20 },
-  { top: "5%",   left: "-148%", size: 36, rot: 4 },
-  { top: "18%",  left: "62%",   size: 46, rot: -26 },
-  { top: "20%",  left: "-190%", size: 46, rot: 8 },
-  { top: "36%",  left: "72%",   size: 48, rot: -12 },
-  { top: "38%",  left: "-228%", size: 52, rot: 12 },
+  { top: "-12%", left: "18%",   size: 26, rot: -18 },
+  { top: "-11%", left: "-108%", size: 26, rot: 16 },
+  { top: "5%",   left: "46%",   size: 34, rot: -24 },
+  { top: "6%",   left: "-150%", size: 34, rot: 6 },
+  { top: "24%",  left: "60%",   size: 44, rot: -28 },
+  { top: "26%",  left: "-188%", size: 44, rot: 10 },
+  { top: "44%",  left: "74%",   size: 50, rot: -14 },
+  { top: "46%",  left: "-236%", size: 54, rot: 14 },
 ] as const;
 
 /* ─── Light particles floating up from each rose bud ───
@@ -79,11 +78,11 @@ const fernLeaves1 = [
  *  bottom = bouquet-bottom(4.8vh) + stem-h × cos(angle)
  */
 const roseHeadPositions = [
-  { left: "calc(50% - 156px + 30vh * sin(-15deg))", bottom: "calc(4.8vh + 30vh * cos(15deg))" },
-  { left: "calc(50% - 78px + 33vh * sin(-8deg))",  bottom: "calc(4.8vh + 33vh * cos(8deg))" },
-  { left: "50%",                                    bottom: "calc(4.8vh + 36vh)" },
-  { left: "calc(50% + 82px + 33vh * sin(8deg))",   bottom: "calc(4.8vh + 33vh * cos(8deg))" },
-  { left: "calc(50% + 160px + 30vh * sin(15deg))", bottom: "calc(4.8vh + 30vh * cos(15deg))" },
+  { left: "calc(50% - 92px + 28vh * sin(-14deg))",  bottom: "calc(4.8vh + 28vh * cos(14deg))" },
+  { left: "calc(50% - 44px + 32vh * sin(-7deg))",   bottom: "calc(4.8vh + 32vh * cos(7deg))" },
+  { left: "50%",                                     bottom: "calc(4.8vh + 37vh)" },
+  { left: "calc(50% + 48px + 32vh * sin(7deg))",    bottom: "calc(4.8vh + 32vh * cos(7deg))" },
+  { left: "calc(50% + 96px + 28vh * sin(14deg))",   bottom: "calc(4.8vh + 28vh * cos(14deg))" },
 ] as const;
 
 const lightParticles = roseHeadPositions.flatMap((pos, roseIdx) =>
