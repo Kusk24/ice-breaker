@@ -134,8 +134,10 @@ export default function Home() {
         ))}
       </div>
 
-      <div className="moon" aria-hidden>
-        <div className="moon__cover" />
+      <div className="moon-wrap" aria-hidden>
+        <div className="moon">
+          <div className="moon__cover" />
+        </div>
       </div>
 
       <div className="mist" aria-hidden />

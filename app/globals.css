@@ -55,10 +55,19 @@ body {
 }
 
 /* ─── Crescent Moon ─── */
-.moon {
+/* entrance wrapper — handles only opacity + translate fade-in */
+.moon-wrap {
   position: absolute;
   top: 7%;
   left: 6%;
+  z-index: 1;
+  opacity: 0;
+  animation: moon-rise 2.4s cubic-bezier(0.22, 1, 0.36, 1) 1.2s both;
+  animation-fill-mode: forwards;
+}
+
+/* inner moon — handles only looping float + glow */
+.moon {
   width: 64px;
   height: 64px;
   border-radius: 50%;
@@ -66,8 +75,18 @@ body {
   box-shadow:
     0 0 28px rgba(245, 224, 122, 0.62),
     0 0 72px rgba(240, 210, 100, 0.28);
-  animation: moon-glow 5s ease-in-out infinite;
-  z-index: 1;
+  animation:
+    moon-float 7s ease-in-out 3.6s infinite,
+    moon-glow 5s ease-in-out 3.6s infinite;
+}
+
+.moon::before {
+  content: "";
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245, 220, 100, 0.12) 0%, transparent 70%);
+  animation: moon-halo 5s ease-in-out 3.6s infinite;
 }
 
 .moon__cover {
@@ -80,6 +99,28 @@ body {
   background: #010611;
 }
 
+@keyframes moon-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+    filter: blur(8px);
+  }
+  60% {
+    filter: blur(1px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes moon-float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  30%       { transform: translateY(-10px) rotate(1.5deg); }
+  65%       { transform: translateY(-5px) rotate(-1deg); }
+}
+
 @keyframes moon-glow {
   0%, 100% {
     box-shadow:
@@ -88,9 +129,15 @@ body {
   }
   50% {
     box-shadow:
-      0 0 40px rgba(245, 224, 122, 0.82),
-      0 0 100px rgba(240, 210, 100, 0.4);
+      0 0 44px rgba(245, 224, 122, 0.9),
+      0 0 110px rgba(240, 210, 100, 0.48),
+      0 0 180px rgba(240, 200, 80, 0.18);
   }
+}
+
+@keyframes moon-halo {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50%       { opacity: 1;   transform: scale(1.18); }
 }
 
 /* ─── Mist ─── */
