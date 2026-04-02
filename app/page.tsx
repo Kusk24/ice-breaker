@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import Link from "next/link";
 import { siteText } from "@/lib/content";
 
 /* ─── Stars ─── */
@@ -411,9 +412,9 @@ export default function Home() {
             </span>
           ))}
         </p>
-        <button className="hero__btn" type="button">
+        <Link className="hero__btn" href="/moon">
           {siteText.buttonOne}
-        </button>
+        </Link>
       </div>
     </main>
   );

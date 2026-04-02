@@ -1398,7 +1398,10 @@ body {
 }
 
 .hero__btn {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
   margin: 2.2em auto 0;
   padding: 0.72em 2.4em;
   font-family: var(--font-dancing), cursive;
@@ -1409,6 +1412,7 @@ body {
   border: none;
   border-radius: 999px;
   cursor: pointer;
+  white-space: nowrap;
   letter-spacing: 0.06em;
   pointer-events: auto;
   text-shadow: 0 1px 4px rgba(80, 0, 20, 0.5);
