@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import Image from "next/image";
 import MoonBackButton from "../components/MoonBackButton";
+import RocketCta from "../components/RocketCta";
 import { siteText } from "@/lib/content";
 
 const stars = Array.from({ length: 70 }, (_, i) => ({
@@ -82,9 +83,7 @@ export default function MoonPage() {
             className="rocket-flight__image"
             priority
           />
-          <button type="button" className="rocket-flight__cta" aria-label={rocketLabel}>
-            {rocketLabel}
-          </button>
+          <RocketCta className="rocket-flight__cta" label={rocketLabel} />
         </div>
       </div>
 

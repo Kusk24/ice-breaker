@@ -7,6 +7,10 @@ export default function MoonBackButton({ className }: { className?: string }) {
   const backLabel = siteText.buttonTwo.trim() || "Back To Flowers";
 
   function handleClick() {
+    // Fly rocket off to the right
+    const rocket = document.querySelector<HTMLElement>(".rocket-flight");
+    if (rocket) rocket.classList.add("exiting-right");
+
     const moonWrap = document.querySelector<HTMLElement>(".moon-wrap--journey");
     if (moonWrap) moonWrap.classList.add("returning");
 
@@ -21,7 +25,6 @@ export default function MoonBackButton({ className }: { className?: string }) {
       }
     };
 
-    // Wait for the return animation to finish before cross-fading pages
     setTimeout(navigate, 3800);
   }
 
