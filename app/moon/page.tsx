@@ -1,8 +1,10 @@
 import type { CSSProperties } from "react";
-import Image from "next/image";
 import MoonBackButton from "../components/MoonBackButton";
 import RocketCta from "../components/RocketCta";
 import { siteText } from "@/lib/content";
+
+const isProd = process.env.NODE_ENV === "production";
+const rocketSrc = `${isProd ? "/ice-breaker" : ""}/rocket.svg`;
 
 const stars = Array.from({ length: 70 }, (_, i) => ({
   x: (i * 17) % 100,
@@ -75,14 +77,8 @@ export default function MoonPage() {
           <span className="rocket-flight__trail" aria-hidden />
           <span className="rocket-flight__flame rocket-flight__flame--outer" aria-hidden />
           <span className="rocket-flight__flame rocket-flight__flame--core" aria-hidden />
-          <Image
-            src="/rocket.svg"
-            alt=""
-            width={360}
-            height={220}
-            className="rocket-flight__image"
-            priority
-          />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={rocketSrc} alt="" className="rocket-flight__image" />
           <RocketCta className="rocket-flight__cta" label={rocketLabel} />
         </div>
       </div>

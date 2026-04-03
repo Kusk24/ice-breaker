@@ -7,9 +7,11 @@ type Props = Omit<ComponentProps<typeof Link>, "onClick">;
 
 export default function TransitionLink({ href, children, ...rest }: Props) {
   const router = useRouter();
+  let navigated = false;
 
-  function handleClick(e: React.MouseEvent<HTMLAnchorElement>) {
-    e.preventDefault();
+  function navigate() {
+    if (navigated) return;
+    navigated = true;
     if (typeof document.startViewTransition !== "function") {
       router.push(href as string);
       return;
@@ -19,8 +21,18 @@ export default function TransitionLink({ href, children, ...rest }: Props) {
     });
   }
 
+  function handleClick(e: React.MouseEvent<HTMLAnchorElement>) {
+    e.preventDefault();
+    navigate();
+  }
+
+  function handleTouchEnd(e: React.TouchEvent<HTMLAnchorElement>) {
+    e.preventDefault();
+    navigate();
+  }
+
   return (
-    <Link href={href} {...rest} onClick={handleClick}>
+    <Link href={href} {...rest} onClick={handleClick} onTouchEnd={handleTouchEnd}>
       {children}
     </Link>
   );
