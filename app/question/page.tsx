@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { siteText } from "@/lib/content";
 
 const stars = Array.from({ length: 50 }, (_, i) => ({
   x: (i * 23) % 100,
@@ -29,7 +30,7 @@ export default function QuestionPage() {
         </p>
 
         <h1 className="question-title">
-          {"Will you go to the moon & back with me?".split("").map((ch, i) => (
+          {siteText.question.split("").map((ch, i) => (
             <span key={i} className="question-char" style={{ "--qi": i } as CSSProperties}>
               {ch === " " ? "\u00A0" : ch}
             </span>
@@ -37,8 +38,8 @@ export default function QuestionPage() {
         </h1>
 
         <div className="question-choices">
-          <button className="q-btn q-btn--yes">Yes 💖</button>
-          <button className="q-btn q-btn--no">No 🥺</button>
+          <button className="q-btn q-btn--yes">{siteText.agreeText}</button>
+          <button className="q-btn q-btn--no">{siteText.disagreeText}</button>
         </div>
       </div>
     </main>

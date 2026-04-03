@@ -9,7 +9,7 @@ export const siteText = {
   buttonTwo: "Back To Flowers",
   buttonThree: "Click Here",
   moonText: "You are like a moon, so pretty & so tiny",
-  question: "nyima pyn lr yin lr kyo ml nww, could you please let me ???🥺",
+  question: "nyima pyn lr yin lr kyo ml nww, could you please let me ???",
   agreeText: "ya",
   disagreeText: "ma ya"
 };
