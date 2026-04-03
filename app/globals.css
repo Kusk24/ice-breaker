@@ -2164,9 +2164,8 @@ body {
 
 .reaction-img {
   display: block;
-  width: clamp(100px, 24vw, 220px);
-  height: auto;
-  max-height: 30vh;
+  width: clamp(110px, 22vw, 180px);
+  height: clamp(110px, 22vw, 180px);
   object-fit: cover;
   border-radius: 1.2rem;
   box-shadow:
@@ -2178,6 +2177,207 @@ body {
   0%   { opacity: 0; transform: scale(0.15) rotate(-14deg); }
   65%  { transform: scale(1.08) rotate(2deg); opacity: 1; }
   100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+/* ─── Celebrate page ─── */
+.celebrate-scene {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem 1rem 3rem;
+  gap: 2rem;
+  overflow-x: hidden;
+}
+
+/* Confetti */
+.celebrate-confetti {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.confetti-piece {
+  position: absolute;
+  left: calc(var(--cx, 50) * 1%);
+  top: -24px;
+  width: var(--cs, 8px);
+  height: var(--cs, 8px);
+  background: var(--cc, #ff6b6b);
+  border-radius: 2px;
+  animation: confetti-fall var(--cdu, 3s) var(--cd, 0s) ease-in infinite;
+}
+@keyframes confetti-fall {
+  0%   { transform: translateY(0) rotate(0deg);          opacity: 1;   }
+  80%  { opacity: 1; }
+  100% { transform: translateY(105vh) rotate(var(--spin, 540deg)); opacity: 0; }
+}
+
+/* Photos */
+.celebrate-photos {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.8rem;
+  padding-top: 1rem;
+}
+.celebrate-photo {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+  transform: rotate(calc((var(--pi, 0) - 2) * 5deg));
+  animation: celebrate-pop 0.65s cubic-bezier(0.34, 1.56, 0.64, 1)
+    calc(var(--pi, 0) * 0.14s) both;
+}
+.celebrate-photo img {
+  width: 110px;
+  height: 110px;
+  object-fit: cover;
+  display: block;
+}
+@keyframes celebrate-pop {
+  0%   { opacity: 0; transform: scale(0.05) rotate(calc((var(--pi, 0) - 2) * 25deg)); }
+  100% { opacity: 1; transform: rotate(calc((var(--pi, 0) - 2) * 5deg)); }
+}
+
+/* Form wrapper */
+.celebrate-form-wrap {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  animation: cel-form-in 0.65s ease-out 0.9s both;
+}
+@keyframes cel-form-in {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.celebrate-form {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  padding: 1.6rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+.celebrate-form__title {
+  color: #fff;
+  font-size: 1.35rem;
+  margin: 0;
+  text-align: center;
+  letter-spacing: 0.01em;
+}
+
+.celebrate-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+.celebrate-field__label {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.92rem;
+}
+
+.celebrate-input {
+  background: rgba(255, 255, 255, 0.11);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 9px;
+  color: #fff;
+  padding: 0.6rem 0.85rem;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+  color-scheme: dark;
+}
+.celebrate-input:focus {
+  border-color: rgba(255, 107, 214, 0.7);
+}
+
+.celebrate-radios { gap: 0.5rem; }
+.celebrate-radio-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem 1rem;
+}
+.celebrate-radio {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.95rem;
+}
+.celebrate-radio input[type="radio"] {
+  accent-color: #ff6bd6;
+  width: 1.1em;
+  height: 1.1em;
+  cursor: pointer;
+}
+
+.celebrate-submit {
+  align-self: center;
+  background: linear-gradient(135deg, #ff6bd6 0%, #ff5a70 100%);
+  border: none;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding: 0.75rem 2.4rem;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.celebrate-submit:hover:not(:disabled) { opacity: 0.88; transform: scale(1.05); }
+.celebrate-submit:disabled { opacity: 0.45; cursor: default; }
+
+/* "Other" row — centred below the 2-col grid */
+.celebrate-other-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+.celebrate-radio--other {
+  justify-content: center;
+}
+.celebrate-other-input {
+  width: 100%;
+  max-width: 240px;
+  text-align: center;
+  animation: cel-form-in 0.25s ease-out both;
+}
+
+.celebrate-error {
+  color: #ff7a7a;
+  font-size: 0.88rem;
+  margin: 0;
+  text-align: center;
+}
+
+.celebrate-success {
+  text-align: center;
+  animation: cel-form-in 0.5s ease-out both;
+}
+.celebrate-success p {
+  color: #fff;
+  font-size: 1.8rem;
+  margin: 0.3rem 0;
+}
+.celebrate-success__sub {
+  font-size: 1.1rem !important;
+  opacity: 0.75;
 }
 
 /* ─── Reduced motion ─── */

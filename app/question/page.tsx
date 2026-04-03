@@ -1,6 +1,7 @@
 "use client";
 import { useState, useCallback, useRef } from "react";
 import type { CSSProperties } from "react";
+import { useRouter } from "next/navigation";
 import { siteText } from "@/lib/content";
 
 const isProd = process.env.NODE_ENV === "production";
@@ -44,6 +45,7 @@ function randPos(prev?: { x: number; y: number }) {
 }
 
 export default function QuestionPage() {
+  const router = useRouter();
   const [phase, setPhase]   = useState(0);
   const [imgKey, setImgKey] = useState(0);
   const [noPos, setNoPos]   = useState(() => randPos());
@@ -57,6 +59,14 @@ export default function QuestionPage() {
   const agreeScale = phase === 0 ? 1 : Math.min(1 + phase * 0.38, 5.2);
   // disagree: shrinks from 1 → 0.42× (still tappable) across phases
   const noScale    = phase === 0 ? 1 : Math.max(1 - (phase - 1) * 0.053, 0.42);
+
+  const handleAgree = useCallback(() => {
+    if (typeof document.startViewTransition === "function") {
+      document.startViewTransition(() => router.push("/celebrate"));
+    } else {
+      router.push("/celebrate");
+    }
+  }, [router]);
 
   const handleDisagree = useCallback(() => {
     setPhase(p => {
@@ -80,6 +90,7 @@ export default function QuestionPage() {
     <button
       key="agree"
       className="q-btn q-btn--yes"
+      onClick={handleAgree}
       style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent" } as CSSProperties}
     >
       {siteText.agreeText}
@@ -102,6 +113,7 @@ export default function QuestionPage() {
     <button
       key="agree-grown"
       className="q-btn q-btn--yes q-btn--grown"
+      onClick={handleAgree}
       style={{
         "--agree-scale": agreeScale,
         touchAction: "manipulation",
