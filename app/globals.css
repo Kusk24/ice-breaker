@@ -2045,6 +2045,11 @@ body {
   100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.4) rotate(360deg); }
 }
 
+.question-title__line {
+  display: block;
+  text-align: center;
+}
+
 .question-title {
   font-family: var(--font-dancing), cursive;
   font-size: clamp(1.2rem, 3.5vw, 2.2rem);

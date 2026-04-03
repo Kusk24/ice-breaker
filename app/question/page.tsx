@@ -164,11 +164,25 @@ export default function QuestionPage() {
 
       <div className="question-content">
         <h1 className="question-title" key={phase}>
-          {questionText.split("").map((ch, i) => (
-            <span key={i} className="question-char" style={{ "--qi": i } as CSSProperties}>
-              {ch === " " ? "\u00A0" : ch}
-            </span>
-          ))}
+          {(() => {
+            const lines = questionText.split(",").map((seg, li) => (li === 0 ? seg : seg.trimStart()));
+            let ci = 0;
+            return lines.map((line, li) => (
+              <span key={li} className="question-title__line">
+                {line.split("").map((ch) => {
+                  const idx = ci++;
+                  return (
+                    <span key={idx} className="question-char" style={{ "--qi": idx } as CSSProperties}>
+                      {ch === " " ? "\u00A0" : ch}
+                    </span>
+                  );
+                })}
+                {li < lines.length - 1 && (
+                  <span className="question-char" style={{ "--qi": ci++ } as CSSProperties}>,</span>
+                )}
+              </span>
+            ));
+          })()}
         </h1>
 
         <div
