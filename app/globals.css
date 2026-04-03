@@ -86,7 +86,7 @@ body {
   left: 6%;
   z-index: 1;
   opacity: 0;
-  animation: moon-rise 2.4s cubic-bezier(0.22, 1, 0.36, 1) 1.2s both;
+  animation: moon-rise 2.4s cubic-bezier(0.22, 1, 0.36, 1) 4.0s both;
   animation-fill-mode: forwards;
 }
 
@@ -1805,7 +1805,7 @@ body {
     0 0 55px rgba(255, 65, 110, 0.45),
     0 0 100px rgba(220, 40, 85, 0.22),
     0 2px 8px rgba(0, 0, 0, 0.4);
-  animation: subtitle-glow 3.5s ease-in-out 5.5s infinite backwards;
+  animation: subtitle-glow 3.5s ease-in-out 10.5s infinite backwards;
 }
 
 @keyframes subtitle-glow {
@@ -1817,12 +1817,12 @@ body {
   display: inline-block;
   opacity: 0;
   animation: blossom-in 0.78s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  animation-delay: calc(0.5s + var(--ci) * 0.055s);
+  animation-delay: calc(5.8s + var(--ci) * 0.055s);
 }
 
 .hero__char--sub {
   animation: blossom-in 0.9s cubic-bezier(0.34, 1.6, 0.64, 1) forwards;
-  animation-delay: calc(3.5s + var(--ci) * 0.16s);
+  animation-delay: calc(8.2s + var(--ci) * 0.16s);
 }
 
 .hero__btn {
@@ -1851,8 +1851,8 @@ body {
     0 1px 0 rgba(255, 180, 200, 0.18) inset;
   opacity: 0;
   animation:
-    blossom-in 1s cubic-bezier(0.34, 1.56, 0.64, 1) 5.6s forwards,
-    btn-pulse 3s ease-in-out 6.6s infinite;
+    blossom-in 1s cubic-bezier(0.34, 1.56, 0.64, 1) 10.5s forwards,
+    btn-pulse 3s ease-in-out 11.5s infinite;
   transition: background 0.25s, box-shadow 0.25s, transform 0.18s;
 }
 
