@@ -1,5 +1,22 @@
+"use client";
+import { useState, useCallback, useRef } from "react";
 import type { CSSProperties } from "react";
 import { siteText } from "@/lib/content";
+
+const isProd = process.env.NODE_ENV === "production";
+const base = isProd ? "/ice-breaker" : "";
+
+const QUESTIONS = [
+  siteText.questionOne,   siteText.questionTwo,   siteText.questionThree,
+  siteText.questionFour,  siteText.questionFive,   siteText.questionSix,
+  siteText.questionSeven, siteText.questionEight,  siteText.questionNine,
+  siteText.questionTen,   siteText.questionEleven,
+];
+
+const IMAGE_FILES = [
+  "1.png","2.JPG","3.JPG","4.png","5.JPG",
+  "6.JPG","7.JPG","8.JPG","9.JPG","10.JPG","11.JPG",
+];
 
 const stars = Array.from({ length: 50 }, (_, i) => ({
   x: (i * 23) % 100,
@@ -7,41 +24,151 @@ const stars = Array.from({ length: 50 }, (_, i) => ({
   delay: `${(i % 7) * 0.6}s`,
 }));
 
+const TOTAL = QUESTIONS.length; // 11
+
+// Keep the new random pos far from the old one
+function randPos(prev?: { x: number; y: number }) {
+  let x: number, y: number;
+  let attempts = 0;
+  do {
+    x = 8 + Math.random() * 78;
+    y = 10 + Math.random() * 75;
+    attempts++;
+  } while (
+    prev &&
+    attempts < 20 &&
+    Math.abs(x - prev.x) < 30 &&
+    Math.abs(y - prev.y) < 20
+  );
+  return { x, y };
+}
+
 export default function QuestionPage() {
+  const [phase, setPhase]   = useState(0);
+  const [imgKey, setImgKey] = useState(0);
+  const [noPos, setNoPos]   = useState(() => randPos());
+  const noPosRef = useRef(noPos);
+
+  const isFinal   = phase === TOTAL;
+  const questionText = phase === 0 ? siteText.question : QUESTIONS[phase - 1];
+  const imgSrc    = phase > 0 ? `${base}/reactions/${IMAGE_FILES[phase - 1]}` : null;
+
+  // agree: grows from 1→ 5× across 11 phases (exponential feel)
+  const agreeScale = phase === 0 ? 1 : Math.min(1 + phase * 0.38, 5.2);
+  // disagree: shrinks from 1 → 0.42× (still tappable) across phases
+  const noScale    = phase === 0 ? 1 : Math.max(1 - (phase - 1) * 0.053, 0.42);
+
+  const handleDisagree = useCallback(() => {
+    setPhase(p => {
+      const next = p + 1;
+      return next;
+    });
+    setImgKey(k => k + 1);
+    const next = randPos(noPosRef.current);
+    noPosRef.current = next;
+    setNoPos(next);
+  }, []);
+
+  const runAway = useCallback(() => {
+    const next = randPos(noPosRef.current);
+    noPosRef.current = next;
+    setNoPos(next);
+  }, []);
+
+  // Phase 0 buttons (inline, normal)
+  const agreeBtnInline = (
+    <button
+      key="agree"
+      className="q-btn q-btn--yes"
+      style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent" } as CSSProperties}
+    >
+      {siteText.agreeText}
+    </button>
+  );
+
+  const disagreeBtnInline = (
+    <button
+      key="disagree"
+      className="q-btn q-btn--no"
+      onClick={handleDisagree}
+      style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent" } as CSSProperties}
+    >
+      {siteText.disagreeText}
+    </button>
+  );
+
+  // Phase 1+ agree — grows big, stays in content area
+  const agreeBtnGrown = (
+    <button
+      key="agree-grown"
+      className="q-btn q-btn--yes q-btn--grown"
+      style={{
+        "--agree-scale": agreeScale,
+        touchAction: "manipulation",
+        WebkitTapHighlightColor: "transparent",
+      } as CSSProperties}
+    >
+      {siteText.agreeText}
+    </button>
+  );
+
+  // Phase 1+ disagree — floating, shrinking
+  const disagreeBtnFloat = (
+    <button
+      key="disagree-float"
+      className={`q-btn q-btn--no q-btn--floating${isFinal ? " q-btn--runaway" : ""}`}
+      style={{
+        left: `${noPos.x}vw`,
+        top:  `${noPos.y}vh`,
+        "--no-scale": noScale,
+        touchAction: "manipulation",
+        WebkitTapHighlightColor: "transparent",
+      } as CSSProperties}
+      onClick={isFinal ? undefined : handleDisagree}
+      onMouseEnter={isFinal ? runAway : undefined}
+      onTouchStart={isFinal ? runAway : undefined}
+    >
+      {siteText.disagreeText}
+    </button>
+  );
+
   return (
-    <main className="scene question-scene" aria-label="Question page">
+    <main className="scene question-scene">
       <div className="sky" aria-hidden>
-        {stars.map((star, i) => (
-          <span
-            key={i}
-            className="star"
-            style={{ "--x": star.x, "--y": star.y, "--delay": star.delay } as CSSProperties}
+        {stars.map((s, i) => (
+          <span key={i} className="star"
+            style={{ "--x": s.x, "--y": s.y, "--delay": s.delay } as CSSProperties}
           />
         ))}
       </div>
 
-      <div className="question-content">
-        <p className="question-debris" aria-hidden>
-          {["🔴", "🟡", "⚪", "🔵", "🔴", "🟡", "⚪"].map((emoji, i) => (
-            <span key={i} className="debris-piece" style={{ "--di": i } as CSSProperties}>
-              {emoji}
-            </span>
-          ))}
-        </p>
+      {/* Image — natural flow, above content, no overlap */}
+      {imgSrc && (
+        <div key={imgKey} className="reaction-img-wrap">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={imgSrc} alt="" className="reaction-img" />
+        </div>
+      )}
 
-        <h1 className="question-title">
-          {siteText.question.split("").map((ch, i) => (
+      <div className="question-content">
+        <h1 className="question-title" key={phase}>
+          {questionText.split("").map((ch, i) => (
             <span key={i} className="question-char" style={{ "--qi": i } as CSSProperties}>
               {ch === " " ? "\u00A0" : ch}
             </span>
           ))}
         </h1>
 
-        <div className="question-choices">
-          <button className="q-btn q-btn--yes">{siteText.agreeText}</button>
-          <button className="q-btn q-btn--no">{siteText.disagreeText}</button>
+        <div
+          className={`question-choices${phase > 0 ? " question-choices--reacted" : ""}`}
+          style={{ "--agree-scale": agreeScale } as CSSProperties}
+        >
+          {phase === 0 ? [agreeBtnInline, disagreeBtnInline] : agreeBtnGrown}
         </div>
       </div>
+
+      {/* Floating disagree lives outside flow so it can go anywhere */}
+      {phase > 0 && disagreeBtnFloat}
     </main>
   );
 }

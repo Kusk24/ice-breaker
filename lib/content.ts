@@ -11,5 +11,16 @@ export const siteText = {
   moonText: "You are like a moon, so pretty & so tiny",
   question: "nyima pyn lr yin lr kyo ml nww, could you please let me ???",
   agreeText: "ya",
-  disagreeText: "ma ya"
+  disagreeText: "ma ya",
+  questionOne: "1",
+  questionTwo: "2",
+  questionThree: "3",
+  questionFour: "4",
+  questionFive: "5",
+  questionSix: "6",
+  questionSeven: "7",
+  questionEight: "8",
+  questionNine: "9",
+  questionTen: "10",
+  questionEleven: "11",
 };
