@@ -227,6 +227,123 @@ body {
   margin: 0;
 }
 
+.rocket-flight {
+  position: absolute;
+  left: calc(50vw - 120px);
+  top: calc(50vh - 320px);
+  z-index: 35;
+  pointer-events: none;
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: rocket-fly-in 3s cubic-bezier(0.12, 0.78, 0.25, 1) var(--rocket-delay, 12s) forwards;
+}
+
+.rocket-flight__craft {
+  position: relative;
+  width: 260px;
+  filter: drop-shadow(0 8px 20px rgba(20, 40, 110, 0.45));
+  will-change: transform;
+  animation: rocket-bob 2.8s ease-in-out calc(var(--rocket-delay, 12s) + 3s) infinite;
+}
+
+.rocket-flight__image {
+  width: 100%;
+  height: auto;
+  display: block;
+  position: relative;
+  z-index: 2;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.rocket-flight__trail {
+  position: absolute;
+  left: -58%;
+  top: 50%;
+  width: 62%;
+  height: 10%;
+  border-radius: 999px;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 90% center, rgba(255, 180, 60, 0.68) 0%, rgba(255, 110, 30, 0.36) 45%, rgba(255, 80, 0, 0) 100%);
+  filter: blur(2.5px);
+  transform: translateY(-50%);
+  z-index: 0;
+  animation: rocket-trail-pulse 0.9s ease-in-out infinite;
+}
+
+.rocket-flight__flame {
+  position: absolute;
+  pointer-events: none;
+  transform-origin: right center;
+  z-index: 3;
+}
+
+.rocket-flight__flame--outer {
+  left: -10%;
+  top: 41%;
+  width: 33%;
+  height: 18%;
+  border-radius: 55% 80% 80% 55%;
+  background:
+    radial-gradient(circle at 65% 50%, rgba(255, 255, 200, 0.95) 0%, rgba(255, 220, 100, 0) 40%),
+    linear-gradient(90deg, #ff7316 0%, #ffbe38 48%, #fff8b0 100%);
+  filter: blur(0.8px);
+  animation: flame-outer 0.22s ease-in-out infinite;
+}
+
+.rocket-flight__flame--core {
+  left: -4%;
+  top: 45.5%;
+  width: 22%;
+  height: 9%;
+  border-radius: 60% 88% 88% 60%;
+  background: linear-gradient(90deg, #ffe44a 0%, #fffbe0 100%);
+  filter: drop-shadow(0 0 6px rgba(255, 220, 60, 0.9));
+  animation: flame-core 0.16s ease-in-out infinite;
+}
+
+.rocket-flight__cta {
+  position: absolute;
+  left: 45%;
+  top: 50%;
+  z-index: 4;
+  transform: translate(-50%, -50%) rotate(0deg) scale(0.15);
+  transform-origin: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: auto;
+  padding: 0.35em 0.9em;
+  border-radius: 999px;
+  border: 1.5px solid rgba(160, 200, 235, 0.75);
+  background: linear-gradient(135deg, #EEF6FF 0%, #C0D8EE 100%);
+  color: #1a3060;
+  font-family: var(--font-dancing), cursive;
+  font-size: clamp(0.68rem, 1.05vw, 0.85rem);
+  font-weight: 700;
+  white-space: nowrap;
+  letter-spacing: 0.04em;
+  text-shadow: 0 1px 2px rgba(160, 200, 240, 0.5);
+  box-shadow:
+    0 5px 14px rgba(30, 70, 130, 0.3),
+    0 1px 0 rgba(255, 255, 255, 0.6) inset;
+  cursor: pointer;
+  animation:
+    rocket-cta-in 0.8s cubic-bezier(0.24, 1.2, 0.36, 1) calc(var(--rocket-delay, 12s) + 3.2s) forwards,
+    btn-pulse 3.1s ease-in-out calc(var(--rocket-delay, 12s) + 4.2s) infinite;
+}
+
+.rocket-flight__cta:hover {
+  background: linear-gradient(135deg, #F5FAFF 0%, #A8CBEA 100%);
+  transform: translate(-50%, -50%) rotate(0deg) scale(1.1) !important;
+  box-shadow:
+    0 8px 22px rgba(30, 70, 130, 0.38),
+    0 1px 0 rgba(255, 255, 255, 0.7) inset;
+}
+
+.rocket-flight__cta:active {
+  transform: translate(-50%, -50%) rotate(0deg) scale(0.95) !important;
+}
+
 @keyframes moon-rise {
   0% {
     opacity: 0;
@@ -387,6 +504,73 @@ body {
     opacity: 1;
     transform: translateY(0);
     visibility: visible;
+  }
+}
+
+@keyframes rocket-fly-in {
+  0%   { opacity: 0; transform: translateX(calc(-75vw - 300px)); }
+  8%   { opacity: 1; }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes rocket-bob {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-14px); }
+}
+
+@keyframes rocket-trail-pulse {
+  0%, 100% {
+    opacity: 0.55;
+    transform: translateY(-50%) scaleX(0.88);
+  }
+  50% {
+    opacity: 0.95;
+    transform: translateY(-50%) scaleX(1.18);
+  }
+}
+
+@keyframes flame-outer {
+  0%, 100% {
+    transform: scaleX(0.82) scaleY(0.86);
+    opacity: 0.80;
+  }
+  50% {
+    transform: scaleX(1.26) scaleY(1.14);
+    opacity: 1;
+  }
+}
+
+@keyframes flame-core {
+  0%, 100% {
+    transform: scaleX(0.78) scaleY(0.88);
+    opacity: 0.86;
+  }
+  50% {
+    transform: scaleX(1.32) scaleY(1.16);
+    opacity: 1;
+  }
+}
+
+@keyframes rocket-cta-in {
+  0% {
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-50%, -50%) rotate(0deg) scale(0.15);
+    filter: blur(6px);
+  }
+  1% {
+    visibility: visible;
+  }
+  65% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(0deg) scale(1.12);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -50%) rotate(0deg) scale(1);
+    filter: blur(0);
   }
 }
 
@@ -1774,6 +1958,17 @@ body {
 
   .edge-grass {
     display: none;
+  }
+
+  .rocket-flight__craft {
+    width: clamp(168px, 52vw, 230px);
+  }
+
+  .rocket-flight__cta {
+    max-width: 65%;
+    font-size: clamp(0.62rem, 3vw, 0.82rem);
+    padding: 0.33em 0.72em;
+    letter-spacing: 0.03em;
   }
 }
 

@@ -6,8 +6,8 @@ export const siteText = {
   buttonLabel: "Start",
   footerText: "Made with Next.js",
   buttonOne: "Click Here 💞",
-  buttonTwo: "",
-  buttonThree: "",
+  buttonTwo: "Back To Flowers",
+  buttonThree: "Click Here",
   moonText: "You are like a moon, so pretty & so tiny, to the moon & back?"
 
 };

@@ -1,8 +1,10 @@
 "use client";
 import { useRouter } from "next/navigation";
+import { siteText } from "@/lib/content";
 
 export default function MoonBackButton({ className }: { className?: string }) {
   const router = useRouter();
+  const backLabel = siteText.buttonTwo.trim() || "Back To Flowers";
 
   function handleClick() {
     const moonWrap = document.querySelector<HTMLElement>(".moon-wrap--journey");
@@ -25,7 +27,7 @@ export default function MoonBackButton({ className }: { className?: string }) {
 
   return (
     <button className={className} onClick={handleClick}>
-      Back To Flowers
+      {backLabel}
     </button>
   );
 }
