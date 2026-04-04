@@ -5,6 +5,7 @@ import { siteText } from "@/lib/content";
 
 const isProd = process.env.NODE_ENV === "production";
 const rocketSrc = `${isProd ? "/ice-breaker" : ""}/rocket.svg`;
+const thaethuSrc = `${isProd ? "/ice-breaker" : ""}/thaethu.png`;
 
 const stars = Array.from({ length: 70 }, (_, i) => ({
   x: (i * 17) % 100,
@@ -44,6 +45,8 @@ export default function MoonPage() {
         <div className="moon moon--fullrise">
           <div className="moon__clip">
             <div className="moon__cover" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={thaethuSrc} alt="" className="moon__portrait" />
           </div>
         </div>
       </div>
