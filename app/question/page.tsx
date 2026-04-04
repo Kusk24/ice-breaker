@@ -46,9 +46,10 @@ function randPos(prev?: { x: number; y: number }) {
 
 export default function QuestionPage() {
   const router = useRouter();
-  const [phase, setPhase]   = useState(0);
-  const [imgKey, setImgKey] = useState(0);
-  const [noPos, setNoPos]   = useState(() => randPos());
+  const [phase, setPhase]       = useState(0);
+  const [imgKey, setImgKey]     = useState(0);
+  const [noPos, setNoPos]       = useState(() => randPos());
+  const [dodgeCount, setDodgeCount] = useState(0);
   const noPosRef = useRef(noPos);
 
   const isFinal   = phase === TOTAL;
@@ -60,6 +61,10 @@ export default function QuestionPage() {
   // disagree: shrinks from 1 → 0.42× (still tappable) across phases
   const noScale    = phase === 0 ? 1 : Math.max(1 - (phase - 1) * 0.053, 0.42);
 
+  // Phase 1 = 1 dodge, phase 2 = 2 dodges, phase 3+ = 3 dodges, final = unlimited
+  const maxDodges = isFinal ? Infinity : Math.min(phase, 3);
+  const needsDodge = phase > 0 && dodgeCount < maxDodges;
+
   const handleAgree = useCallback(() => {
     if (typeof document.startViewTransition === "function") {
       document.startViewTransition(() => router.push("/celebrate"));
@@ -69,11 +74,9 @@ export default function QuestionPage() {
   }, [router]);
 
   const handleDisagree = useCallback(() => {
-    setPhase(p => {
-      const next = p + 1;
-      return next;
-    });
+    setPhase(p => p + 1);
     setImgKey(k => k + 1);
+    setDodgeCount(0);
     const next = randPos(noPosRef.current);
     noPosRef.current = next;
     setNoPos(next);
@@ -83,6 +86,7 @@ export default function QuestionPage() {
     const next = randPos(noPosRef.current);
     noPosRef.current = next;
     setNoPos(next);
+    setDodgeCount(c => c + 1);
   }, []);
 
   // Phase 0 buttons (inline, normal)
@@ -128,7 +132,7 @@ export default function QuestionPage() {
   const disagreeBtnFloat = (
     <button
       key="disagree-float"
-      className={`q-btn q-btn--no q-btn--floating${isFinal ? " q-btn--runaway" : ""}`}
+      className={`q-btn q-btn--no q-btn--floating${needsDodge ? " q-btn--runaway" : ""}`}
       style={{
         left: `${noPos.x}vw`,
         top:  `${noPos.y}vh`,
@@ -136,9 +140,9 @@ export default function QuestionPage() {
         touchAction: "manipulation",
         WebkitTapHighlightColor: "transparent",
       } as CSSProperties}
-      onClick={isFinal ? undefined : handleDisagree}
-      onMouseEnter={isFinal ? runAway : undefined}
-      onTouchStart={isFinal ? runAway : undefined}
+      onClick={needsDodge ? undefined : handleDisagree}
+      onMouseEnter={needsDodge ? runAway : undefined}
+      onTouchStart={needsDodge ? runAway : undefined}
     >
       {siteText.disagreeText}
     </button>
