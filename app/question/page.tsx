@@ -14,7 +14,7 @@ const QUESTIONS = [
   siteText.questionTen,   siteText.questionEleven,
 ];
 
-const DODGE_TEXTS = ["whyyyyy T_T", "pls not here", "Nooooooo", "...", "sate soe p", "hahaha catch me!!!", "wahaha", "Don't you dareeee", "Cruel T3 ly lr?", "ayy nww"];
+const DODGE_TEXTS = ["whyyyyy T_T", "pls not here", "Nooooooo", "...", "sate soe p", "hahaha catch me!!!", "wahaha", "Don't you dareeee", "Cruel T3 ly lr?", "ayy nww", "blah blah", "e shuu"];
 
 const IMAGE_FILES = [
   "1.png","2.JPG","3.JPG","4.png","5.JPG",
@@ -54,9 +54,14 @@ export default function QuestionPage() {
   const [dodgeCount, setDodgeCount] = useState(0);
   const [dodgeText, setDodgeText]   = useState(siteText.disagreeText);
   const noPosRef = useRef(noPos);
+  const deckRef = useRef<string[]>([]);
 
-  function randomDodgeText() {
-    return DODGE_TEXTS[Math.floor(Math.random() * DODGE_TEXTS.length)];
+  function nextDodgeText() {
+    if (deckRef.current.length === 0) {
+      // Reshuffle all texts
+      deckRef.current = [...DODGE_TEXTS].sort(() => Math.random() - 0.5);
+    }
+    return deckRef.current.pop()!;
   }
 
   const isFinal   = phase === TOTAL;
@@ -84,7 +89,7 @@ export default function QuestionPage() {
     setPhase(p => p + 1);
     setImgKey(k => k + 1);
     setDodgeCount(0);
-    setDodgeText(randomDodgeText());
+    setDodgeText(nextDodgeText());
     const next = randPos(noPosRef.current);
     noPosRef.current = next;
     setNoPos(next);
@@ -95,7 +100,7 @@ export default function QuestionPage() {
     noPosRef.current = next;
     setNoPos(next);
     setDodgeCount(c => c + 1);
-    setDodgeText(randomDodgeText());
+    setDodgeText(nextDodgeText());
   }, []);
 
   // Phase 0 buttons (inline, normal)
