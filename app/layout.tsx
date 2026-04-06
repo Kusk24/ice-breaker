@@ -27,7 +27,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`h-full antialiased ${playfair.variable} ${dancing.variable}`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <a
+          href="https://github.com/Kusk24/ice-breaker"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="site-credit"
+        >
+          <span className="site-credit__name">By WinYu</span>
+          <span className="site-credit__sub">made with much love &lt;3</span>
+        </a>
+      </body>
     </html>
   );
 }
