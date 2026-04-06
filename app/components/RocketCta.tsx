@@ -108,7 +108,7 @@ export default function RocketCta({ className, label }: { className?: string; la
         document.querySelector<HTMLElement>(".moon-scene .sky")?.classList.add("warp-speed");
         document.querySelector<HTMLElement>(".moon-scene .mist")?.classList.add("mist-out");
 
-        setTimeout(navigate, 900);
+        setTimeout(navigate, 2800);
       }
     }
 
