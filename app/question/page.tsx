@@ -14,6 +14,8 @@ const QUESTIONS = [
   siteText.questionTen,   siteText.questionEleven,
 ];
 
+const DODGE_TEXTS = ["whyyyyy T_T", "pls not here", "Nooooooo", "...", "sate soe p", "hahaha catch me!!!", "wahaha", "Don't you dareeee", "Cruel T3 ly lr?", "ayy nww"];
+
 const IMAGE_FILES = [
   "1.png","2.JPG","3.JPG","4.png","5.JPG",
   "6.JPG","7.JPG","8.JPG","9.JPG","10.JPG","11.JPG",
@@ -46,11 +48,16 @@ function randPos(prev?: { x: number; y: number }) {
 
 export default function QuestionPage() {
   const router = useRouter();
-  const [phase, setPhase]       = useState(0);
-  const [imgKey, setImgKey]     = useState(0);
-  const [noPos, setNoPos]       = useState(() => randPos());
+  const [phase, setPhase]           = useState(0);
+  const [imgKey, setImgKey]         = useState(0);
+  const [noPos, setNoPos]           = useState(() => randPos());
   const [dodgeCount, setDodgeCount] = useState(0);
+  const [dodgeText, setDodgeText]   = useState(siteText.disagreeText);
   const noPosRef = useRef(noPos);
+
+  function randomDodgeText() {
+    return DODGE_TEXTS[Math.floor(Math.random() * DODGE_TEXTS.length)];
+  }
 
   const isFinal   = phase === TOTAL;
   const questionText = phase === 0 ? siteText.question : QUESTIONS[phase - 1];
@@ -77,6 +84,7 @@ export default function QuestionPage() {
     setPhase(p => p + 1);
     setImgKey(k => k + 1);
     setDodgeCount(0);
+    setDodgeText(randomDodgeText());
     const next = randPos(noPosRef.current);
     noPosRef.current = next;
     setNoPos(next);
@@ -87,6 +95,7 @@ export default function QuestionPage() {
     noPosRef.current = next;
     setNoPos(next);
     setDodgeCount(c => c + 1);
+    setDodgeText(randomDodgeText());
   }, []);
 
   // Phase 0 buttons (inline, normal)
@@ -199,6 +208,17 @@ export default function QuestionPage() {
 
       {/* Floating disagree lives outside flow so it can go anywhere */}
       {phase > 0 && disagreeBtnFloat}
+
+      {/* Speech bubble — outside button so it's never affected by button's scale */}
+      {phase > 0 && dodgeText && (
+        <span
+          key={dodgeText + noPos.x + noPos.y}
+          className="dodge-bubble"
+          style={{ left: `${noPos.x}vw`, top: `calc(${noPos.y}vh - 52px)` } as CSSProperties}
+        >
+          {dodgeText}
+        </span>
+      )}
     </main>
   );
 }
