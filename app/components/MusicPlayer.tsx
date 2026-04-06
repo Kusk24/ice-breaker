@@ -16,11 +16,11 @@ export default function MusicPlayer() {
 
     // Try autoplay immediately; fall back to first interaction if browser blocks it
     audio.play()
-      .then(() => { setPlaying(true); setStarted(true); })
+      .then(() => { setPlaying(true); })
       .catch(() => {
         // Browser blocked autoplay — start on first user interaction
         function onFirstInteraction() {
-          audio.play().then(() => { setPlaying(true); setStarted(true); }).catch(() => {});
+          audio.play().then(() => { setPlaying(true); }).catch(() => {});
           window.removeEventListener("click", onFirstInteraction);
           window.removeEventListener("keydown", onFirstInteraction);
           window.removeEventListener("touchstart", onFirstInteraction);
