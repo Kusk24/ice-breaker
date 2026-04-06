@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Dancing_Script } from "next/font/google";
 import "./globals.css";
+import MusicPlayer from "./components/MusicPlayer";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -29,6 +30,7 @@ export default function RootLayout({
     <html lang="en" className={`h-full antialiased ${playfair.variable} ${dancing.variable}`}>
       <body className="min-h-full flex flex-col">
         {children}
+        <MusicPlayer />
         <a
           href="https://github.com/Kusk24/ice-breaker"
           target="_blank"

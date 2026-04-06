@@ -2463,6 +2463,55 @@ body {
   opacity: 0.75;
 }
 
+/* ─── Music toggle ─── */
+.music-toggle {
+  position: fixed;
+  bottom: 18px;
+  left: 18px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  background: rgba(255, 220, 180, 0.15);
+  border: 1.5px solid rgba(255, 200, 120, 0.45);
+  border-radius: 50%;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.4);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.music-toggle:hover {
+  background: rgba(255, 220, 180, 0.25);
+  border-color: rgba(255, 200, 120, 0.7);
+}
+.music-toggle__icon {
+  font-size: 1.3rem;
+  color: #fdeea5;
+  display: block;
+  line-height: 1;
+}
+.music-toggle__icon--on {
+  animation: music-bounce 0.8s ease-in-out infinite alternate;
+}
+.music-toggle__icon--off {
+  opacity: 0.4;
+}
+.music-toggle__label {
+  font-size: 0.55rem;
+  color: rgba(220, 220, 255, 0.55);
+  letter-spacing: 0.02em;
+}
+@keyframes music-bounce {
+  from { transform: translateY(0) scale(1); }
+  to   { transform: translateY(-3px) scale(1.15); }
+}
+
 /* ─── Site credit badge ─── */
 .site-credit {
   position: fixed;
