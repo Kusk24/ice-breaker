@@ -14,23 +14,22 @@ export default function MusicPlayer() {
     audio.volume = 0.35;
     audioRef.current = audio;
 
-    // Try autoplay immediately; fall back to first interaction if browser blocks it
-    audio.play()
-      .then(() => { setPlaying(true); })
-      .catch(() => {
-        // Browser blocked autoplay — start on first user interaction
-        function onFirstInteraction() {
-          audio.play().then(() => { setPlaying(true); }).catch(() => {});
-          window.removeEventListener("click", onFirstInteraction);
-          window.removeEventListener("keydown", onFirstInteraction);
-          window.removeEventListener("touchstart", onFirstInteraction);
-        }
-        window.addEventListener("click", onFirstInteraction);
-        window.addEventListener("keydown", onFirstInteraction);
-        window.addEventListener("touchstart", onFirstInteraction);
-      });
+    // Start on first user click (e.g. the "Click Here" button)
+    function onFirstClick() {
+      audio.muted = true;
+      audio.play().then(() => {
+        audio.muted = false;
+        setPlaying(true);
+      }).catch(() => {});
+      window.removeEventListener("click", onFirstClick);
+    }
+    window.addEventListener("click", onFirstClick);
 
-    return () => { audio.pause(); audio.src = ""; };
+    return () => {
+      window.removeEventListener("click", onFirstClick);
+      audio.pause();
+      audio.src = "";
+    };
   }, []);
 
   function toggle() {
@@ -51,12 +50,7 @@ export default function MusicPlayer() {
       aria-label={playing ? "Pause music" : "Play music"}
       title={playing ? "Pause music" : "Play music"}
     >
-      {playing ? (
-        // Music note animated
-        <span className="music-toggle__icon music-toggle__icon--on">♪</span>
-      ) : (
-        <span className="music-toggle__icon music-toggle__icon--off">♪</span>
-      )}
+      <span className={`music-toggle__icon${playing ? " music-toggle__icon--on" : " music-toggle__icon--off"}`}>♪</span>
       <span className="music-toggle__label">{playing ? "Music on" : "Music off"}</span>
     </button>
   );
