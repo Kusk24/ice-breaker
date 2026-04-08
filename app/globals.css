@@ -246,6 +246,44 @@ body {
   margin: 0;
 }
 
+.gemini-constellation {
+  position: absolute;
+  top: 50%;
+  right: 4%;
+  z-index: 5;
+  width: clamp(160px, 20vw, 320px);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-50%) scale(0.94);
+  animation: gemini-appear 3s ease-out 7.8s forwards,
+    gemini-float 9s ease-in-out 10.8s infinite;
+  filter: drop-shadow(0 0 18px rgba(120, 170, 255, 0.55));
+}
+
+.gemini-constellation__image {
+  width: 100%;
+  height: auto;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+@keyframes gemini-appear {
+  0%   { opacity: 0; transform: translateY(-50%) scale(0.94); }
+  100% { opacity: 1; transform: translateY(-50%) scale(1); }
+}
+
+@keyframes gemini-float {
+  0%, 100% { transform: translateY(-50%) scale(1); }
+  50%      { transform: translateY(calc(-50% - 10px)) scale(1.02); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gemini-constellation {
+    animation: gemini-appear 0.6s ease-out 0.2s forwards;
+  }
+}
+
 .rocket-flight {
   position: absolute;
   left: calc(50vw - 120px);

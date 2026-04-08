@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 480" width="100%" height="100%">
+  <defs>
+    <filter id="glow-large" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" />
+    </filter>
+    
+    <filter id="glow-medium" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3.5" />
+    </filter>
+
+    <filter id="glow-small" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="1" />
+    </filter>
+
+    <g id="star">
+      <circle cx="0" cy="0" r="14" fill="#4d94ff" filter="url(#glow-large)" opacity="0.65"/>
+      <circle cx="0" cy="0" r="7" fill="#8cbfff" filter="url(#glow-medium)" opacity="0.85"/>
+      <circle cx="0" cy="0" r="2.5" fill="#ffffff" filter="url(#glow-small)"/>
+      <circle cx="0" cy="0" r="1.5" fill="#ffffff"/>
+    </g>
+  </defs>
+
+  <g stroke="#cce0ff" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.9">
+    <polyline points="110,80 160,90 220,115 280,140 330,130" />
+    <polyline points="110,80 85,130 95,180 155,210 200,225 270,250" />
+    <polyline points="280,140 282,195 270,250 240,310" />
+  </g>
+
+  <use href="#star" x="110" y="80" />
+  <use href="#star" x="160" y="90" />
+  <use href="#star" x="220" y="115" />
+  <use href="#star" x="280" y="140" />
+  <use href="#star" x="330" y="130" />
+  <use href="#star" x="85" y="130" />
+  <use href="#star" x="95" y="180" />
+  <use href="#star" x="155" y="210" />
+  <use href="#star" x="200" y="225" />
+  <use href="#star" x="270" y="250" />
+  <use href="#star" x="282" y="195" />
+  <use href="#star" x="240" y="310" />
+
+  <g transform="translate(200, 410)">
+    <circle cx="0" cy="0" r="42" fill="none" stroke="#7bb4ff" stroke-width="1.5" opacity="0.85"/>
+    <circle cx="0" cy="0" r="42" fill="none" stroke="#7bb4ff" stroke-width="3" filter="url(#glow-medium)" opacity="0.4"/>
+    
+    <g stroke="#7bb4ff" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.9">
+      <path d="M -22 -20 Q 0 -4 22 -20" />
+      <path d="M -22 20 Q 0 4 22 20" />
+      <line x1="-9" y1="-12" x2="-9" y2="12" />
+      <line x1="9" y1="-12" x2="9" y2="12" />
+    </g>
+
+    <g stroke="#7bb4ff" stroke-width="5" stroke-linecap="round" fill="none" filter="url(#glow-medium)" opacity="0.4">
+      <path d="M -22 -20 Q 0 -4 22 -20" />
+      <path d="M -22 20 Q 0 4 22 20" />
+      <line x1="-9" y1="-12" x2="-9" y2="12" />
+      <line x1="9" y1="-12" x2="9" y2="12" />
+    </g>
+  </g>
+</svg>
