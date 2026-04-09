@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import GeminiConstellation from "../components/GeminiConstellation";
 import MoonBackButton from "../components/MoonBackButton";
 import RocketCta from "../components/RocketCta";
 import { siteText } from "@/lib/content";
@@ -6,7 +7,6 @@ import { siteText } from "@/lib/content";
 const isProd = process.env.NODE_ENV === "production";
 const rocketSrc = `${isProd ? "/ice-breaker" : ""}/rocket.svg`;
 const thaethuSrc = `${isProd ? "/ice-breaker" : ""}/thaethu.png`;
-const geminiSrc = `${isProd ? "/ice-breaker" : ""}/gemini.svg`;
 
 const stars = Array.from({ length: 70 }, (_, i) => ({
   x: (i * 17) % 100,
@@ -55,8 +55,7 @@ export default function MoonPage() {
       <div className="mist" aria-hidden />
 
       <div className="gemini-constellation" aria-hidden>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={geminiSrc} alt="" className="gemini-constellation__image" />
+        <GeminiConstellation />
       </div>
 
       <p className="moon-text" aria-label={siteText.moonText}>
