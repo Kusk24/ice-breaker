@@ -14,7 +14,7 @@ const QUESTIONS = [
   siteText.questionTen,   siteText.questionEleven,
 ];
 
-const DODGE_TEXTS = ["whyyyyy T_T", "pls not here", "Nooooooo", "...", "sate soe p", "hahaha catch me!!!", "wahaha", "Don't you dareeee", "Cruel T3 ly lr?", "ayy nww", "blah blah", "e shuu", "hw byr", "Thae Thae Thu Aungggg ( ｡ •̀ ᴖ •́ ｡)💢"];
+const DODGE_TEXTS = ["whyyyyy T_T", "pls not here", "Nooooooo", "...", "sate soe p", "hahaha catch me!!!", "wahahaha ꉂ(˵˃ ᗜ ˂˵)", "Don't you dareeee", "Cruel T3 ly lr?", "ayy nww", "blah blah", "e shuu", "hw byr", "Thae Thae Thu Aungggg ( ｡ •̀ ᴖ •́ ｡)💢"];
 
 const IMAGE_FILES = [
   "1.png","2.JPG","3.JPG","4.png","5.JPG",
