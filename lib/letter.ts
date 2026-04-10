@@ -1,4 +1,4 @@
-export const letter = `Dear Thae Thu,
+export const letter = `Dear Thae Thu (T3),
 
 You probably didn't expect a letter hidden here, but here it is — just for you.
 
@@ -6,7 +6,8 @@ Even though gifts, letters might not be the first ever you receive from someone,
 
 Everytime I think of you, I write this project and modify it. 
 
-Thank you for letting me know you (as a brother or friend or whatever you are comfortable with), and thank you for letting me be a part of my daily life.
+I want to know more about youuuuuu. Please allow meeeee (∩˃o˂∩)♡,  Don't be too cruelllllll ૮(˶ㅠ︿ㅠ)ა,
+ wanna be yoursss, Ahem"(,,¬﹏¬,,) I mean your friend.
 
 With all best wishes,
 WinYu 🌙`
