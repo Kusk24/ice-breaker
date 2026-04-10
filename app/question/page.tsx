@@ -183,7 +183,7 @@ export default function QuestionPage() {
       <div className="question-content">
         <h1 className="question-title" key={phase}>
           {(() => {
-            const lines = questionText.split(",").map((seg, li) => (li === 0 ? seg : seg.trimStart()));
+            const lines = questionText.split(/,|\n/).map((seg, li) => (li === 0 ? seg : seg.trimStart()));
             let ci = 0;
             return lines.map((line, li) => (
               <span key={li} className="question-title__line">
