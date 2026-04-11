@@ -11,9 +11,9 @@ export default function RocketCta({ className, label }: { className?: string; la
 
   function navigate() {
     if (typeof document.startViewTransition === "function") {
-      document.startViewTransition(() => router.push("/question"));
+      document.startViewTransition(() => router.push("/countdown"));
     } else {
-      router.push("/question");
+      router.push("/countdown");
     }
   }
 
