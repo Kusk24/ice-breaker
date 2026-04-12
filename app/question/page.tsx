@@ -3,6 +3,7 @@ import { useState, useCallback, useRef } from "react";
 import type { CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 import { siteText } from "@/lib/content";
+import T3Nebula from "@/app/components/T3Nebula";
 
 const isProd = process.env.NODE_ENV === "production";
 const base = isProd ? "/ice-breaker" : "";
@@ -164,6 +165,7 @@ export default function QuestionPage() {
 
   return (
     <main className="scene question-scene">
+      <T3Nebula />
       <div className="sky" aria-hidden>
         {stars.map((s, i) => (
           <span key={i} className="star"

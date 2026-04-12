@@ -3172,35 +3172,155 @@ body {
   50%      { opacity: 0.4; }
 }
 
-/* ── Explosion ── */
-.bomb-wrap--exploded .bomb-body {
-  animation: bomb-pop 0.5s ease forwards;
+/* ── Screen flash on explosion ── */
+.explosion-flash {
+  position: fixed;
+  inset: 0;
+  background: white;
+  z-index: 100;
+  pointer-events: none;
+  animation: flash-out 0.8s ease-out forwards;
+}
+
+@keyframes flash-out {
+  0%   { opacity: 1; }
+  40%  { opacity: 0.6; }
+  100% { opacity: 0; }
+}
+
+/* ── Bomb pop on explosion ── */
+.bomb-body--exploding {
+  animation: bomb-pop 0.6s ease forwards;
+  pointer-events: none;
 }
 
 @keyframes bomb-pop {
-  0%   { transform: scale(1); opacity: 1; }
-  30%  { transform: scale(1.3); opacity: 0.8; }
-  100% { transform: scale(0); opacity: 0; }
+  0%   { transform: scale(1);   opacity: 1; filter: brightness(1); }
+  20%  { transform: scale(1.4); opacity: 1; filter: brightness(4); }
+  100% { transform: scale(0);   opacity: 0; filter: brightness(1); }
 }
 
+/* ── Explosion container — fixed to viewport center (bomb is always centered) ── */
+.bomb-explosion {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 50;
+  overflow: visible;
+}
+
+/* ── Nebula gas blobs — expand from bomb center outward ── */
+.nebula-gas {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+}
+
+.nebula-gas--1 {
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(255,120,50,0.55) 0%, rgba(255,60,20,0.3) 40%, transparent 70%);
+  animation: gas-expand-1 4s 0.1s cubic-bezier(0.1,0.7,0.3,1) forwards;
+}
+.nebula-gas--2 {
+  width: 900px; height: 600px;
+  background: radial-gradient(ellipse, rgba(192,132,252,0.45) 0%, rgba(100,60,200,0.25) 50%, transparent 70%);
+  animation: gas-expand-2 4.5s 0.3s cubic-bezier(0.1,0.7,0.3,1) forwards;
+}
+.nebula-gas--3 {
+  width: 600px; height: 800px;
+  background: radial-gradient(ellipse, rgba(52,211,153,0.35) 0%, rgba(20,160,120,0.2) 50%, transparent 70%);
+  animation: gas-expand-3 5s 0.5s cubic-bezier(0.1,0.7,0.3,1) forwards;
+}
+.nebula-gas--4 {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(96,165,250,0.4) 0%, rgba(50,100,220,0.2) 50%, transparent 70%);
+  animation: gas-expand-4 3.8s 0.2s cubic-bezier(0.1,0.7,0.3,1) forwards;
+}
+
+@keyframes gas-expand-1 {
+  0%   { transform: translate(-50%, -50%) scale(0) rotate(0deg);   opacity: 0; }
+  15%  { opacity: 0.9; }
+  60%  { transform: translate(-55%, -48%) scale(1.6) rotate(12deg); opacity: 0.7; }
+  100% { transform: translate(-55%, -48%) scale(2.2) rotate(20deg); opacity: 0; }
+}
+@keyframes gas-expand-2 {
+  0%   { transform: translate(-50%, -50%) scale(0) rotate(0deg);    opacity: 0; }
+  15%  { opacity: 0.85; }
+  60%  { transform: translate(-42%, -52%) scale(1.4) rotate(-15deg); opacity: 0.65; }
+  100% { transform: translate(-42%, -52%) scale(2.0) rotate(-25deg); opacity: 0; }
+}
+@keyframes gas-expand-3 {
+  0%   { transform: translate(-50%, -50%) scale(0) rotate(0deg);    opacity: 0; }
+  15%  { opacity: 0.75; }
+  60%  { transform: translate(-48%, -44%) scale(1.3) rotate(8deg);  opacity: 0.55; }
+  100% { transform: translate(-48%, -44%) scale(1.9) rotate(15deg); opacity: 0; }
+}
+@keyframes gas-expand-4 {
+  0%   { transform: translate(-50%, -50%) scale(0) rotate(0deg);    opacity: 0; }
+  15%  { opacity: 0.8; }
+  60%  { transform: translate(-53%, -54%) scale(1.5) rotate(-10deg); opacity: 0.6; }
+  100% { transform: translate(-53%, -54%) scale(2.1) rotate(-18deg); opacity: 0; }
+}
+
+/* Central burst ring */
+.bomb-explosion__burst {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0%, #FFD766 25%, #FF5A00 55%, transparent 100%);
+  transform: translate(-50%, -50%);
+  animation: burst-expand 1.4s ease-out forwards;
+}
+
+@keyframes burst-expand {
+  0%   { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  50%  { transform: translate(-50%, -50%) scale(20); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(30); opacity: 0; }
+}
+
+/* T3 particles */
 .bomb-explosion__particle {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: var(--size);
-  height: var(--size);
-  border-radius: 50%;
-  background: #FFD766;
-  animation: bomb-particle-fly var(--dur) ease-out forwards;
+  font-weight: 900;
+  line-height: 1;
+  user-select: none;
+  white-space: nowrap;
+  text-shadow:
+    0 0 8px currentColor,
+    0 0 20px currentColor,
+    0 0 40px currentColor;
+  opacity: 0;
+  animation-name: t3-fly;
+  animation-timing-function: cubic-bezier(0.05, 0.85, 0.25, 1);
+  animation-fill-mode: forwards;
 }
 
-.bomb-explosion__particle:nth-child(odd) { background: #FF5A70; }
-.bomb-explosion__particle:nth-child(3n)  { background: #FF8000; }
-.bomb-explosion__particle:nth-child(5n)  { background: #EEF6FF; }
-
-@keyframes bomb-particle-fly {
-  0%   { transform: translate(-50%, -50%) rotate(var(--angle)) translateX(0); opacity: 1; }
-  100% { transform: translate(-50%, -50%) rotate(var(--angle)) translateX(var(--dist)); opacity: 0; }
+@keyframes t3-fly {
+  0% {
+    transform: translate(-50%, -50%) rotate(var(--angle)) translateX(0px) rotate(var(--init-rotate)) scale(0.3);
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(var(--angle)) translateX(20px) rotate(calc(var(--init-rotate) + 45deg)) scale(1.6);
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(var(--angle)) translateX(var(--dist)) rotate(var(--spin)) scale(0.7);
+    opacity: 0;
+  }
 }
 
 /* ── Progress bar ── */
@@ -3263,6 +3383,82 @@ body {
 
 .countdown-btn--active:active {
   transform: scale(0.95);
+}
+
+/* ── T3 Nebula residue (persists after explosion, carried to question page) ── */
+.t3-nebula {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Gas cloud blobs that persist as nebula background */
+.t3-nebula__gas {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0;
+  animation-name: nebula-gas-breathe;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+/* Bottom-right cluster — main nebula blob */
+.t3-nebula__gas--pink {
+  width: 420px; height: 340px;
+  bottom: -60px; right: -60px;
+  top: auto; left: auto;
+  background: radial-gradient(ellipse at 40% 40%, rgba(244,114,182,0.55) 0%, rgba(192,132,252,0.32) 40%, rgba(96,165,250,0.12) 65%, transparent 75%);
+  filter: blur(55px);
+  animation-duration: 10s;
+  animation-delay: -2s;
+}
+/* Bottom-right secondary wisp */
+.t3-nebula__gas--blue {
+  width: 300px; height: 260px;
+  bottom: 40px; right: 80px;
+  top: auto; left: auto;
+  background: radial-gradient(ellipse at 60% 60%, rgba(96,165,250,0.4) 0%, rgba(52,211,153,0.2) 50%, transparent 72%);
+  filter: blur(70px);
+  animation-duration: 13s;
+  animation-delay: -6s;
+}
+/* Top-left accent cloud */
+.t3-nebula__gas--orange {
+  width: 340px; height: 260px;
+  top: -40px; left: -40px;
+  background: radial-gradient(ellipse at 55% 55%, rgba(255,180,60,0.38) 0%, rgba(255,90,112,0.2) 45%, rgba(192,132,252,0.1) 65%, transparent 78%);
+  filter: blur(60px);
+  animation-duration: 11s;
+  animation-delay: -3s;
+}
+
+@keyframes nebula-gas-breathe {
+  0%   { opacity: 0.4; transform: scale(1) rotate(0deg); }
+  50%  { opacity: 0.7; transform: scale(1.08) rotate(3deg); }
+  100% { opacity: 0.45; transform: scale(0.95) rotate(-2deg); }
+}
+
+.t3-nebula__piece {
+  line-height: 1;
+  user-select: none;
+  white-space: nowrap;
+  text-shadow: 0 0 8px currentColor, 0 0 22px currentColor;
+  animation-name: nebula-drift;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-duration: var(--drift-dur);
+  animation-delay: var(--drift-delay);
+}
+
+@keyframes nebula-drift {
+  0%   { transform: rotate(var(--rotate)) translate(0px, 0px); }
+  33%  { transform: rotate(calc(var(--rotate) + 8deg)) translate(6px, -9px); }
+  66%  { transform: rotate(calc(var(--rotate) - 5deg)) translate(-6px, 7px); }
+  100% { transform: rotate(calc(var(--rotate) + 12deg)) translate(5px, -5px); }
 }
 
 /* ─── Reduced motion ─── */
