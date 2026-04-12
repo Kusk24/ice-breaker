@@ -80,6 +80,13 @@ export default function CountdownPage() {
   const isUrgent = remaining <= 60;
   const isAlmostDone = remaining <= 10;
 
+  // Spark position along cubic bezier: M 50,58 C 56,34 72,12 90,4
+  // t=1 (progress=0) → spark at tip (90,4); t=0 (progress=1) → spark at cap (50,58)
+  const fuseT = 1 - progress;
+  const t = fuseT;
+  const sparkX = (1-t)*(1-t)*(1-t)*50 + 3*(1-t)*(1-t)*t*56 + 3*(1-t)*t*t*72 + t*t*t*90;
+  const sparkY = (1-t)*(1-t)*(1-t)*58 + 3*(1-t)*(1-t)*t*34 + 3*(1-t)*t*t*12 + t*t*t*4;
+
   return (
     <main className="scene countdown-scene" aria-label="Countdown timer">
       {/* Stars */}
@@ -101,23 +108,99 @@ export default function CountdownPage() {
       {/* Bomb */}
       <div className={`bomb-wrap ${done ? "bomb-wrap--exploded" : ""} ${isUrgent ? "bomb-wrap--urgent" : ""} ${isAlmostDone ? "bomb-wrap--shake" : ""}`}>
 
-        {/* Neck cap */}
-        <div className="bomb-cap" aria-hidden>
-          <div className="bomb-cap__ring" />
-          <div className="bomb-cap__tube" />
-          {/* Fuse — curved rope with spark, anchored to cap */}
-          <div className="bomb-fuse">
-            <div className="bomb-fuse__rope" style={{ "--burn": progress } as CSSProperties} />
-            {!done && (
-              <div className="bomb-fuse__spark">
-                <span className="bomb-fuse__spark-star" />
-                <span className="bomb-fuse__spark-star bomb-fuse__spark-star--mid" />
-                <span className="bomb-fuse__spark-star bomb-fuse__spark-star--inner" />
-                <span className="bomb-fuse__spark-core" />
-              </div>
-            )}
-          </div>
-        </div>
+        {/* Cap + Fuse — cap sits at bottom of SVG on top of bomb sphere, fuse curls up-right */}
+        <svg className="bomb-cap-svg" viewBox="0 0 100 90" xmlns="http://www.w3.org/2000/svg" aria-hidden overflow="visible">
+          <defs>
+            {/* Metallic cap body gradient */}
+            <linearGradient id="capBodyGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"   stopColor="#72728a"/>
+              <stop offset="25%"  stopColor="#52526a"/>
+              <stop offset="65%"  stopColor="#2c2c3c"/>
+              <stop offset="100%" stopColor="#16161e"/>
+            </linearGradient>
+            <radialGradient id="sparkGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%"   stopColor="#ffffff" stopOpacity="1"/>
+              <stop offset="30%"  stopColor="#ffea00" stopOpacity="0.9"/>
+              <stop offset="70%"  stopColor="#ff6600" stopOpacity="0.4"/>
+              <stop offset="100%" stopColor="#ff2200" stopOpacity="0"/>
+            </radialGradient>
+          </defs>
+
+          {/* ── Fuse rope — goes from cap center upward and curls right to tip ── */}
+          {/* shadow */}
+          <path d="M 50,57 C 56,34 72,12 90,4" stroke="#1a0c02" strokeWidth="7" fill="none" strokeLinecap="round" opacity="0.45"/>
+          {/* main rope */}
+          <path
+            className="fuse-rope"
+            d="M 50,57 C 56,34 72,12 90,4"
+            stroke="#c8864a"
+            strokeWidth="5"
+            fill="none"
+            strokeLinecap="round"
+            strokeDasharray="84"
+            strokeDashoffset={`${progress * 84}`}
+          />
+          {/* braid texture */}
+          <path
+            d="M 50,57 C 56,34 72,12 90,4"
+            stroke="#7a4e1a"
+            strokeWidth="5"
+            fill="none"
+            strokeLinecap="round"
+            strokeDasharray="5 9"
+            opacity="0.65"
+            strokeDashoffset={`${progress * 84}`}
+          />
+          {/* highlight stripe */}
+          <path
+            d="M 50,57 C 56,34 72,12 90,4"
+            stroke="#ffe0a0"
+            strokeWidth="1.5"
+            fill="none"
+            strokeLinecap="round"
+            strokeDasharray="84"
+            strokeDashoffset={`${progress * 84}`}
+            opacity="0.4"
+          />
+
+          {/* ── CAP — simple cute nub on top of bomb ── */}
+          <rect x="33" y="57" width="34" height="22" rx="5" fill="url(#capBodyGrad)" stroke="#0e0e1c" strokeWidth="2"/>
+          {/* top highlight */}
+          <rect x="37" y="59" width="26" height="4" rx="2" fill="rgba(255,255,255,0.22)"/>
+          {/* left edge shine */}
+          <rect x="36" y="59" width="5" height="17" rx="2" fill="rgba(255,255,255,0.07)"/>
+          {/* bottom merge shadow */}
+          <rect x="33" y="73" width="34" height="6" rx="3" fill="rgba(0,0,0,0.45)"/>
+
+          {/* ── Spark — proper starburst like reference ── */}
+          {!done && (
+            <g transform={`translate(${sparkX}, ${sparkY})`}>
+              {/* outer glow halo */}
+              <circle r="12" fill="url(#sparkGlow)" className="spark-halo"/>
+              {/* outer red star */}
+              <path
+                d="M 0,-7 L 1.7,-2.2 L 6.3,-3.4 L 2.9,0.6 L 5.7,5.2 L 1.1,2.3 L -1.4,6.3 L -2.3,1.5 L -7.2,-0.6 L -2.9,-2.3 Z"
+                fill="#ff4500"
+                className="spark-star-outer"
+              />
+              {/* inner yellow star */}
+              <path
+                d="M 0,-4.2 L 1.0,-1.4 L 4.0,-2.0 L 1.7,0.4 L 3.5,3.1 L 0.6,1.4 L -0.8,3.8 L -1.4,0.9 L -4.3,-0.3 L -1.7,-1.4 Z"
+                fill="#ffea00"
+                className="spark-star-inner"
+              />
+              {/* white core */}
+              <circle r="1.8" fill="#ffffff" className="spark-core-svg"/>
+              {/* floating sparkle dots */}
+              <circle r="1.4" fill="#ffe066" className="sparkle s1"/>
+              <circle r="1.0" fill="#ffcc00" className="sparkle s2"/>
+              <circle r="1.6" fill="#ff9900" className="sparkle s3"/>
+              <circle r="0.9" fill="#ffffff" className="sparkle s4"/>
+              <circle r="1.2" fill="#ffdd55" className="sparkle s5"/>
+              <circle r="1.1" fill="#ffaa30" className="sparkle s6"/>
+            </g>
+          )}
+        </svg>
 
         {/* Bomb body */}
         <div className="bomb-body">
@@ -154,16 +237,17 @@ export default function CountdownPage() {
         <div className="countdown-bar__fill" style={{ width: `${progress * 100}%` }} />
       </div>
 
-      {/* CTA Button */}
-      <button
-        type="button"
-        className={`countdown-btn ${done ? "countdown-btn--active" : "countdown-btn--locked"}`}
-        onClick={handleGo}
-        disabled={!done}
-        aria-label={done ? "Proceed to questions" : "Wait for countdown"}
-      >
-        {done ? siteText.countdownButton : `Wait ${formatTime(remaining)}`}
-      </button>
+      {/* CTA Button — only shown when countdown is done */}
+      {done && (
+        <button
+          type="button"
+          className="countdown-btn countdown-btn--active"
+          onClick={handleGo}
+          aria-label="Proceed to questions"
+        >
+          {siteText.countdownButton}
+        </button>
+      )}
     </main>
   );
 }

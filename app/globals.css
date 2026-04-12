@@ -2841,15 +2841,49 @@ body {
   text-align: center;
   color: rgba(220, 235, 255, 0.9);
   letter-spacing: 0.06em;
+  margin-bottom: 0;
   opacity: 0;
   animation: cd-fade-in-up 1s ease forwards;
   z-index: 10;
-  margin-bottom: 2rem;
 }
 
 .countdown-title--done {
-  color: #FFD766;
-  animation: cd-fade-in-up 0.6s ease forwards, btn-pulse 2s ease-in-out 0.6s infinite;
+  font-family: var(--font-playfair), serif;
+  background: linear-gradient(120deg, #f9d4ff, #c084fc, #e879f9, #a5b4fc, #f9d4ff);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: cd-fade-in-up 0.6s ease forwards, shimmer-slide 3s linear 0.6s infinite, glow-pulse 2.5s ease-in-out 0.6s infinite;
+  letter-spacing: 0.12em;
+  position: relative;
+  filter: drop-shadow(0 0 18px rgba(192, 132, 252, 0.7));
+}
+
+.countdown-title--done::before {
+  content: "";
+  position: absolute;
+  inset: -12px -24px;
+  background: radial-gradient(ellipse at center, rgba(168, 85, 247, 0.18) 0%, transparent 70%);
+  border-radius: 20px;
+  animation: flash-behind 2.5s ease-in-out 0.6s infinite;
+  z-index: -1;
+  pointer-events: none;
+}
+
+@keyframes shimmer-slide {
+  0%   { background-position: 0% center; }
+  100% { background-position: 300% center; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { filter: drop-shadow(0 0 18px rgba(192, 132, 252, 0.7)) drop-shadow(0 0 40px rgba(232, 121, 249, 0.4)); }
+  50%       { filter: drop-shadow(0 0 32px rgba(192, 132, 252, 1))   drop-shadow(0 0 70px rgba(232, 121, 249, 0.7)); }
+}
+
+@keyframes flash-behind {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50%       { opacity: 1;   transform: scale(1.08); }
 }
 
 @keyframes cd-fade-in-up {
@@ -2885,188 +2919,105 @@ body {
   75%  { transform: translateX(5px) rotate(2deg); }
 }
 
-/* ── Fuse — curved rope via border trick ── */
-.bomb-fuse {
-  position: absolute;
-  width: 80px;
-  height: 70px;
-  /* bottom-left of this box sits on top-center of the cap */
-  bottom: 100%;
-  left: 50%;
-  margin-left: -4px;
-  margin-bottom: -18px;
-  z-index: 12;
+/* ── Unified cap + fuse SVG ── */
+.bomb-cap-svg {
+  display: block;
+  width: 140px;
+  height: auto;
+  overflow: visible;
+  margin-bottom: -16px;
+  position: relative;
+  z-index: 11;
   pointer-events: none;
 }
 
-/* Quarter-circle arc: bottom-left connects to cap, curves up-right to spark */
-.bomb-fuse__rope {
-  position: absolute;
-  inset: 0;
-  border: 4px solid transparent;
-  border-left-color: #c0864a;
-  border-top-color: #c0864a;
-  border-radius: 70% 0 0 0;
-  clip-path: inset(0 calc(var(--burn, 0) * 100%) 0 0);
-  transition: clip-path 1s linear;
+.fuse-rope {
+  transition: stroke-dashoffset 1s linear;
 }
 
-.bomb-fuse__rope::after {
-  content: "";
-  position: absolute;
-  inset: -4px;
-  border: 4px solid transparent;
-  border-left: 4px dashed #7a5a30;
-  border-top: 4px dashed #7a5a30;
-  border-radius: 70% 0 0 0;
-  opacity: 0.5;
-  clip-path: inset(0 calc(var(--burn, 0) * 100%) 0 0);
-}
-
-/* Spark — soft glow at the tip (top-right corner of the arc) */
-.bomb-fuse__spark {
-  position: absolute;
-  top: -2px;
-  right: -2px;
-  z-index: 13;
-}
-
-/* Outer warm aura — like the rose bud glow */
-.bomb-fuse__spark-star {
-  position: absolute;
-  width: 36px;
-  height: 36px;
-  top: -18px;
-  left: -18px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 180, 60, 0.6) 0%, rgba(255, 120, 30, 0.2) 50%, transparent 70%);
+.spark-halo {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: halo-breathe 1s ease-in-out infinite alternate;
   filter: blur(4px);
-  animation: spark-glow 1.2s ease-in-out infinite alternate;
 }
 
-/* Mid glow — warm amber orb */
-.bomb-fuse__spark-star--mid {
-  width: 22px;
-  height: 22px;
-  top: -11px;
-  left: -11px;
-  background: radial-gradient(circle, rgba(255, 200, 80, 0.8) 0%, rgba(255, 150, 40, 0.3) 60%, transparent 80%);
-  filter: blur(2px);
-  animation-delay: 0.15s;
+.spark-star-outer {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: star-spin 0.5s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 3px rgba(255,80,0,0.8));
 }
 
-/* Inner bright core — like a light-particle */
-.bomb-fuse__spark-star--inner {
-  width: 12px;
-  height: 12px;
-  top: -6px;
-  left: -6px;
-  background: radial-gradient(circle, rgba(255, 245, 200, 0.95) 0%, rgba(255, 220, 100, 0.5) 60%, transparent 85%);
-  filter: blur(1px);
-  animation-delay: 0.08s;
+.spark-star-inner {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: star-spin 0.35s ease-in-out infinite alternate-reverse;
 }
 
-/* Core — bright white-gold dot with soft halo */
-.bomb-fuse__spark-core {
-  position: absolute;
-  width: 6px;
-  height: 6px;
-  top: -3px;
-  left: -3px;
-  border-radius: 50%;
-  background: #fffbe6;
-  box-shadow:
-    0 0 6px 3px rgba(255, 240, 180, 0.9),
-    0 0 16px 6px rgba(255, 180, 60, 0.4);
-  animation: spark-core-pulse 0.8s ease-in-out infinite alternate;
+.spark-core-svg {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: spark-core-pulse 0.3s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 4px #fff) drop-shadow(0 0 8px rgba(255,220,100,1));
 }
 
-/* Floating micro-particles drifting upward from the spark */
-.bomb-fuse__spark::before,
-.bomb-fuse__spark::after {
-  content: "";
-  position: absolute;
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: #ffdc7a;
-  box-shadow: 0 0 6px rgba(255, 200, 80, 0.8);
-  animation: spark-particle-float 1.4s ease-out infinite;
+/* Flying sparkle particles */
+.sparkle {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation-timing-function: ease-out;
+  animation-iteration-count: infinite;
+}
+.s1 { animation: fly1 1.0s 0.0s  ease-out infinite; }
+.s2 { animation: fly2 1.3s 0.2s  ease-out infinite; }
+.s3 { animation: fly3 0.9s 0.4s  ease-out infinite; }
+.s4 { animation: fly4 1.2s 0.1s  ease-out infinite; }
+.s5 { animation: fly5 1.1s 0.3s  ease-out infinite; }
+.s6 { animation: fly6 0.85s 0.5s ease-out infinite; }
+
+@keyframes halo-breathe {
+  from { opacity: 0.6; transform: scale(0.85); }
+  to   { opacity: 1;   transform: scale(1.15); }
 }
 
-.bomb-fuse__spark::after {
-  width: 2px;
-  height: 2px;
-  background: #ffe8a0;
-  animation-delay: 0.7s;
-  animation-duration: 1.8s;
-}
-
-@keyframes spark-glow {
-  from { transform: scale(0.85); opacity: 0.5; }
-  to   { transform: scale(1.15); opacity: 1; }
+@keyframes star-spin {
+  from { transform: scale(0.88) rotate(-12deg); opacity: 0.85; }
+  to   { transform: scale(1.12) rotate(12deg);  opacity: 1; }
 }
 
 @keyframes spark-core-pulse {
-  from { transform: scale(0.9); opacity: 0.8; }
-  to   { transform: scale(1.1); opacity: 1; }
+  from { transform: scale(0.85); opacity: 0.9; }
+  to   { transform: scale(1.2);  opacity: 1; }
 }
 
-@keyframes spark-particle-float {
-  0%   { transform: translate(0, 0) scale(1); opacity: 1; }
-  100% { transform: translate(-8px, -20px) scale(0); opacity: 0; }
+/* 8 sparkle trajectories — different angles, distances, fades */
+@keyframes fly1 {
+  0%   { transform: translate(0,0) scale(1); opacity: 1; }
+  100% { transform: translate(-7px,-13px) scale(0); opacity: 0; }
+}
+@keyframes fly2 {
+  0%   { transform: translate(0,0) scale(1); opacity: 1; }
+  100% { transform: translate(4px,-15px) scale(0); opacity: 0; }
+}
+@keyframes fly3 {
+  0%   { transform: translate(0,0) scale(1); opacity: 1; }
+  100% { transform: translate(10px,-9px) scale(0); opacity: 0; }
+}
+@keyframes fly4 {
+  0%   { transform: translate(0,0) scale(1); opacity: 1; }
+  100% { transform: translate(-11px,-5px) scale(0); opacity: 0; }
+}
+@keyframes fly5 {
+  0%   { transform: translate(0,0) scale(1); opacity: 1; }
+  100% { transform: translate(6px,-16px) scale(0); opacity: 0; }
+}
+@keyframes fly6 {
+  0%   { transform: translate(0,0) scale(1); opacity: 1; }
+  100% { transform: translate(-5px,-17px) scale(0); opacity: 0; }
 }
 
-/* ── Cap / neck ── */
-.bomb-cap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  z-index: 11;
-  position: relative;
-  overflow: visible;
-}
-
-.bomb-cap__ring {
-  width: 62px;
-  height: 14px;
-  background: linear-gradient(180deg, #7a7a8a 0%, #4a4a54 50%, #7a7a8a 100%);
-  border-radius: 4px;
-  border: 2px solid #222;
-  position: relative;
-}
-
-.bomb-cap__ring::after {
-  content: "";
-  position: absolute;
-  top: 3px;
-  left: 8px;
-  right: 8px;
-  height: 2px;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 1px;
-}
-
-.bomb-cap__tube {
-  width: 46px;
-  height: 22px;
-  background: linear-gradient(180deg, #3a3a44 0%, #222228 50%, #3a3a44 100%);
-  border: 2px solid #1a1a1a;
-  border-radius: 2px;
-  margin-top: -2px;
-  position: relative;
-}
-
-.bomb-cap__tube::after {
-  content: "";
-  position: absolute;
-  top: 2px;
-  left: 3px;
-  width: 6px;
-  height: calc(100% - 4px);
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 2px;
-}
+/* ── Cap / neck — now drawn in SVG, no HTML divs needed ── */
 
 /* ── Bomb body ── */
 .bomb-body {
@@ -3086,7 +3037,7 @@ body {
   justify-content: center;
   overflow: hidden;
   transition: box-shadow 0.5s ease;
-  margin-top: -4px;
+  margin-top: 0;
 }
 
 /* Glossy highlight — large */
