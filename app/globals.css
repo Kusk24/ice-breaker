@@ -2854,7 +2854,7 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: cd-fade-in-up 0.6s ease forwards, shimmer-slide 3s linear 0.6s infinite, glow-pulse 2.5s ease-in-out 0.6s infinite;
+  animation: cd-fade-in-up 1.2s ease 0.3s forwards, shimmer-slide 3s linear 1.5s infinite, glow-pulse 2.5s ease-in-out 1.5s infinite;
   letter-spacing: 0.12em;
   position: relative;
   filter: drop-shadow(0 0 18px rgba(192, 132, 252, 0.7));
@@ -3371,7 +3371,8 @@ body {
   box-shadow:
     0 5px 14px rgba(30, 70, 130, 0.3),
     0 1px 0 rgba(255, 255, 255, 0.6) inset;
-  animation: cd-fade-in-up 0.5s ease forwards, btn-pulse 3s ease-in-out 0.5s infinite;
+  opacity: 0;
+  animation: cd-fade-in-up 1.2s ease 0.8s forwards, btn-pulse 3s ease-in-out 2s infinite;
 }
 
 .countdown-btn--active:hover {
@@ -3391,6 +3392,12 @@ body {
   inset: 0;
   pointer-events: none;
   z-index: 1;
+  animation: nebula-fade-in 2s ease forwards;
+}
+
+@keyframes nebula-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 /* Gas cloud blobs that persist as nebula background */
