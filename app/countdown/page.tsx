@@ -4,7 +4,7 @@ import type { CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 import { siteText } from "@/lib/content";
 
-const TOTAL_SECONDS = 15 * 60; // TODO: change back to 10 * 60 (10 minutes)
+const TOTAL_SECONDS = 30; // TODO: change back to 10 * 60 (10 minutes)
 const STORAGE_KEY = "bomb-countdown-start";
 
 const stars = Array.from({ length: 60 }, (_, i) => ({
@@ -77,8 +77,9 @@ export default function CountdownPage() {
   }, [done, router]);
 
   const progress = 1 - remaining / TOTAL_SECONDS; // 0 → 1
-  const isUrgent = remaining <= 60;
-  const isAlmostDone = remaining <= 10;
+  const isWarning = remaining <= 120 && remaining > 60; // 2min–1min: building tension
+  const isUrgent = remaining <= 60;                     // 1min: danger
+  const isAlmostDone = remaining <= 10;                  // 10s: extreme
 
   // Spark position along cubic bezier: M 50,58 C 56,34 72,12 90,4
   // t=1 (progress=0) → spark at tip (90,4); t=0 (progress=1) → spark at cap (50,58)
@@ -106,7 +107,7 @@ export default function CountdownPage() {
       </p>
 
       {/* Bomb */}
-      <div className={`bomb-wrap ${done ? "bomb-wrap--exploded" : ""} ${isUrgent ? "bomb-wrap--urgent" : ""} ${isAlmostDone ? "bomb-wrap--shake" : ""}`}>
+      <div className={`bomb-wrap ${done ? "bomb-wrap--exploded" : ""} ${isWarning ? "bomb-wrap--warning" : ""} ${isUrgent ? "bomb-wrap--urgent" : ""} ${isAlmostDone ? "bomb-wrap--shake" : ""}`}>
 
         {/* Cap + Fuse — cap sits at bottom of SVG on top of bomb sphere, fuse curls up-right */}
         <svg className="bomb-cap-svg" viewBox="0 0 100 90" xmlns="http://www.w3.org/2000/svg" aria-hidden overflow="visible">
