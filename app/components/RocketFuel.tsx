@@ -108,7 +108,7 @@ export default function RocketFuel({ rocketDelay, children }: RocketFuelProps) {
       {showAlert && (
         <div className="fuel-alert" onClick={handleAlertDismiss}>
           <span className="fuel-alert__text">
-            The rocket needs fuel! Look around... ✨
+            The rocket needs fuel! Look around... ➡🌌
           </span>
         </div>
       )}
