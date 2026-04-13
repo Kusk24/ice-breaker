@@ -737,14 +737,15 @@ body {
 
 /* Stars stretch into warp lines */
 .warp-speed .star {
-  animation: warp-star 0.9s ease-in 0.1s forwards !important;
+  animation: warp-star 2s ease-in 0.1s forwards !important;
   transform-origin: 50vw 50vh;
 }
 
 @keyframes warp-star {
   0%   { opacity: 0.3; width: 2px; height: 2px; }
-  40%  { opacity: 1; }
-  100% { opacity: 0; width: 2px; height: 60px; transform: translateY(-80px) scaleY(8); filter: blur(1px); }
+  25%  { opacity: 1; width: 2px; height: 4px; }
+  60%  { opacity: 1; width: 2px; height: 40px; transform: translateY(-50px) scaleY(5); filter: blur(0.5px); }
+  100% { opacity: 0; width: 2px; height: 80px; transform: translateY(-120px) scaleY(12); filter: blur(1.5px); }
 }
 
 /* Mist fades out */
@@ -754,6 +755,109 @@ body {
 
 @keyframes mist-out {
   to { opacity: 0; }
+}
+
+/* ─── Rocket incoming on countdown page ─── */
+.rocket-incoming {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  overflow: hidden;
+  perspective: 800px;
+}
+
+.rocket-incoming__craft {
+  position: absolute;
+  width: 200px;
+  filter: drop-shadow(0 4px 16px rgba(255, 140, 0, 0.5));
+  transform-origin: center center;
+  will-change: transform, opacity;
+  opacity: 0;
+}
+
+.rocket-incoming__image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.rocket-incoming__trail {
+  position: absolute;
+  left: -58%;
+  top: 50%;
+  width: 62%;
+  height: 10%;
+  border-radius: 999px;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 90% center, rgba(255, 180, 60, 0.68) 0%, rgba(255, 110, 30, 0.36) 45%, rgba(255, 80, 0, 0) 100%);
+  transform: translateY(-50%);
+  z-index: 0;
+  animation: rocket-trail-pulse 0.6s ease-in-out infinite;
+}
+
+.rocket-incoming__flame {
+  position: absolute;
+  pointer-events: none;
+  transform-origin: right center;
+  z-index: 3;
+}
+
+.rocket-incoming__flame--outer {
+  left: -10%;
+  top: 41%;
+  width: 33%;
+  height: 18%;
+  border-radius: 55% 80% 80% 55%;
+  background:
+    radial-gradient(circle at 65% 50%, rgba(255, 255, 200, 0.92) 0%, rgba(255, 220, 100, 0) 40%),
+    linear-gradient(90deg, #ff7316 0%, #ffbe38 48%, #fff8b0 100%);
+  animation: flame-outer 0.35s ease-in-out infinite;
+}
+
+.rocket-incoming__flame--core {
+  left: -4%;
+  top: 45.5%;
+  width: 22%;
+  height: 9%;
+  border-radius: 60% 88% 88% 60%;
+  background: linear-gradient(90deg, #ffe44a 0%, #fffbe0 100%);
+  animation: flame-core 0.25s ease-in-out infinite;
+}
+
+/* Warp flash when rocket arrives */
+.rocket-incoming__flash {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(255,255,255,0.8) 0%, rgba(200,220,255,0.3) 40%, transparent 70%);
+  z-index: 99;
+  pointer-events: none;
+  animation: warp-flash 0.8s ease-out forwards;
+}
+
+@keyframes warp-flash {
+  0%   { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/*
+  Rocket flies up from below in a smooth arc,
+  passes near the bomb, curves away upper-right.
+  Evenly spaced keyframes + linear timing = no pauses.
+*/
+@keyframes rocket-fly-to-bomb {
+  0%   { left: 42%; top: 115%; transform: translate(-50%,0) rotate(-90deg) scale(0.55); opacity: 0; }
+  3%   { opacity: 1; }
+  10%  { left: 43%; top: 95%;  transform: translate(-50%,0) rotate(-90deg) scale(0.6); }
+  20%  { left: 43%; top: 75%;  transform: translate(-50%,0) rotate(-90deg) scale(0.7); }
+  30%  { left: 44%; top: 58%;  transform: translate(-50%,0) rotate(-88deg) scale(0.8); }
+  40%  { left: 45%; top: 44%;  transform: translate(-50%,0) rotate(-85deg) scale(0.9); }
+  50%  { left: 47%; top: 36%;  transform: translate(-50%,0) rotate(-75deg) scale(0.95); }
+  60%  { left: 52%; top: 30%;  transform: translate(-50%,0) rotate(-55deg) scale(0.9); }
+  70%  { left: 62%; top: 24%;  transform: translate(-50%,0) rotate(-35deg) scale(0.8); opacity: 0.9; }
+  80%  { left: 76%; top: 18%;  transform: translate(-50%,0) rotate(-18deg) scale(0.65); opacity: 0.7; }
+  90%  { left: 95%; top: 10%;  transform: translate(-50%,0) rotate(-8deg)  scale(0.5); opacity: 0.4; }
+  100% { left: 115%; top: 5%;  transform: translate(-50%,0) rotate(0deg)   scale(0.35); opacity: 0; }
 }
 
 /* ─── Mist ─── */

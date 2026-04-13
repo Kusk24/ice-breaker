@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 
 const isProd = process.env.NODE_ENV === "production";
 const src = `${isProd ? "/ice-breaker" : ""}/music/moonlight romance.mp3`;
+const MUSIC_OFF_KEY = "t3-music-off";
 
 export default function MusicPlayer() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -13,6 +14,9 @@ export default function MusicPlayer() {
     audio.loop = true;
     audio.volume = 0.35;
     audioRef.current = audio;
+
+    // If user previously turned music off, don't auto-play
+    if (localStorage.getItem(MUSIC_OFF_KEY) === "1") return;
 
     // Start on first user click (e.g. the "Click Here" button)
     function onFirstClick() {
@@ -38,8 +42,12 @@ export default function MusicPlayer() {
     if (playing) {
       audio.pause();
       setPlaying(false);
+      localStorage.setItem(MUSIC_OFF_KEY, "1");
     } else {
-      audio.play().then(() => setPlaying(true)).catch(() => {});
+      audio.play().then(() => {
+        setPlaying(true);
+        localStorage.removeItem(MUSIC_OFF_KEY);
+      }).catch(() => {});
     }
   }
 

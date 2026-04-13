@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import { siteText } from "@/lib/content";
 import T3Nebula from "@/app/components/T3Nebula";
 
+const isProd = process.env.NODE_ENV === "production";
+const rocketSrc = `${isProd ? "/ice-breaker" : ""}/rocket.svg`;
+
 const TOTAL_SECONDS = 30; // TODO: change back to 10 * 60 (10 minutes)
 const STORAGE_KEY = "bomb-countdown-start";
 
@@ -45,6 +48,75 @@ export default function CountdownPage() {
   const [exploding, setExploding] = useState(false);
   const [done, setDone] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [rocketIncoming, setRocketIncoming] = useState(false);
+  const rocketCraftRef = useRef<HTMLDivElement | null>(null);
+
+  // Step 1: detect if we arrived from moon page
+  useEffect(() => {
+    if (sessionStorage.getItem("t3-rocket-incoming") === "1") {
+      sessionStorage.removeItem("t3-rocket-incoming");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setRocketIncoming(true);
+    }
+  }, []);
+
+  // Step 2: once rocket element is mounted, run smooth rAF animation
+  useEffect(() => {
+    if (!rocketIncoming) return;
+    if (!rocketCraftRef.current) return;
+    const el: HTMLDivElement = rocketCraftRef.current;
+
+    const DUR = 3000;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    let rafId: number;
+    const startTime = performance.now();
+
+    // Cubic bezier path (viewport %):
+    // P0 = bottom center, P1/P2 = controls, P3 = off upper-right
+    const p0x = 0.44, p0y = 1.15;
+    const p1x = 0.45, p1y = 0.30;
+    const p2x = 0.55, p2y = 0.10;
+    const p3x = 1.20, p3y = -0.05;
+
+    function cubic(t: number, a: number, b: number, c: number, d: number) {
+      const u = 1 - t;
+      return u*u*u*a + 3*u*u*t*b + 3*u*t*t*c + t*t*t*d;
+    }
+
+    function frame(ts: number) {
+      const elapsed = ts - startTime;
+      const t = Math.min(elapsed / DUR, 1);
+      const e = t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2) / 2;
+
+      const px = cubic(e, p0x, p1x, p2x, p3x) * vw;
+      const py = cubic(e, p0y, p1y, p2y, p3y) * vh;
+
+      // Rotation from curve tangent
+      const dt = 0.005;
+      const t2 = Math.min(e + dt, 1);
+      const tx = cubic(t2, p0x, p1x, p2x, p3x) * vw - px;
+      const ty = cubic(t2, p0y, p1y, p2y, p3y) * vh - py;
+      const angle = Math.atan2(ty, tx) * (180 / Math.PI);
+
+      const scale = 0.5 + 0.5 * Math.sin(Math.min(t, 0.6) / 0.6 * Math.PI);
+      const opacity = t < 0.05 ? t / 0.05 : t > 0.8 ? 1 - (t - 0.8) / 0.2 : 1;
+
+      el.style.left = `${px}px`;
+      el.style.top = `${py}px`;
+      el.style.transform = `translate(-50%,-50%) rotate(${angle}deg) scale(${scale})`;
+      el.style.opacity = `${opacity}`;
+
+      if (t < 1) {
+        rafId = requestAnimationFrame(frame);
+      } else {
+        setRocketIncoming(false);
+      }
+    }
+
+    rafId = requestAnimationFrame(frame);
+    return () => cancelAnimationFrame(rafId);
+  }, [rocketIncoming]);
 
   useEffect(() => {
     // Already exploded — skip bomb entirely, show done state.
@@ -284,6 +356,22 @@ export default function CountdownPage() {
         >
           {siteText.countdownButton}
         </button>
+      )}
+
+      {/* Rocket flying in from moon page */}
+      {rocketIncoming && (
+        <>
+          <div className="rocket-incoming__flash" aria-hidden />
+          <div className="rocket-incoming" aria-hidden>
+            <div className="rocket-incoming__craft" ref={rocketCraftRef}>
+              <span className="rocket-incoming__trail" />
+              <span className="rocket-incoming__flame rocket-incoming__flame--outer" />
+              <span className="rocket-incoming__flame rocket-incoming__flame--core" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={rocketSrc} alt="" className="rocket-incoming__image" />
+            </div>
+          </div>
+        </>
       )}
     </main>
   );
