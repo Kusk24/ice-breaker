@@ -8,7 +8,7 @@ import T3Nebula from "@/app/components/T3Nebula";
 const isProd = process.env.NODE_ENV === "production";
 const rocketSrc = `${isProd ? "/ice-breaker" : ""}/rocket.svg`;
 
-const TOTAL_SECONDS = 30; // TODO: change back to 10 * 60 (10 minutes)
+const TOTAL_SECONDS = 15 * 60; // TODO: change back to 10 * 60 (10 minutes)
 const STORAGE_KEY = "bomb-countdown-start";
 
 const stars = Array.from({ length: 60 }, (_, i) => ({
