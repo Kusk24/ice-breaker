@@ -735,17 +735,22 @@ body {
   100% { opacity: 0; transform: translateY(40px); filter: blur(6px); }
 }
 
-/* Stars stretch into warp lines */
+/* Stars stretch into warp lines — triggered after scene drift */
 .warp-speed .star {
-  animation: warp-star 2s ease-in 0.1s forwards !important;
-  transform-origin: 50vw 50vh;
+  animation: warp-star 1.8s ease-in forwards !important;
 }
 
 @keyframes warp-star {
-  0%   { opacity: 0.3; width: 2px; height: 2px; }
-  25%  { opacity: 1; width: 2px; height: 4px; }
-  60%  { opacity: 1; width: 2px; height: 40px; transform: translateY(-50px) scaleY(5); filter: blur(0.5px); }
-  100% { opacity: 0; width: 2px; height: 80px; transform: translateY(-120px) scaleY(12); filter: blur(1.5px); }
+  0%   { opacity: 0.6; width: 2px; height: 2px; }
+  15%  { opacity: 1;   width: 2px; height: 8px; }
+  40%  { opacity: 1;   width: 2px; height: 60px; filter: blur(0.3px); }
+  100% { opacity: 0;   width: 2px; height: 120px; transform: translateY(50vh); filter: blur(1.5px); }
+}
+
+/* Lift overflow/contain so cloned stars above viewport are visible during exit */
+.scene--exiting {
+  overflow: visible !important;
+  contain: none !important;
 }
 
 /* Mist fades out */

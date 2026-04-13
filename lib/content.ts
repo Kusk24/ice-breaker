@@ -26,7 +26,7 @@ export const siteText = {
   questionEleven: "wahaha, bl pyay ma ll kwa, ma ya lo ma ya tok buu ly",
   countdownTitle: "Something is about to happen..., I got u bombed 🤔",
   countdownReady: "Wait is over ✨",
-  countdownButton: "Let's Go! 💣",
+  countdownButton: "Let's Goooo !",
   formQuestion: "Haha Gotcha!!!, btw when will you come back? ( ╹ -╹)?",
   formOne: "Date",
   formTwo: "Time",

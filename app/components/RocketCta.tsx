@@ -69,31 +69,68 @@ export default function RocketCta({ className, label }: { className?: string; la
       if (t < 1) {
         requestAnimationFrame(orbitFrame);
       } else {
-        // Orbit done — rocket flies straight upward
-        // The rocket SVG nose points right; after orbit the rotation
-        // already has it pointing roughly upward (~270deg from orbit math).
-        // Snap to exactly -90deg (nose up) for a clean vertical launch.
+        // Orbit done — two-phase exit:
+        //   Phase 1 (0-2s):  Moon + stars drift down together (camera follows rocket up)
+        //   Phase 2 (2s+):   Rocket punches it — stars stretch into lightspeed lines
+
         rocketEl.style.transition = "none";
         rocketEl.style.transform = "rotate(-90deg)";
 
-        // Trigger scene exit effects
+        const sky = document.querySelector<HTMLElement>(".moon-scene .sky");
+        const scene = document.querySelector<HTMLElement>(".moon-scene");
+
+        // Lift overflow clipping so stars above viewport are visible
+        scene?.classList.add("scene--exiting");
+
+        // Seed extra stars above viewport so sky doesn't go blank during drift.
+        // Stars use inline CSS custom properties (--y) for vertical position.
+        // We clone each star and shift its --y upward so they fill the gap.
+        if (sky) {
+          const existing = sky.querySelectorAll<HTMLElement>(".star");
+          existing.forEach((s) => {
+            // Read the inline --y value from the style attribute
+            const yStr = s.style.getPropertyValue("--y");
+            const origY = parseFloat(yStr || "30");
+            // Create two layers of clones above the viewport
+            for (const offset of [-70, -140]) {
+              const clone = s.cloneNode(true) as HTMLElement;
+              clone.style.setProperty("--y", String(origY + offset));
+              sky.appendChild(clone);
+            }
+          });
+        }
+
+        // Phase 1: everything drifts down — moon implodes, text dissolves
         moonWrap.classList.add("moon-implode");
         document.querySelector<HTMLElement>(".moon-text")?.classList.add("text-dissolve");
-        document.querySelector<HTMLElement>(".moon-scene .sky")?.classList.add("warp-speed");
         document.querySelector<HTMLElement>(".moon-scene .mist")?.classList.add("mist-out");
 
-        // Rocket accelerates upward and off screen
-        const launchDur = 1400;
+        const TOTAL_DUR = 3000;
+        const WARP_AT = 0.35; // warp stars kick in at 35% through
         const launchStart = performance.now();
         const startTop = parseFloat(rocketEl.style.top);
+        let warpTriggered = false;
 
         function launchFrame(ts: number) {
-          const p = Math.min((ts - launchStart) / launchDur, 1);
-          // Ease-in exponential — slow start then rockets away
-          const e = p * p * p;
+          const elapsed = ts - launchStart;
+          const p = Math.min(elapsed / TOTAL_DUR, 1);
 
-          const ny = startTop - e * (window.innerHeight + 400);
-          const bright = 1 + e * 3;
+          // Single smooth exponential curve: (e^(4p) - 1) / (e^4 - 1)
+          // Starts almost imperceptibly slow, smoothly builds, ends fast
+          const e = (Math.exp(4 * p) - 1) / (Math.E * Math.E * Math.E * Math.E - 1);
+
+          // Scene drifts down with same curve (capped at 40vh)
+          if (scene) scene.style.transform = `translateY(${Math.min(e * 60, 40)}vh)`;
+
+          // Warp stars trigger partway through
+          if (!warpTriggered && p >= WARP_AT) {
+            warpTriggered = true;
+            sky?.classList.add("warp-speed");
+          }
+
+          // Rocket follows same curve — one smooth acceleration
+          const ny = startTop - e * (window.innerHeight + 500);
+          const bright = 1 + e * 4;
 
           rocketEl.style.top = `${ny}px`;
           rocketEl.style.filter = `brightness(${bright})`;
@@ -106,8 +143,7 @@ export default function RocketCta({ className, label }: { className?: string; la
         }
         requestAnimationFrame(launchFrame);
 
-        // Wait for warp effect to play out then navigate
-        setTimeout(navigate, 2800);
+        setTimeout(navigate, TOTAL_DUR + 400);
       }
     }
 
