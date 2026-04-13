@@ -2,6 +2,7 @@ import type { CSSProperties } from "react";
 import GeminiConstellation from "../components/GeminiConstellation";
 import MoonBackButton from "../components/MoonBackButton";
 import RocketCta from "../components/RocketCta";
+import RocketFuel from "../components/RocketFuel";
 import { siteText } from "@/lib/content";
 
 const isProd = process.env.NODE_ENV === "production";
@@ -77,19 +78,21 @@ export default function MoonPage() {
         ))}
       </p>
 
-      <div
-        className="rocket-flight"
-        style={{ "--rocket-delay": rocketDelay } as CSSProperties}
-      >
-        <div className="rocket-flight__craft">
-          <span className="rocket-flight__trail" aria-hidden />
-          <span className="rocket-flight__flame rocket-flight__flame--outer" aria-hidden />
-          <span className="rocket-flight__flame rocket-flight__flame--core" aria-hidden />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={rocketSrc} alt="" className="rocket-flight__image" />
-          <RocketCta className="rocket-flight__cta" label={rocketLabel} />
+      <RocketFuel rocketDelay={rocketDelay}>
+        <div
+          className="rocket-flight"
+          style={{ "--rocket-delay": rocketDelay } as CSSProperties}
+        >
+          <div className="rocket-flight__craft">
+            <span className="rocket-flight__trail" aria-hidden />
+            <span className="rocket-flight__flame rocket-flight__flame--outer" aria-hidden />
+            <span className="rocket-flight__flame rocket-flight__flame--core" aria-hidden />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={rocketSrc} alt="" className="rocket-flight__image" />
+            <RocketCta className="rocket-flight__cta" label={rocketLabel} />
+          </div>
         </div>
-      </div>
+      </RocketFuel>
 
       <div className="moon-actions">
         <MoonBackButton className="hero__btn moon-actions__btn" />

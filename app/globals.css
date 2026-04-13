@@ -460,6 +460,94 @@ body {
   transform: translate(-50%, -50%) rotate(0deg) scale(0.95) !important;
 }
 
+/* ─── Rocket Fuel System ─── */
+.rocket-fuel-wrap {
+  display: contents;
+}
+
+/* Dying state: flames flicker and fade out over 2.5s */
+.rocket-fuel-wrap--dying .rocket-flight__flame--outer {
+  animation: fuel-flame-die 2.5s ease-in forwards !important;
+}
+.rocket-fuel-wrap--dying .rocket-flight__flame--core {
+  animation: fuel-flame-die 2.5s ease-in 0.3s forwards !important;
+}
+.rocket-fuel-wrap--dying .rocket-flight__trail {
+  animation: fuel-trail-die 2.5s ease-in forwards !important;
+}
+
+/* No-fuel CTA: suppress pulse animation and hover grow */
+.rocket-cta--no-fuel {
+  animation: rocket-cta-in 0.8s cubic-bezier(0.24, 1.2, 0.36, 1) calc(var(--rocket-delay, 12s) + 3.2s) forwards !important;
+}
+.rocket-cta--no-fuel:hover {
+  transform: translate(-50%, -50%) rotate(0deg) scale(1) !important;
+  box-shadow: 0 5px 14px rgba(30, 70, 130, 0.3), 0 1px 0 rgba(255, 255, 255, 0.6) inset !important;
+}
+
+/* Empty state: flames fully dead */
+.rocket-fuel-wrap--empty .rocket-flight__flame--outer,
+.rocket-fuel-wrap--empty .rocket-flight__flame--core {
+  opacity: 0 !important;
+  animation: none !important;
+}
+.rocket-fuel-wrap--empty .rocket-flight__trail {
+  opacity: 0 !important;
+  animation: none !important;
+}
+
+/* Flame sputters: flickers a few times then dies */
+@keyframes fuel-flame-die {
+  0%   { opacity: 1;    transform: scaleX(1) scaleY(1); }
+  15%  { opacity: 0.4;  transform: scaleX(0.6) scaleY(0.5); }
+  25%  { opacity: 0.9;  transform: scaleX(0.9) scaleY(0.85); }
+  40%  { opacity: 0.25; transform: scaleX(0.4) scaleY(0.35); }
+  50%  { opacity: 0.7;  transform: scaleX(0.7) scaleY(0.6); }
+  65%  { opacity: 0.15; transform: scaleX(0.3) scaleY(0.25); }
+  78%  { opacity: 0.5;  transform: scaleX(0.45) scaleY(0.4); }
+  90%  { opacity: 0.08; transform: scaleX(0.15) scaleY(0.1); }
+  100% { opacity: 0;    transform: scaleX(0) scaleY(0); }
+}
+
+@keyframes fuel-trail-die {
+  0%   { opacity: 0.55; transform: translateY(-50%) scaleX(1); }
+  30%  { opacity: 0.3;  transform: translateY(-50%) scaleX(0.6); }
+  60%  { opacity: 0.12; transform: translateY(-50%) scaleX(0.3); }
+  100% { opacity: 0;    transform: translateY(-50%) scaleX(0); }
+}
+
+/* Fuel alert bubble */
+.fuel-alert {
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  animation: fuel-alert-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+.fuel-alert__text {
+  display: inline-block;
+  padding: 14px 28px;
+  border-radius: 16px;
+  background: rgba(20, 10, 40, 0.88);
+  border: 1.5px solid rgba(255, 180, 60, 0.5);
+  color: #ffe0a0;
+  font-family: var(--font-dancing), cursive;
+  font-size: clamp(1rem, 2.5vw, 1.3rem);
+  font-weight: 600;
+  text-align: center;
+  backdrop-filter: blur(12px);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(255, 140, 0, 0.15);
+  white-space: nowrap;
+}
+
+@keyframes fuel-alert-pop {
+  0% { opacity: 0; transform: translateX(-50%) scale(0.7) translateY(10px); }
+  100% { opacity: 1; transform: translateX(-50%) scale(1) translateY(0); }
+}
+
 @keyframes moon-rise {
   0% {
     opacity: 0;
