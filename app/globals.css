@@ -252,7 +252,9 @@ body {
   right: 4%;
   z-index: 5;
   width: clamp(160px, 20vw, 320px);
-  pointer-events: none;
+  pointer-events: auto;
+  cursor: pointer;
+  text-decoration: none;
   opacity: 0;
   transform: translateY(-50%) scale(0.94);
   animation: gemini-appear 0.8s ease-out 6.6s forwards,
@@ -342,6 +344,164 @@ body {
     stroke-dashoffset: 0;
     animation: none;
   }
+}
+
+/* ─── Constellation Page ─── */
+.constellation-scene {
+  background: radial-gradient(ellipse at 50% 40%, #0a0e2a 0%, #050816 50%, #020408 100%);
+  overflow: hidden;
+}
+
+/* Background stars */
+.constellation-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.constellation-bg__star {
+  position: absolute;
+  left: calc(var(--sx) * 1%);
+  top: calc(var(--sy) * 1%);
+  width: var(--ss);
+  height: var(--ss);
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0;
+  animation: const-star-twinkle var(--sdu) ease-in-out var(--sd) infinite;
+}
+
+@keyframes const-star-twinkle {
+  0%, 100% { opacity: 0.2; transform: scale(0.8); }
+  50%      { opacity: 0.9; transform: scale(1.2); }
+}
+
+/* Nebula clouds */
+.constellation-nebula {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+.constellation-nebula__cloud {
+  position: absolute;
+  border-radius: 50%;
+  animation: const-nebula-drift 20s ease-in-out infinite alternate;
+}
+@keyframes const-nebula-drift {
+  0%   { opacity: 0.6; transform: rotate(var(--rot, 0deg)) scale(1); }
+  100% { opacity: 1;   transform: rotate(var(--rot, 0deg)) scale(1.08) translateX(2%); }
+}
+
+/* Shooting stars */
+.constellation-shooting {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+.constellation-shooting__star {
+  position: absolute;
+  left: var(--shx);
+  top: var(--shy);
+  width: 80px;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.9), transparent);
+  opacity: 0;
+  transform: rotate(var(--sha));
+  animation: const-shoot var(--shdu) ease-out var(--shd) infinite;
+}
+@keyframes const-shoot {
+  0%   { opacity: 0; transform: rotate(var(--sha)) translateX(0); }
+  10%  { opacity: 1; }
+  100% { opacity: 0; transform: rotate(var(--sha)) translateX(200px); }
+}
+
+/* Main constellation SVG */
+.constellation-main {
+  position: absolute;
+  inset: 5%;
+  z-index: 5;
+  width: 90%;
+  height: 90%;
+  pointer-events: none;
+}
+
+/* Constellation lines */
+.constellation-main__line {
+  fill: none;
+  stroke: #cce0ff;
+  stroke-width: 0.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.85;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: const-line-draw 2s ease-out calc(0.8s + var(--li) * 0.5s) forwards;
+}
+.constellation-main__line--glow {
+  stroke: #6ea8ff;
+  stroke-width: 0.8;
+  opacity: 0.3;
+}
+@keyframes const-line-draw {
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
+}
+
+/* Star nodes */
+.constellation-main__star {
+  opacity: 0;
+  animation: const-star-pop 0.6s ease-out calc(0.3s + var(--si) * 0.15s) forwards;
+}
+@keyframes const-star-pop {
+  0%   { opacity: 0; transform: scale(0); }
+  70%  { opacity: 1; transform: scale(1.3); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Gemini symbol */
+.constellation-main__symbol {
+  opacity: 0;
+  animation: const-symbol-in 1s ease-out 2.5s forwards;
+}
+@keyframes const-symbol-in {
+  from { opacity: 0; }
+  to   { opacity: 0.85; }
+}
+
+/* Title */
+.constellation-title {
+  position: absolute;
+  bottom: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  font-family: var(--font-playfair), serif;
+  font-size: clamp(1.8rem, 4vw, 3.2rem);
+  font-weight: 400;
+  font-style: italic;
+  color: #b0ccff;
+  letter-spacing: 0.15em;
+  text-shadow: 0 0 20px rgba(120, 170, 255, 0.5), 0 0 60px rgba(80, 130, 255, 0.2);
+  white-space: nowrap;
+}
+.constellation-title__char {
+  display: inline-block;
+  opacity: 0;
+  animation: const-title-in 0.5s ease-out calc(2s + var(--ci) * 0.1s) forwards;
+}
+@keyframes const-title-in {
+  0%   { opacity: 0; transform: translateY(12px); filter: blur(4px); }
+  100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+/* Back button */
+.constellation-back {
+  position: fixed;
+  top: 5%;
+  left: 5%;
+  z-index: 20;
 }
 
 .rocket-flight {

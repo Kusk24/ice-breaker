@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import Link from "next/link";
 import GeminiConstellation from "../components/GeminiConstellation";
 import MoonBackButton from "../components/MoonBackButton";
 import RocketCta from "../components/RocketCta";
@@ -55,9 +56,9 @@ export default function MoonPage() {
 
       <div className="mist" aria-hidden />
 
-      <div className="gemini-constellation" aria-hidden>
+      <Link href="/constellation" className="gemini-constellation" aria-label="Explore Gemini constellation">
         <GeminiConstellation />
-      </div>
+      </Link>
 
       <p className="moon-text" aria-label={siteText.moonText}>
         {moonLines.map((line, li) => (
