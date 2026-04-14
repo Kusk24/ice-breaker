@@ -79,12 +79,23 @@ export default function QuestionPage() {
   const needsDodge = phase > 0 && dodgeCount < maxDodges;
 
   const handleAgree = useCallback(() => {
+    // Fire-and-forget email with disagree count
+    fetch(`https://formsubmit.co/ajax/${siteText.receiverEmail}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({
+        Answer: siteText.agreeText,
+        "Disagree count": phase,
+        _subject: "T3 agreed! 💕",
+      }),
+    }).catch(() => {});
+
     if (typeof document.startViewTransition === "function") {
       document.startViewTransition(() => router.push("/celebrate"));
     } else {
       router.push("/celebrate");
     }
-  }, [router]);
+  }, [router, phase]);
 
   const handleDisagree = useCallback(() => {
     setPhase(p => p + 1);
