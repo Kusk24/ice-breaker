@@ -337,8 +337,8 @@ export default function ConstellationStars() {
                 pointerEvents="none"
               />
 
-              {/* Hit area — on top of everything for reliable clicks */}
-              <circle cx={s.x} cy={s.y} r={12} fill="transparent" style={{ cursor: "pointer" }} />
+              {/* Hit area — on top, sized to not overlap neighbors */}
+              <circle cx={s.x} cy={s.y} r={5.5} fill="transparent" style={{ cursor: "pointer" }} />
             </g>
           );
         })}
