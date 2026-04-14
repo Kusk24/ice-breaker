@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import type { CSSProperties } from "react";
+import Link from "next/link";
 import { siteText } from "@/lib/content";
 
 const isProd = process.env.NODE_ENV === "production";
@@ -154,6 +155,14 @@ export default function CelebratePage() {
           </form>
         )}
       </div>
+
+      {/* Navigation buttons */}
+      <nav className="celebrate-nav" aria-label="Explore other pages">
+        <Link href="/" className="celebrate-nav__btn">Flowers</Link>
+        <Link href="/moon" className="celebrate-nav__btn">Moon</Link>
+        <Link href="/constellation" className="celebrate-nav__btn">Stars</Link>
+        <Link href="/question" className="celebrate-nav__btn">Question</Link>
+      </nav>
     </main>
   );
 }

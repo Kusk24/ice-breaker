@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Playfair_Display, Dancing_Script, Share_Tech_Mono } from "next/font/google";
 import "./globals.css";
 import MusicPlayer from "./components/MusicPlayer";
-import ScrollLetter from "./components/ScrollLetter";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -38,7 +37,6 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         {children}
         <MusicPlayer />
-        <ScrollLetter />
         <a
           href="https://github.com/Kusk24/ice-breaker"
           target="_blank"
