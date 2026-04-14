@@ -3784,12 +3784,208 @@ body:has(.constellation-scene) {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Bomb container ── */
-.bomb-wrap {
+/* ── Shared stage that holds asteroid + bomb together ── */
+.bomb-stage {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
+  /* fixed height so bomb-wrap can be absolutely centered */
+  width: clamp(460px, 86vw, 600px);
+  height: clamp(460px, 86vw, 600px);
+}
+
+/* ── Asteroid — fills the stage, centered ── */
+.asteroid-wrap {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 8;
+}
+
+/* gentle slow tumble while idle */
+.asteroid-wrap:not(.asteroid-wrap--explode):not(.asteroid-wrap--done) {
+  animation: ast-idle-drift 8s ease-in-out infinite alternate;
+}
+
+@keyframes ast-idle-drift {
+  from { transform: translate(-50%, -50%) rotate(-1.2deg); }
+  to   { transform: translate(-50%, -50%) rotate(1.2deg); }
+}
+
+/* ── 4 pieces — each overlaps perfectly; SVG clipPath shows only its quadrant ── */
+.asteroid-piece {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+}
+
+.asteroid-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* transform-origin at the crack point (center of the asteroid) for each piece */
+.asteroid-piece--0 { transform-origin: 100% 100%; } /* top-left  → pivot bottom-right corner */
+.asteroid-piece--1 { transform-origin:   0% 100%; } /* top-right → pivot bottom-left corner  */
+.asteroid-piece--2 { transform-origin: 100%   0%; } /* bot-left  → pivot top-right corner    */
+.asteroid-piece--3 { transform-origin:   0%   0%; } /* bot-right → pivot top-left corner     */
+
+/* ── Explosion: pieces fly to their corners ── */
+.asteroid-wrap--explode .asteroid-piece--0 {
+  animation: ast-fly-0 1.4s cubic-bezier(0.22, 0.68, 0, 1.1) 0.05s forwards;
+}
+.asteroid-wrap--explode .asteroid-piece--1 {
+  animation: ast-fly-1 1.3s cubic-bezier(0.22, 0.68, 0, 1.1) 0.08s forwards;
+}
+.asteroid-wrap--explode .asteroid-piece--2 {
+  animation: ast-fly-2 1.5s cubic-bezier(0.22, 0.68, 0, 1.1) 0.03s forwards;
+}
+.asteroid-wrap--explode .asteroid-piece--3 {
+  animation: ast-fly-3 1.35s cubic-bezier(0.22, 0.68, 0, 1.1) 0.06s forwards;
+}
+
+@keyframes ast-fly-0 {
+  0%   { transform: translate(0, 0) rotate(0deg);   opacity: 1; }
+  100% { transform: translate(-160px, -200px) rotate(-60deg); opacity: 0; }
+}
+@keyframes ast-fly-1 {
+  0%   { transform: translate(0, 0) rotate(0deg);  opacity: 1; }
+  100% { transform: translate(170px, -180px) rotate(65deg); opacity: 0; }
+}
+@keyframes ast-fly-2 {
+  0%   { transform: translate(0, 0) rotate(0deg);   opacity: 1; }
+  100% { transform: translate(-150px, 210px) rotate(-75deg); opacity: 0; }
+}
+@keyframes ast-fly-3 {
+  0%   { transform: translate(0, 0) rotate(0deg);  opacity: 1; }
+  100% { transform: translate(165px, 195px) rotate(70deg); opacity: 0; }
+}
+
+/* ── Done state: pieces break out of stage, position at viewport corners ── */
+.asteroid-wrap--done {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  transform: none;
+  pointer-events: none;
+  z-index: 15;
+}
+
+.asteroid-wrap--done .asteroid-piece {
+  position: fixed;
+  width: clamp(120px, 20vw, 180px);
+  height: clamp(120px, 20vw, 180px);
+  pointer-events: auto;
+  cursor: pointer;
+  transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+  opacity: 0;
+  animation-fill-mode: forwards;
+}
+
+.asteroid-wrap--done .asteroid-piece--0 {
+  top: 8vh;
+  left: 6vw;
+  transform: rotate(-15deg);
+  animation: ast-appear 0.6s ease forwards, ast-float-0 3.5s ease-in-out 0.6s infinite alternate;
+}
+.asteroid-wrap--done .asteroid-piece--1 {
+  top: 6vh;
+  right: 6vw;
+  left: auto;
+  transform: rotate(20deg);
+  animation: ast-appear 0.6s ease 0.1s forwards, ast-float-1 3s ease-in-out 0.7s infinite alternate;
+}
+.asteroid-wrap--done .asteroid-piece--2 {
+  bottom: 12vh;
+  left: 8vw;
+  top: auto;
+  transform: rotate(10deg);
+  animation: ast-appear 0.6s ease 0.2s forwards, ast-float-2 3.8s ease-in-out 0.8s infinite alternate;
+}
+.asteroid-wrap--done .asteroid-piece--3 {
+  bottom: 10vh;
+  right: 8vw;
+  top: auto;
+  left: auto;
+  transform: rotate(-22deg);
+  animation: ast-appear 0.6s ease 0.15s forwards, ast-float-3 3.2s ease-in-out 0.75s infinite alternate;
+}
+
+@keyframes ast-appear {
+  0%   { opacity: 0; transform: scale(0.5); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes ast-float-0 {
+  0%   { transform: rotate(-15deg) translateY(0); }
+  100% { transform: rotate(-15deg) translateY(-14px); }
+}
+@keyframes ast-float-1 {
+  0%   { transform: rotate(20deg) translateY(0); }
+  100% { transform: rotate(20deg) translateY(-12px); }
+}
+@keyframes ast-float-2 {
+  0%   { transform: rotate(10deg) translateY(0); }
+  100% { transform: rotate(10deg) translateY(-16px); }
+}
+@keyframes ast-float-3 {
+  0%   { transform: rotate(-22deg) translateY(0); }
+  100% { transform: rotate(-22deg) translateY(-10px); }
+}
+
+/* Hover glow */
+.asteroid-wrap--done .asteroid-piece:hover {
+  filter: drop-shadow(0 0 18px rgba(200, 200, 255, 0.6));
+}
+
+/* Zoomed piece — enlarge and shift toward center area, staying on its side */
+.asteroid-piece--zoomed {
+  animation: none !important;
+  opacity: 1 !important;
+  z-index: 25;
+  width: clamp(500px, 70vw, 800px) !important;
+  height: clamp(500px, 70vw, 800px) !important;
+  filter: drop-shadow(0 0 30px rgba(200, 200, 255, 0.7)) !important;
+  transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+}
+
+/* Each piece shifts inward toward center on its side */
+.asteroid-piece--zoomed.asteroid-piece--0 {
+  top: 15vh !important;
+  left: 15vw !important;
+  transform: rotate(-5deg) !important;
+}
+.asteroid-piece--zoomed.asteroid-piece--1 {
+  top: 15vh !important;
+  right: 15vw !important;
+  transform: rotate(5deg) !important;
+}
+.asteroid-piece--zoomed.asteroid-piece--2 {
+  bottom: 15vh !important;
+  left: 15vw !important;
+  transform: rotate(5deg) !important;
+}
+.asteroid-piece--zoomed.asteroid-piece--3 {
+  bottom: 15vh !important;
+  right: 15vw !important;
+  transform: rotate(-5deg) !important;
+}
+
+/* ── Bomb container — fills the stage so children can be placed at stage % ── */
+.bomb-wrap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   z-index: 10;
   opacity: 0;
   animation: cd-fade-in-up 1.2s ease 0.3s forwards;
@@ -3854,11 +4050,14 @@ body:has(.constellation-scene) {
 /* ── Unified cap + fuse SVG ── */
 .bomb-cap-svg {
   display: block;
-  width: 140px;
+  width: 100px;
   height: auto;
   overflow: visible;
-  margin-bottom: -16px;
-  position: relative;
+  position: absolute;
+  /* anchor bottom of cap to top of bomb body (which is centered at 50%/50%) */
+  bottom: calc(50% + clamp(160px, 30vw, 210px) / 2 - 16px);
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 11;
   pointer-events: none;
 }
@@ -3953,8 +4152,8 @@ body:has(.constellation-scene) {
 
 /* ── Bomb body ── */
 .bomb-body {
-  width: clamp(180px, 36vw, 240px);
-  height: clamp(180px, 36vw, 240px);
+  width: clamp(160px, 30vw, 210px);
+  height: clamp(160px, 30vw, 210px);
   border-radius: 50%;
   background:
     radial-gradient(circle at 35% 32%, #5a5a5a 0%, #2a2a2a 25%, #111111 70%, #000000 100%);
@@ -3963,13 +4162,15 @@ body:has(.constellation-scene) {
     inset 0 -8px 24px rgba(0, 0, 0, 0.6),
     inset 0 6px 16px rgba(80, 80, 120, 0.1),
     0 0 0 3px #000;
-  position: relative;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   transition: box-shadow 0.5s ease;
-  margin-top: 0;
 }
 
 /* Glossy highlight — large */
@@ -4012,7 +4213,7 @@ body:has(.constellation-scene) {
   background: #0a0a0a;
   border: 2px solid #333;
   border-radius: 6px;
-  padding: 6px 14px;
+  padding: 6px 12px;
   box-shadow:
     inset 0 2px 8px rgba(0, 0, 0, 0.8),
     0 1px 0 rgba(255, 255, 255, 0.05),
@@ -4039,7 +4240,7 @@ body:has(.constellation-scene) {
 
 .bomb-timer__digits {
   font-family: var(--font-digital), "Courier New", monospace;
-  font-size: clamp(1.6rem, 5vw, 2.2rem);
+  font-size: clamp(1.3rem, 4vw, 1.8rem);
   font-weight: 400;
   color: #ff1a1a;
   text-shadow:

@@ -8,7 +8,7 @@ import T3Nebula from "@/app/components/T3Nebula";
 const isProd = process.env.NODE_ENV === "production";
 const rocketSrc = `${isProd ? "/ice-breaker" : ""}/rocket.svg`;
 
-const TOTAL_SECONDS = 10000; // TODO: change back to 10 * 60 (10 minutes)
+const TOTAL_SECONDS = 30; // TODO: change back to 10 * 60 (10 minutes)
 const STORAGE_KEY = "bomb-countdown-start";
 
 const stars = Array.from({ length: 60 }, (_, i) => ({
@@ -50,6 +50,7 @@ export default function CountdownPage() {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [rocketIncoming, setRocketIncoming] = useState(false);
   const rocketCraftRef = useRef<HTMLDivElement | null>(null);
+  const [zoomedPiece, setZoomedPiece] = useState<number | null>(null);
 
   // Step 1: detect if we arrived from moon page
   useEffect(() => {
@@ -205,8 +206,153 @@ export default function CountdownPage() {
         {done ? siteText.countdownReady : siteText.countdownTitle}
       </p>
 
-      {/* Bomb */}
-      <div className={`bomb-wrap ${exploding ? "bomb-wrap--exploded" : ""} ${isWarning ? "bomb-wrap--warning" : ""} ${isUrgent ? "bomb-wrap--urgent" : ""} ${isAlmostDone && !exploding ? "bomb-wrap--shake" : ""}`}>
+      {/* Bomb + Asteroid — shared positioning context */}
+      <div className="bomb-stage">
+
+        {/* Asteroid — behind bomb, shatters on explosion, pieces float after */}
+        <div className={`asteroid-wrap${exploding ? " asteroid-wrap--explode" : ""}${done ? " asteroid-wrap--done" : ""}`} aria-hidden={!done}>
+          {/* Shared defs */}
+          <svg width="0" height="0" style={{ position: "absolute" }}>
+            <defs>
+              {/* Grey rock body — distinct from the black bomb */}
+              <radialGradient id="ast-body" cx="35%" cy="28%" r="68%">
+                <stop offset="0%"   stopColor="#c8c8c8"/>
+                <stop offset="30%"  stopColor="#909090"/>
+                <stop offset="65%"  stopColor="#585858"/>
+                <stop offset="100%" stopColor="#282828"/>
+              </radialGradient>
+              {/* Bottom-right shadow */}
+              <radialGradient id="ast-shade" cx="68%" cy="74%" r="52%">
+                <stop offset="0%"   stopColor="#111111" stopOpacity="0.75"/>
+                <stop offset="100%" stopColor="transparent"/>
+              </radialGradient>
+              {/* Crater bowl — darker grey cavity */}
+              <radialGradient id="cr-bowl" cx="40%" cy="35%" r="60%">
+                <stop offset="0%"   stopColor="#686868"/>
+                <stop offset="100%" stopColor="#1e1e1e"/>
+              </radialGradient>
+              {/* Organic rock-chunk clips — curved bumpy edges like real fragments */}
+              <clipPath id="ast-clip-0">
+                <path d="M 10,5 C 50,-5 110,8 155,2 C 165,25 150,55 162,78 C 148,95 158,125 145,148 C 110,155 70,145 35,150 C 15,130 5,100 8,70 C -2,45 5,20 10,5 Z"/>
+              </clipPath>
+              <clipPath id="ast-clip-1">
+                <path d="M 155,2 C 195,-4 240,5 285,10 C 298,40 290,75 295,108 C 300,135 292,155 280,165 C 250,158 215,168 178,155 C 162,130 170,100 158,78 C 150,55 165,25 155,2 Z"/>
+              </clipPath>
+              <clipPath id="ast-clip-2">
+                <path d="M 8,148 C 40,140 80,155 120,145 C 138,165 125,190 135,212 C 145,235 128,260 140,285 C 110,300 65,295 25,290 C 8,265 -2,235 5,205 C 12,180 2,165 8,148 Z"/>
+              </clipPath>
+              <clipPath id="ast-clip-3">
+                <path d="M 165,155 C 200,148 235,162 270,158 C 290,180 295,210 288,240 C 280,265 292,285 275,298 C 240,305 200,295 165,290 C 148,265 155,235 142,212 C 130,190 145,170 165,155 Z"/>
+              </clipPath>
+            </defs>
+          </svg>
+
+          {([0, 1, 2, 3] as const).map((i) => (
+            <div
+              key={i}
+              className={`asteroid-piece asteroid-piece--${i}${done ? " asteroid-piece--floating" : ""}${zoomedPiece === i ? " asteroid-piece--zoomed" : ""}`}
+              onClick={done ? () => setZoomedPiece(zoomedPiece === i ? null : i) : undefined}
+              style={done ? { cursor: "pointer" } : undefined}
+            >
+              {/* 300×300 viewBox — roughly round rock, cartoon style like reference but black */}
+              <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" className="asteroid-svg">
+                <g clipPath={`url(#ast-clip-${i})`}>
+
+                    {/* ── Main body — smooth round with 4 gentle edge bumps ── */}
+                    <path
+                      d="
+                        M 150,20
+                        C 172,12 200,14 222,26
+                        C 248,20 272,38 278,64
+                        C 292,84 288,112 276,132
+                        C 280,156 264,178 244,188
+                        C 224,210 194,220 164,220
+                        C 140,228 112,224 90,212
+                        C 66,216 40,202 26,182
+                        C 8,164 6,138 14,116
+                        C 4,96  8,70  22,52
+                        C 28,28 54,14 80,16
+                        C 100,8 128,10 150,20 Z
+                      "
+                      fill="url(#ast-body)"
+                      stroke="#2a2a2a"
+                      strokeWidth="7"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="
+                        M 150,20
+                        C 172,12 200,14 222,26
+                        C 248,20 272,38 278,64
+                        C 292,84 288,112 276,132
+                        C 280,156 264,178 244,188
+                        C 224,210 194,220 164,220
+                        C 140,228 112,224 90,212
+                        C 66,216 40,202 26,182
+                        C 8,164 6,138 14,116
+                        C 4,96  8,70  22,52
+                        C 28,28 54,14 80,16
+                        C 100,8 128,10 150,20 Z
+                      "
+                      fill="url(#ast-shade)"
+                      stroke="none"
+                    />
+
+                    {/* ── Craters — cartoon bowl style: dark ring + grey inner + outline ── */}
+
+                    {/* Crater 1 — upper-left, large */}
+                    <ellipse cx="92"  cy="80"  rx="34" ry="28" fill="#383838" stroke="#222" strokeWidth="3"/>
+                    <ellipse cx="92"  cy="83"  rx="26" ry="21" fill="url(#cr-bowl)"/>
+                    <ellipse cx="88"  cy="79"  rx="10" ry="8"  fill="#888" opacity="0.45"/>
+
+                    {/* Crater 2 — upper-right, medium */}
+                    <ellipse cx="200" cy="75"  rx="26" ry="22" fill="#383838" stroke="#222" strokeWidth="3"/>
+                    <ellipse cx="200" cy="78"  rx="20" ry="17" fill="url(#cr-bowl)"/>
+                    <ellipse cx="197" cy="74"  rx="8"  ry="6"  fill="#888" opacity="0.45"/>
+
+                    {/* Crater 3 — center, biggest */}
+                    <ellipse cx="148" cy="160" rx="38" ry="30" fill="#383838" stroke="#222" strokeWidth="3"/>
+                    <ellipse cx="148" cy="163" rx="30" ry="23" fill="url(#cr-bowl)"/>
+                    <ellipse cx="144" cy="158" rx="12" ry="9"  fill="#888" opacity="0.45"/>
+
+                    {/* Crater 4 — left-center, small */}
+                    <ellipse cx="52"  cy="148" rx="18" ry="15" fill="#383838" stroke="#222" strokeWidth="2.5"/>
+                    <ellipse cx="52"  cy="151" rx="13" ry="11" fill="url(#cr-bowl)"/>
+                    <ellipse cx="49"  cy="147" rx="5"  ry="4"  fill="#888" opacity="0.4"/>
+
+                    {/* Crater 5 — right, small */}
+                    <ellipse cx="234" cy="150" rx="16" ry="13" fill="#383838" stroke="#222" strokeWidth="2.5"/>
+                    <ellipse cx="234" cy="153" rx="12" ry="10" fill="url(#cr-bowl)"/>
+                    <ellipse cx="231" cy="149" rx="5"  ry="4"  fill="#888" opacity="0.4"/>
+
+                    {/* ── Small dots / pockmarks ── */}
+                    <circle cx="140" cy="46"  r="4"   fill="#444"/>
+                    <circle cx="170" cy="38"  r="3"   fill="#444"/>
+                    <circle cx="60"  cy="110" r="3.5" fill="#444"/>
+                    <circle cx="240" cy="110" r="3"   fill="#444"/>
+                    <circle cx="110" cy="200" r="3"   fill="#444"/>
+                    <circle cx="190" cy="195" r="3.5" fill="#444"/>
+                    <circle cx="220" cy="55"  r="3"   fill="#444"/>
+                    <circle cx="76"  cy="170" r="2.5" fill="#444"/>
+                    <circle cx="200" cy="175" r="2.5" fill="#444"/>
+
+                    {/* ── Top-left highlight (cartoon cel-shading style) ── */}
+                    <path
+                      d="M 60,30 Q 120,12 188,18 Q 228,22 250,44"
+                      fill="none"
+                      stroke="rgba(200,200,200,0.22)"
+                      strokeWidth="10"
+                      strokeLinecap="round"
+                    />
+
+                  </g>
+                </svg>
+              </div>
+            ))}
+          </div>
+
+        {/* Bomb */}
+        <div className={`bomb-wrap ${exploding ? "bomb-wrap--exploded" : ""} ${isWarning ? "bomb-wrap--warning" : ""} ${isUrgent ? "bomb-wrap--urgent" : ""} ${isAlmostDone && !exploding ? "bomb-wrap--shake" : ""}`}>
 
         {/* Cap + Fuse SVG */}
         {!exploding && !done && (
@@ -336,7 +482,8 @@ export default function CountdownPage() {
             ))}
           </div>
         )}
-      </div>
+        </div>{/* /bomb-wrap */}
+      </div>{/* /bomb-stage */}
 
       {/* Progress bar */}
       <div className="countdown-bar" aria-hidden>
