@@ -3,6 +3,7 @@ import Link from "next/link";
 import GeminiConstellation from "../components/GeminiConstellation";
 import MoonBackButton from "../components/MoonBackButton";
 import RocketCta from "../components/RocketCta";
+import RocketEnergy from "../components/RocketEnergy";
 import RocketFuel from "../components/RocketFuel";
 import { siteText } from "@/lib/content";
 
@@ -90,6 +91,7 @@ export default function MoonPage() {
             <span className="rocket-flight__flame rocket-flight__flame--core" aria-hidden />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={rocketSrc} alt="" className="rocket-flight__image" />
+            <RocketEnergy rocketDelay={rocketDelay} />
             <RocketCta className="rocket-flight__cta" label={rocketLabel} />
           </div>
         </div>

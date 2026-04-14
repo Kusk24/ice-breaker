@@ -2,8 +2,8 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import type { ReactNode } from "react";
 
-const FUEL_KEY = "t3-rocket-fuel";
-const FADE_DELAY = 4; // seconds after rocket lands before fuel dies
+const ENERGY_KEY = "t3-rocket-energy";
+const FADE_DELAY = 4; // seconds after rocket lands before energy dies
 
 interface RocketFuelProps {
   rocketDelay: string;
@@ -11,11 +11,11 @@ interface RocketFuelProps {
 }
 
 export default function RocketFuel({ rocketDelay, children }: RocketFuelProps) {
-  const [hasFuel, setHasFuel] = useState(() => {
+  const [hasEnergy, setHasEnergy] = useState(() => {
     if (typeof window === "undefined") return false;
-    return sessionStorage.getItem(FUEL_KEY) === "1";
+    return sessionStorage.getItem(ENERGY_KEY) === "1";
   });
-  const [fuelState, setFuelState] = useState<"full" | "dying" | "empty">("full");
+  const [energyState, setEnergyState] = useState<"full" | "dying" | "empty">("full");
   const [showAlert, setShowAlert] = useState(false);
   const ctaRef = useRef<HTMLElement | null>(null);
 
@@ -25,80 +25,94 @@ export default function RocketFuel({ rocketDelay, children }: RocketFuelProps) {
   useEffect(() => {
     const findCta = () => document.querySelector<HTMLElement>(".rocket-flight__cta");
 
-    // Poll briefly until CTA exists (it appears after rocket-cta-in animation delay)
     const poll = setInterval(() => {
       const el = findCta();
       if (el) {
         ctaRef.current = el;
         clearInterval(poll);
-        applyCtaStyle(el, hasFuel);
+        applyCtaStyle(el, hasEnergy);
       }
     }, 200);
 
     return () => clearInterval(poll);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Apply/remove disabled style whenever hasFuel changes
+  // Apply/remove disabled style whenever hasEnergy changes
   useEffect(() => {
     const el = ctaRef.current;
     if (!el) return;
-    applyCtaStyle(el, hasFuel);
-  }, [hasFuel]);
+    applyCtaStyle(el, hasEnergy);
+  }, [hasEnergy]);
 
-  // Fuel dying animation (visual only — flames sputter)
+  // Energy dying animation (visual only — flames sputter)
   useEffect(() => {
-    if (hasFuel) return; // skip if already fueled
+    if (hasEnergy) return;
 
-    const dyingTimer = setTimeout(() => setFuelState("dying"), landMs + FADE_DELAY * 1000);
-    const emptyTimer = setTimeout(() => setFuelState("empty"), landMs + FADE_DELAY * 1000 + 2500);
+    const dyingTimer = setTimeout(() => setEnergyState("dying"), landMs + FADE_DELAY * 1000);
+    const emptyTimer = setTimeout(() => setEnergyState("empty"), landMs + FADE_DELAY * 1000 + 2500);
 
     return () => {
       clearTimeout(dyingTimer);
       clearTimeout(emptyTimer);
     };
-  }, [landMs, hasFuel]);
+  }, [landMs, hasEnergy]);
 
-  // Block ALL clicks on CTA unless hasFuel is true
+  // Block ALL clicks on CTA unless hasEnergy is true
   useEffect(() => {
     function intercept(e: MouseEvent) {
       const target = e.target as HTMLElement;
       if (!target.closest(".rocket-flight__cta")) return;
 
-      if (!hasFuel) {
+      if (!hasEnergy) {
         e.preventDefault();
         e.stopPropagation();
         e.stopImmediatePropagation();
 
-        if (fuelState === "empty") {
+        if (energyState === "empty") {
           setShowAlert(true);
           setTimeout(() => setShowAlert(false), 3000);
         }
       }
     }
 
-    // Capture phase on document — fires before React's handler
     document.addEventListener("click", intercept, true);
     return () => document.removeEventListener("click", intercept, true);
-  }, [hasFuel, fuelState]);
+  }, [hasEnergy, energyState]);
 
-  // Called by Gemini (or anything) to refuel — exposed via custom event
+  // Listen for refuel event (dispatched from constellation page)
   useEffect(() => {
     function onRefuel() {
-      sessionStorage.setItem(FUEL_KEY, "1");
-      setHasFuel(true);
-      setFuelState("full");
+      sessionStorage.setItem(ENERGY_KEY, "1");
+      setHasEnergy(true);
+      setEnergyState("full");
     }
 
     window.addEventListener("t3-refuel", onRefuel);
     return () => window.removeEventListener("t3-refuel", onRefuel);
   }, []);
 
+  // Sync energy on focus (user returns from constellation)
+  useEffect(() => {
+    function syncEnergy() {
+      const stored = sessionStorage.getItem(ENERGY_KEY) === "1";
+      if (stored && !hasEnergy) {
+        setHasEnergy(true);
+        setEnergyState("full");
+      }
+    }
+
+    window.addEventListener("focus", syncEnergy);
+    syncEnergy();
+
+    return () => window.removeEventListener("focus", syncEnergy);
+  }, [hasEnergy]);
+
   const handleAlertDismiss = useCallback(() => setShowAlert(false), []);
 
   const wrapClass = [
     "rocket-fuel-wrap",
-    !hasFuel && fuelState === "dying" && "rocket-fuel-wrap--dying",
-    !hasFuel && fuelState === "empty" && "rocket-fuel-wrap--empty",
+    !hasEnergy && energyState === "dying" && "rocket-fuel-wrap--dying",
+    !hasEnergy && energyState === "empty" && "rocket-fuel-wrap--empty",
   ].filter(Boolean).join(" ");
 
   return (
@@ -108,7 +122,7 @@ export default function RocketFuel({ rocketDelay, children }: RocketFuelProps) {
       {showAlert && (
         <div className="fuel-alert" onClick={handleAlertDismiss}>
           <span className="fuel-alert__text">
-            The rocket needs fuel! Look around... ➡🌌
+            The rocket needs energy! Find energy source to ride ➡🌌
           </span>
         </div>
       )}
@@ -117,8 +131,8 @@ export default function RocketFuel({ rocketDelay, children }: RocketFuelProps) {
 }
 
 /** Directly apply/remove disabled styling on the CTA element */
-function applyCtaStyle(el: HTMLElement, hasFuel: boolean) {
-  if (hasFuel) {
+function applyCtaStyle(el: HTMLElement, hasEnergy: boolean) {
+  if (hasEnergy) {
     el.style.removeProperty("opacity");
     el.style.removeProperty("filter");
     el.style.removeProperty("cursor");

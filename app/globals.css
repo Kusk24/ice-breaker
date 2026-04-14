@@ -426,6 +426,9 @@ body {
   height: 90%;
   pointer-events: none;
 }
+.constellation-main--interactive {
+  pointer-events: auto;
+}
 
 /* Constellation lines */
 .constellation-main__line {
@@ -454,10 +457,45 @@ body {
   opacity: 0;
   animation: const-star-pop 0.6s ease-out calc(0.3s + var(--si) * 0.15s) forwards;
 }
+.constellation-main__star--clickable {
+  cursor: pointer;
+}
+.constellation-main__star--clickable:hover circle {
+  transition: transform 0.2s ease;
+}
+.constellation-main__star--clickable:hover {
+  animation: const-star-pop 0.6s ease-out calc(0.3s + var(--si) * 0.15s) forwards,
+             const-star-pulse 1.5s ease-in-out infinite;
+}
+.constellation-main__star--collected {
+  opacity: 1 !important;
+  transition: opacity 0.8s ease-out;
+}
+.constellation-main__star--collecting {
+  animation: const-star-collect 0.8s ease-out forwards !important;
+}
 @keyframes const-star-pop {
   0%   { opacity: 0; transform: scale(0); }
   70%  { opacity: 1; transform: scale(1.3); }
   100% { opacity: 1; transform: scale(1); }
+}
+@keyframes const-star-pulse {
+  0%, 100% { filter: brightness(1); }
+  50%      { filter: brightness(1.8) drop-shadow(0 0 4px rgba(140,200,255,0.8)); }
+}
+@keyframes const-star-collect {
+  0%   { transform: scale(1); filter: brightness(1); }
+  30%  { transform: scale(2.5); filter: brightness(3); }
+  100% { transform: scale(0.8); filter: brightness(0.3); }
+}
+
+/* Star flash effect */
+.constellation-star-flash {
+  animation: const-flash 0.8s ease-out forwards;
+}
+@keyframes const-flash {
+  0%   { opacity: 1; r: 4; }
+  100% { opacity: 0; r: 8; }
 }
 
 /* Gemini symbol */
@@ -500,8 +538,173 @@ body {
 .constellation-back {
   position: fixed;
   top: 5%;
-  left: 5%;
+  right: 5%;
   z-index: 20;
+  opacity: 1;
+  animation: blossom-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s both;
+}
+
+/* ─── Energy Locator (Constellation Page) ─── */
+.energy-locator {
+  position: fixed;
+  right: 4%;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  animation: energy-loc-in 0.6s ease-out 2.8s forwards;
+}
+.energy-locator__icon {
+  font-size: 1.5rem;
+  filter: drop-shadow(0 0 6px rgba(255, 220, 60, 0.6));
+}
+.energy-locator__track {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 3px;
+  padding: 6px 4px;
+  border-radius: 12px;
+  background: rgba(10, 20, 50, 0.6);
+  border: 1px solid rgba(100, 160, 255, 0.2);
+  backdrop-filter: blur(8px);
+}
+.energy-locator__segment {
+  width: 18px;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(60, 100, 180, 0.2);
+  transition: background 0.4s ease, box-shadow 0.4s ease;
+}
+.energy-locator__segment--lit {
+  background: linear-gradient(90deg, #4d94ff, #80cfff);
+  box-shadow: 0 0 8px rgba(80, 160, 255, 0.6);
+}
+.energy-locator__label {
+  font-family: var(--font-dancing), cursive;
+  font-size: 0.85rem;
+  color: #8cbfff;
+  text-shadow: 0 0 8px rgba(100, 160, 255, 0.4);
+  letter-spacing: 0.05em;
+}
+.energy-locator--full .energy-locator__icon {
+  animation: energy-icon-glow 1s ease-in-out infinite alternate;
+}
+.energy-locator--full .energy-locator__label {
+  color: #ffd700;
+  text-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
+}
+@keyframes energy-loc-in {
+  from { opacity: 0; transform: translateY(-50%) translateX(20px); }
+  to   { opacity: 1; transform: translateY(-50%) translateX(0); }
+}
+@keyframes energy-icon-glow {
+  0%   { filter: drop-shadow(0 0 6px rgba(255, 220, 60, 0.6)) brightness(1); }
+  100% { filter: drop-shadow(0 0 16px rgba(255, 220, 60, 1)) brightness(1.3); }
+}
+
+/* Energy full message */
+.energy-full-msg {
+  position: fixed;
+  top: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  animation: energy-full-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+.energy-full-msg__text {
+  display: inline-block;
+  padding: 14px 28px;
+  border-radius: 16px;
+  background: rgba(10, 20, 50, 0.88);
+  border: 1.5px solid rgba(80, 160, 255, 0.5);
+  color: #b0e0ff;
+  font-family: var(--font-dancing), cursive;
+  font-size: clamp(1rem, 2.5vw, 1.3rem);
+  font-weight: 600;
+  text-align: center;
+  backdrop-filter: blur(12px);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(80, 160, 255, 0.2);
+  white-space: nowrap;
+}
+@keyframes energy-full-in {
+  0%   { opacity: 0; transform: translateX(-50%) scale(0.7) translateY(10px); }
+  100% { opacity: 1; transform: translateX(-50%) scale(1) translateY(0); }
+}
+
+/* ─── Rocket Energy Locator (Moon Page) ─── */
+.rocket-energy-locator {
+  position: absolute;
+  right: -48px;
+  top: 10px;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  opacity: 0;
+  pointer-events: none;
+  animation: rocket-energy-in 0.6s ease-out calc(var(--rocket-delay, 12s) + 3.5s) forwards;
+}
+.rocket-energy-locator__ring {
+  position: relative;
+  width: 42px;
+  height: 42px;
+}
+.rocket-energy-locator__svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+.rocket-energy-locator__track-bg {
+  fill: none;
+  stroke: rgba(60, 100, 180, 0.2);
+  stroke-width: 2.5;
+}
+.rocket-energy-locator__track-fill {
+  fill: none;
+  stroke: #4d94ff;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.6s ease;
+  filter: drop-shadow(0 0 4px rgba(80, 160, 255, 0.5));
+}
+.rocket-energy-locator--full .rocket-energy-locator__track-fill {
+  stroke: #ffd700;
+  filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.6));
+}
+.rocket-energy-locator__icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  filter: drop-shadow(0 0 4px rgba(255, 220, 60, 0.4));
+}
+.rocket-energy-locator--full .rocket-energy-locator__icon {
+  animation: energy-icon-glow 1s ease-in-out infinite alternate;
+}
+.rocket-energy-locator__label {
+  font-family: var(--font-dancing), cursive;
+  font-size: 0.65rem;
+  color: #8cbfff;
+  text-shadow: 0 0 6px rgba(100, 160, 255, 0.3);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+.rocket-energy-locator--full .rocket-energy-locator__label {
+  color: #ffd700;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+}
+@keyframes rocket-energy-in {
+  from { opacity: 0; transform: scale(0.5); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
 .rocket-flight {

@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import ConstellationBack from "../components/ConstellationBack";
+import ConstellationStars from "../components/ConstellationStars";
 
 /* Dense starfield — more stars, varied sizes */
 const bgStars = Array.from({ length: 180 }, (_, i) => ({
@@ -9,28 +10,6 @@ const bgStars = Array.from({ length: 180 }, (_, i) => ({
   delay: `${(i % 12) * 0.4}s`,
   duration: `${2.5 + ((i * 11) % 20) / 10}s`,
 }));
-
-/* Gemini constellation — bigger coordinates for full-page */
-const geminiStars: Array<{ x: number; y: number; size: "lg" | "md" | "sm" }> = [
-  { x: 28, y: 18, size: "lg" },
-  { x: 35, y: 20, size: "md" },
-  { x: 44, y: 24, size: "lg" },
-  { x: 54, y: 28, size: "md" },
-  { x: 60, y: 27, size: "lg" },
-  { x: 25, y: 28, size: "md" },
-  { x: 27, y: 36, size: "sm" },
-  { x: 37, y: 42, size: "md" },
-  { x: 43, y: 46, size: "lg" },
-  { x: 55, y: 52, size: "md" },
-  { x: 56, y: 42, size: "sm" },
-  { x: 50, y: 62, size: "lg" },
-];
-
-const geminiLines = [
-  "M 28,18 L 35,20 L 44,24 L 54,28 L 60,27",
-  "M 28,18 L 25,28 L 27,36 L 37,42 L 43,46 L 55,52",
-  "M 54,28 L 56,42 L 55,52 L 50,62",
-];
 
 /* Faint nebula clouds */
 const nebulaClouds = [
@@ -103,90 +82,8 @@ export default function ConstellationPage() {
         ))}
       </div>
 
-      {/* Main Gemini constellation — full viewport SVG */}
-      <svg
-        className="constellation-main"
-        viewBox="0 0 100 100"
-        preserveAspectRatio="xMidYMid meet"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <defs>
-          <filter id="c-glow-lg" x="-80%" y="-80%" width="260%" height="260%">
-            <feGaussianBlur stdDeviation="1.2" />
-          </filter>
-          <filter id="c-glow-md" x="-60%" y="-60%" width="220%" height="220%">
-            <feGaussianBlur stdDeviation="0.5" />
-          </filter>
-          <filter id="c-glow-line" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="0.3" />
-          </filter>
-        </defs>
-
-        {/* Constellation lines — draw in on load */}
-        {geminiLines.map((d, i) => (
-          <g key={`line-${i}`}>
-            {/* Glow layer */}
-            <path
-              d={d}
-              className="constellation-main__line constellation-main__line--glow"
-              style={{ "--li": i } as CSSProperties}
-              pathLength={1}
-              filter="url(#c-glow-line)"
-            />
-            {/* Crisp layer */}
-            <path
-              d={d}
-              className="constellation-main__line"
-              style={{ "--li": i } as CSSProperties}
-              pathLength={1}
-            />
-          </g>
-        ))}
-
-        {/* Star nodes */}
-        {geminiStars.map((s, i) => (
-          <g
-            key={`gstar-${i}`}
-            className="constellation-main__star"
-            style={{ "--si": i } as CSSProperties}
-          >
-            {/* Outer glow */}
-            <circle
-              cx={s.x} cy={s.y}
-              r={s.size === "lg" ? 2.2 : s.size === "md" ? 1.6 : 1.2}
-              fill="#4d94ff"
-              filter="url(#c-glow-lg)"
-              opacity="0.6"
-            />
-            {/* Mid glow */}
-            <circle
-              cx={s.x} cy={s.y}
-              r={s.size === "lg" ? 1.1 : s.size === "md" ? 0.8 : 0.6}
-              fill="#8cbfff"
-              filter="url(#c-glow-md)"
-              opacity="0.85"
-            />
-            {/* Core */}
-            <circle
-              cx={s.x} cy={s.y}
-              r={s.size === "lg" ? 0.5 : s.size === "md" ? 0.38 : 0.28}
-              fill="#ffffff"
-            />
-          </g>
-        ))}
-
-        {/* Gemini symbol at bottom center */}
-        <g className="constellation-main__symbol" transform="translate(43, 78) scale(0.18)">
-          <circle cx="0" cy="0" r="42" fill="none" stroke="#7bb4ff" strokeWidth="1.5" opacity="0.85" />
-          <circle cx="0" cy="0" r="42" fill="none" stroke="#7bb4ff" strokeWidth="3" filter="url(#c-glow-md)" opacity="0.4" />
-          <g stroke="#7bb4ff" strokeWidth="2.5" strokeLinecap="round" fill="none" opacity="0.9">
-            <path d="M -22 -20 Q 0 -4 22 -20" />
-            <path d="M -22 20 Q 0 4 22 20" />
-            <line x1="-9" y1="-12" x2="-9" y2="12" />
-            <line x1="9" y1="-12" x2="9" y2="12" />
-          </g>
-        </g>
-      </svg>
+      {/* Interactive Gemini constellation + Energy locator */}
+      <ConstellationStars />
 
       {/* Title */}
       <h1 className="constellation-title">

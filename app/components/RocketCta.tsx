@@ -6,8 +6,9 @@ export default function RocketCta({ className, label }: { className?: string; la
 
   function navigate() {
     sessionStorage.setItem("t3-rocket-incoming", "1");
-    // Clear fuel so next visit requires finding it again from Gemini
-    sessionStorage.removeItem("t3-rocket-fuel");
+    // Clear energy + collected stars so next visit requires finding them again
+    sessionStorage.removeItem("t3-rocket-energy");
+    sessionStorage.removeItem("t3-stars-collected");
     if (typeof document.startViewTransition === "function") {
       document.startViewTransition(() => router.push("/countdown"));
     } else {
