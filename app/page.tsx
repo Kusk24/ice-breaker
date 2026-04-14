@@ -1,5 +1,8 @@
+"use client";
+import { useState, useCallback } from "react";
 import type { CSSProperties } from "react";
 import TransitionLink from "./components/TransitionLink";
+import CageRelease from "./components/CageRelease";
 import { siteText } from "@/lib/content";
 
 /* ─── Stars ─── */
@@ -116,6 +119,9 @@ const greenFlow = Array.from({ length: 22 }, (_, i) => ({
 }));
 
 export default function Home() {
+  const [cageOpen, setCageOpen] = useState(false);
+  const handleRelease = useCallback(() => setCageOpen(true), []);
+
   return (
     <main className="scene" aria-label="Red roses with magical grass and flowing particles at night">
       <div className="sky" aria-hidden>
@@ -389,6 +395,9 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Cage with butterflies & fireflies */}
+      <CageRelease onRelease={handleRelease} />
+
       <div className="hero">
         <h1 className="hero__title">
           {[...siteText.title].map((char, i) => (
@@ -412,9 +421,11 @@ export default function Home() {
             </span>
           ))}
         </p>
-        <TransitionLink className="hero__btn" href="/moon">
-          {siteText.buttonOne}
-        </TransitionLink>
+        {cageOpen && (
+          <TransitionLink className="hero__btn hero__btn--cage-reveal" href="/moon">
+            {siteText.buttonOne}
+          </TransitionLink>
+        )}
       </div>
     </main>
   );

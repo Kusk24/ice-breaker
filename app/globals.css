@@ -2584,13 +2584,18 @@ body:has(.constellation-scene) {
   justify-content: center;
   width: fit-content;
   margin: 2.2em auto 0;
-  padding: 0.72em 2.4em;
+  padding: 0.72em 2.6em;
   font-family: var(--font-dancing), cursive;
   font-size: clamp(1rem, 2vw, 1.4rem);
   font-weight: 700;
-  color: #fff0f5;
-  background: linear-gradient(135deg, #b81a42 0%, #e03468 50%, #c0224e 100%);
-  border: none;
+  color: #fff8f0;
+  /* Fairy-tale: soft violet-rose with golden shimmer */
+  background: linear-gradient(135deg,
+    #7c3fa8 0%,
+    #b565d0 35%,
+    #e080c0 65%,
+    #c958a8 100%);
+  border: 1px solid rgba(255, 200, 240, 0.25);
   border-radius: 999px;
   cursor: pointer;
   white-space: nowrap;
@@ -2598,10 +2603,11 @@ body:has(.constellation-scene) {
   pointer-events: auto;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-  text-shadow: 0 1px 4px rgba(80, 0, 20, 0.5);
+  text-shadow: 0 1px 5px rgba(50, 0, 80, 0.55);
   box-shadow:
-    0 4px 18px rgba(180, 20, 60, 0.55),
-    0 1px 0 rgba(255, 180, 200, 0.18) inset;
+    0 4px 22px rgba(160, 60, 200, 0.5),
+    0 0 40px rgba(200, 100, 230, 0.15),
+    inset 0 1px 0 rgba(255, 220, 255, 0.22);
   opacity: 0;
   animation:
     blossom-in 1s cubic-bezier(0.34, 1.56, 0.64, 1) 10.5s forwards,
@@ -2610,29 +2616,309 @@ body:has(.constellation-scene) {
 }
 
 .hero__btn:hover {
-  background: linear-gradient(135deg, #d12055 0%, #f04078 50%, #d42860 100%);
+  background: linear-gradient(135deg,
+    #9248c0 0%,
+    #cc78e0 35%,
+    #f098d4 65%,
+    #d868c0 100%);
   box-shadow:
-    0 6px 28px rgba(200, 30, 75, 0.7),
-    0 1px 0 rgba(255, 190, 210, 0.22) inset;
+    0 6px 30px rgba(180, 80, 220, 0.65),
+    0 0 55px rgba(210, 110, 240, 0.25),
+    inset 0 1px 0 rgba(255, 220, 255, 0.3);
   transform: scale(1.06) translateY(-2px);
 }
 
 .hero__btn:active {
   transform: scale(0.97) translateY(1px);
-  box-shadow: 0 2px 10px rgba(180, 20, 60, 0.45);
+  box-shadow: 0 2px 12px rgba(140, 40, 180, 0.5);
+}
+
+/* Button materializes from creature energy — smooth fairy-dust coalesce */
+.hero__btn--cage-reveal {
+  opacity: 0;
+  animation:
+    cage-btn-in 2s cubic-bezier(0.22, 1, 0.36, 1) 0.15s forwards,
+    cage-btn-glow 2.4s ease-out 0.15s forwards,
+    btn-pulse 3s ease-in-out 2.6s infinite;
+}
+
+@keyframes cage-btn-in {
+  0%   {
+    opacity: 0;
+    transform: scale(0.4);
+    filter: blur(18px) brightness(2.5);
+  }
+  30%  {
+    opacity: 0.55;
+    transform: scale(0.82);
+    filter: blur(8px) brightness(1.8);
+  }
+  60%  {
+    opacity: 0.88;
+    transform: scale(1.06);
+    filter: blur(2px) brightness(1.25);
+  }
+  78%  {
+    opacity: 1;
+    transform: scale(0.97);
+    filter: blur(0) brightness(1.05);
+  }
+  90%  { transform: scale(1.02); filter: blur(0) brightness(1); }
+  100% { opacity: 1; transform: scale(1); filter: blur(0) brightness(1); }
+}
+
+@keyframes cage-btn-glow {
+  0%   {
+    box-shadow:
+      0 0 80px 40px rgba(220, 160, 255, 0.55),
+      0 0 140px 70px rgba(180, 100, 240, 0.2),
+      inset 0 0 25px rgba(230, 180, 255, 0.35);
+  }
+  35%  {
+    box-shadow:
+      0 0 45px 20px rgba(200, 130, 255, 0.38),
+      0 0 80px 35px rgba(160, 80, 220, 0.15),
+      inset 0 0 12px rgba(220, 170, 255, 0.2);
+  }
+  100% {
+    box-shadow:
+      0 4px 22px rgba(160, 60, 200, 0.5),
+      0 0 40px rgba(200, 100, 230, 0.15),
+      inset 0 1px 0 rgba(255, 220, 255, 0.22);
+  }
+}
+
+/* ─── Cage & creatures ─── */
+/* ─── Cage wrap ─── */
+.cage-wrap {
+  position: fixed;
+  inset: 0;
+  z-index: 12;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+.cage-wrap--visible {
+  opacity: 1;
+}
+.cage-wrap--visible .cage {
+  animation:
+    cage-entrance 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards,
+    cage-sway 5s ease-in-out 1.5s infinite;
+}
+.cage-wrap--open .cage {
+  animation: cage-open 1.4s ease-out forwards !important;
+  pointer-events: none;
+}
+
+/* ─── Cage ─── */
+.cage {
+  position: absolute;
+  left: 15%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: clamp(90px, 13vw, 145px);
+  background: none;
+  border: none;
+  padding: 0;
+  pointer-events: auto;
+  z-index: 13;
+  opacity: 0;
+  /* No explicit height — SVG drives it */
+}
+.cage__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter:
+    drop-shadow(0 2px 12px rgba(200, 170, 70, 0.3))
+    drop-shadow(0 0 28px rgba(255, 220, 100, 0.1));
+  transition: filter 0.4s;
+}
+.cage:hover .cage__svg {
+  filter:
+    drop-shadow(0 2px 18px rgba(210, 175, 60, 0.55))
+    drop-shadow(0 0 40px rgba(255, 220, 100, 0.2));
+}
+
+@keyframes cage-entrance {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.55) translateY(22px); }
+  60%  { opacity: 1; transform: translate(-50%, -50%) scale(1.06) translateY(-5px); }
+  100% { opacity: 1; transform: translate(-50%, -50%) scale(1) translateY(0); }
+}
+@keyframes cage-sway {
+  0%, 100% { transform: translate(-50%, -50%) rotate(-1.5deg) translateY(0); }
+  25%      { transform: translate(-50%, -50%) rotate(0deg) translateY(-2px); }
+  50%      { transform: translate(-50%, -50%) rotate(1.5deg) translateY(0); }
+  75%      { transform: translate(-50%, -50%) rotate(0deg) translateY(2px); }
+}
+@keyframes cage-open {
+  0%   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  20%  { transform: translate(-50%, -50%) scale(1.08);
+         filter: brightness(1.8) drop-shadow(0 0 20px rgba(255,220,100,0.7)); }
+  55%  { opacity: 0.6; transform: translate(-50%, -50%) scale(1.14) rotate(4deg);
+         filter: brightness(2.5); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.65) translateY(-50px);
+         filter: brightness(3); }
+}
+
+.cage__door {
+  transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: 18px 50px;
+}
+.cage-wrap--open .cage__door {
+  transform: rotate(-80deg);
+}
+
+/* SVG butterfly wing animations — transform-origin in SVG space */
+.bf-wing-l {
+  transform-box: fill-box;
+  transform-origin: right center;
+  animation: svg-wing-l 0.3s ease-in-out infinite alternate;
+}
+.bf-wing-r {
+  transform-box: fill-box;
+  transform-origin: left center;
+  animation: svg-wing-r 0.3s ease-in-out 0.04s infinite alternate;
+}
+@keyframes svg-wing-l {
+  0%   { transform: scaleX(1); }
+  100% { transform: scaleX(0.18); }
+}
+@keyframes svg-wing-r {
+  0%   { transform: scaleX(1); }
+  100% { transform: scaleX(0.18); }
+}
+
+.cage__hint {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-dancing), cursive;
+  font-size: clamp(0.6rem, 1.2vw, 0.85rem);
+  color: rgba(255, 220, 150, 0.7);
+  white-space: nowrap;
+  letter-spacing: 0.4px;
+  animation: cage-hint-pulse 2.5s ease-in-out infinite;
+}
+@keyframes cage-hint-pulse {
+  0%, 100% { opacity: 0.35; transform: translateX(-50%) translateY(0); }
+  50%      { opacity: 0.9;  transform: translateX(-50%) translateY(-2px); }
+}
+
+/* ─── Flying butterflies (fixed, post-release) ─── */
+.fly-butterfly {
+  position: fixed;
+  width: var(--bsize);
+  height: var(--bsize);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  z-index: 200;
+  animation: fly-bob 1.8s ease-in-out infinite alternate;
+}
+.fly-butterfly__wing--l,
+.fly-butterfly__wing--r {
+  position: absolute;
+  top: 10%;
+  width: 52%;
+  height: 70%;
+  background: radial-gradient(
+    ellipse at 55% 35%,
+    hsla(var(--bhue), 90%, 82%, 0.95) 0%,
+    hsla(var(--bhue), 80%, 65%, 0.8) 40%,
+    hsla(var(--bhue), 65%, 48%, 0.55) 75%,
+    transparent 100%
+  );
+  box-shadow: 0 0 8px 2px hsla(var(--bhue), 85%, 70%, 0.3);
+}
+.fly-butterfly__wing--l {
+  right: 50%;
+  transform-origin: right center;
+  border-radius: 60% 10% 40% 60%;
+  animation: fly-wing-l var(--flap) ease-in-out infinite alternate;
+}
+.fly-butterfly__wing--r {
+  left: 50%;
+  transform-origin: left center;
+  border-radius: 10% 60% 60% 40%;
+  animation: fly-wing-r var(--flap) ease-in-out 0.04s infinite alternate;
+}
+@keyframes fly-wing-l {
+  0%   { transform: scaleX(1); }
+  100% { transform: scaleX(0.15) skewY(10deg); }
+}
+@keyframes fly-wing-r {
+  0%   { transform: scaleX(1); }
+  100% { transform: scaleX(0.15) skewY(-10deg); }
+}
+.fly-butterfly__body {
+  position: absolute;
+  left: 50%;
+  top: 30%;
+  width: 2.5px;
+  height: 55%;
+  transform: translateX(-50%);
+  background: linear-gradient(to bottom,
+    hsla(var(--bhue), 45%, 28%, 0.9),
+    hsla(var(--bhue), 35%, 18%, 0.7));
+  border-radius: 2px;
+}
+.fly-butterfly__glow {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    hsla(var(--bhue), 90%, 80%, 0.18) 0%,
+    transparent 70%);
+  animation: fly-glow 1.4s ease-in-out infinite alternate;
+}
+@keyframes fly-glow {
+  0%   { opacity: 0.4; transform: scale(0.9); }
+  100% { opacity: 1;   transform: scale(1.3); }
+}
+@keyframes fly-bob {
+  0%   { transform: translate(-50%, -50%) translateY(0px); }
+  100% { transform: translate(-50%, -50%) translateY(-4px); }
+}
+
+/* ─── Flying fireflies (fixed, post-release) ─── */
+.fly-firefly {
+  position: fixed;
+  width: calc(var(--fsize) * 2.5);
+  height: calc(var(--fsize) * 2.5);
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  z-index: 200;
+  background: radial-gradient(circle,
+    #ffffff 0%,
+    rgba(255, 248, 180, 0.9) 20%,
+    rgba(255, 220, 80, 0.5) 50%,
+    transparent 80%);
+  box-shadow:
+    0 0 6px 3px rgba(255, 235, 120, 0.6),
+    0 0 16px 6px rgba(255, 200, 60, 0.2);
+  animation: firefly-pulse 1.8s ease-in-out infinite alternate;
+}
+@keyframes firefly-pulse {
+  0%   { opacity: 0.5; transform: translate(-50%, -50%) scale(0.7); }
+  50%  { opacity: 1;   transform: translate(-50%, -50%) scale(1.15); }
+  100% { opacity: 0.65; transform: translate(-50%, -50%) scale(0.9); }
 }
 
 @keyframes btn-pulse {
   0%, 100% {
     box-shadow:
-      0 4px 18px rgba(180, 20, 60, 0.55),
-      0 1px 0 rgba(255, 180, 200, 0.18) inset;
+      0 4px 22px rgba(160, 60, 200, 0.5),
+      0 0 40px rgba(200, 100, 230, 0.15),
+      inset 0 1px 0 rgba(255, 220, 255, 0.22);
   }
   50% {
     box-shadow:
-      0 4px 32px rgba(200, 30, 75, 0.8),
-      0 0 18px rgba(220, 50, 90, 0.35),
-      0 1px 0 rgba(255, 180, 200, 0.18) inset;
+      0 4px 35px rgba(180, 80, 230, 0.72),
+      0 0 60px rgba(210, 110, 245, 0.28),
+      inset 0 1px 0 rgba(255, 220, 255, 0.28);
   }
 }
 
