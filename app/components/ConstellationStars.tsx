@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import type { CSSProperties } from "react";
 
 const ENERGY_KEY = "t3-rocket-energy";
@@ -28,6 +28,85 @@ const geminiLines = [
   "M 54,28 L 56,42 L 55,52 L 50,62",
 ];
 
+/** Spawn energy stream particles from star to energy bar */
+function spawnEnergyStream(starX: number, starY: number) {
+  const bar = document.querySelector(".energy-locator");
+  if (!bar) return;
+
+  const barRect = bar.getBoundingClientRect();
+  const endX = barRect.left + barRect.width / 2;
+  const endY = barRect.top + barRect.height * 0.45;
+
+  const PARTICLE_COUNT = 12;
+  const STREAM_DURATION = 900;
+
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    const p = document.createElement("div");
+    p.className = "energy-particle";
+
+    // Stagger each particle
+    const delay = i * 50;
+    const size = 4 + Math.random() * 6;
+
+    p.style.cssText = `
+      position: fixed;
+      left: ${starX}px;
+      top: ${starY}px;
+      width: ${size}px;
+      height: ${size}px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 999;
+      background: radial-gradient(circle, #fff 0%, #80c0ff 40%, #4090ff 70%, transparent 100%);
+      box-shadow: 0 0 ${size * 2}px ${size}px rgba(80,160,255,0.5),
+                  0 0 ${size * 4}px ${size * 1.5}px rgba(60,120,255,0.2);
+      opacity: 0;
+    `;
+    document.body.appendChild(p);
+
+    const dx = endX - starX;
+    const dy = endY - starY;
+    // Curve offset: perpendicular to the line, randomized
+    const perpX = -dy * 0.15 * (Math.random() - 0.3);
+    const perpY = dx * 0.15 * (Math.random() - 0.3);
+
+    const startTime = performance.now() + delay;
+
+    function animate(ts: number) {
+      const elapsed = ts - startTime;
+      if (elapsed < 0) { requestAnimationFrame(animate); return; }
+
+      const t = Math.min(elapsed / STREAM_DURATION, 1);
+      // Ease-in-out for smooth flow
+      const ease = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+
+      // Quadratic bezier: start → control(midpoint+perp) → end
+      const mt = 1 - ease;
+      const cx = (starX + endX) / 2 + perpX;
+      const cy = (starY + endY) / 2 + perpY;
+      const x = mt * mt * starX + 2 * mt * ease * cx + ease * ease * endX;
+      const y = mt * mt * starY + 2 * mt * ease * cy + ease * ease * endY;
+
+      // Fade in fast, hold, fade out at end
+      const opacity = t < 0.1 ? t / 0.1 : t > 0.75 ? (1 - t) / 0.25 : 1;
+      // Shrink near end
+      const scale = t > 0.7 ? 1 - (t - 0.7) / 0.3 * 0.6 : 1;
+
+      p.style.left = `${x}px`;
+      p.style.top = `${y}px`;
+      p.style.opacity = String(opacity * 0.9);
+      p.style.transform = `translate(-50%, -50%) scale(${scale})`;
+
+      if (t < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        p.remove();
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+}
+
 export default function ConstellationStars() {
   const [collected, setCollected] = useState<number[]>(() => {
     if (typeof window === "undefined") return [];
@@ -39,6 +118,7 @@ export default function ConstellationStars() {
   });
   const [justCollected, setJustCollected] = useState<number | null>(null);
   const [energyFull, setEnergyFull] = useState(false);
+  const svgRef = useRef<SVGSVGElement>(null);
 
   // Check if energy already full on mount
   useEffect(() => {
@@ -50,6 +130,20 @@ export default function ConstellationStars() {
   const handleStarClick = useCallback(
     (index: number) => {
       if (collected.includes(index) || energyFull) return;
+
+      // Get star screen position from SVG
+      const svg = svgRef.current;
+      if (svg) {
+        const star = geminiStars[index];
+        const pt = svg.createSVGPoint();
+        pt.x = star.x;
+        pt.y = star.y;
+        const ctm = svg.getScreenCTM();
+        if (ctm) {
+          const screenPt = pt.matrixTransform(ctm);
+          spawnEnergyStream(screenPt.x, screenPt.y);
+        }
+      }
 
       setJustCollected(index);
       setTimeout(() => setJustCollected(null), 800);
@@ -63,7 +157,7 @@ export default function ConstellationStars() {
           sessionStorage.setItem(ENERGY_KEY, "1");
           setEnergyFull(true);
           window.dispatchEvent(new Event("t3-refuel"));
-        }, 600);
+        }, 1200);
       }
     },
     [collected, energyFull]
@@ -75,24 +169,52 @@ export default function ConstellationStars() {
     <>
       {/* Interactive Gemini constellation SVG */}
       <svg
+        ref={svgRef}
         className="constellation-main constellation-main--interactive"
         viewBox="0 0 100 100"
         preserveAspectRatio="xMidYMid meet"
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
-          <filter id="c-glow-lg" x="-80%" y="-80%" width="260%" height="260%">
+          {/* Glow filters — layered for realistic star look */}
+          <filter id="c-bloom" x="-300%" y="-300%" width="700%" height="700%">
+            <feGaussianBlur stdDeviation="4.5" />
+          </filter>
+          <filter id="c-glow-lg" x="-200%" y="-200%" width="500%" height="500%">
+            <feGaussianBlur stdDeviation="2.5" />
+          </filter>
+          <filter id="c-glow-md" x="-150%" y="-150%" width="400%" height="400%">
             <feGaussianBlur stdDeviation="1.2" />
           </filter>
-          <filter id="c-glow-md" x="-60%" y="-60%" width="220%" height="220%">
+          <filter id="c-glow-sm" x="-100%" y="-100%" width="300%" height="300%">
             <feGaussianBlur stdDeviation="0.5" />
           </filter>
           <filter id="c-glow-line" x="-20%" y="-20%" width="140%" height="140%">
             <feGaussianBlur stdDeviation="0.3" />
           </filter>
-          <filter id="c-glow-collect" x="-100%" y="-100%" width="300%" height="300%">
-            <feGaussianBlur stdDeviation="2" />
+          <filter id="c-glow-collect" x="-300%" y="-300%" width="700%" height="700%">
+            <feGaussianBlur stdDeviation="5" />
           </filter>
+          {/* Radial gradients for natural star glow */}
+          <radialGradient id="c-star-glow-lg">
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.9" />
+            <stop offset="15%" stopColor="#c8e0ff" stopOpacity="0.6" />
+            <stop offset="40%" stopColor="#4d94ff" stopOpacity="0.25" />
+            <stop offset="70%" stopColor="#2060cc" stopOpacity="0.08" />
+            <stop offset="100%" stopColor="#1040aa" stopOpacity="0" />
+          </radialGradient>
+          <radialGradient id="c-star-glow-md">
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.85" />
+            <stop offset="20%" stopColor="#b0d4ff" stopOpacity="0.5" />
+            <stop offset="50%" stopColor="#4d94ff" stopOpacity="0.18" />
+            <stop offset="100%" stopColor="#1040aa" stopOpacity="0" />
+          </radialGradient>
+          <radialGradient id="c-star-glow-sm">
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.8" />
+            <stop offset="25%" stopColor="#a0c8ff" stopOpacity="0.4" />
+            <stop offset="60%" stopColor="#4d94ff" stopOpacity="0.12" />
+            <stop offset="100%" stopColor="#1040aa" stopOpacity="0" />
+          </radialGradient>
         </defs>
 
         {/* Constellation lines */}
@@ -118,9 +240,11 @@ export default function ConstellationStars() {
         {geminiStars.map((s, i) => {
           const isCollected = collected.includes(i);
           const isJust = justCollected === i;
-          const r = s.size === "lg" ? { outer: 2.2, mid: 1.1, core: 0.5 } :
-                    s.size === "md" ? { outer: 1.6, mid: 0.8, core: 0.38 } :
-                                      { outer: 1.2, mid: 0.6, core: 0.28 };
+          const grad = s.size === "lg" ? "url(#c-star-glow-lg)" :
+                       s.size === "md" ? "url(#c-star-glow-md)" : "url(#c-star-glow-sm)";
+          const r = s.size === "lg" ? { bloom: 10, outer: 6, mid: 3.5, inner: 1.8, core: 0.9 } :
+                    s.size === "md" ? { bloom: 7, outer: 4.5, mid: 2.5, inner: 1.3, core: 0.65 } :
+                                      { bloom: 5.5, outer: 3.5, mid: 2, inner: 1, core: 0.5 };
 
           return (
             <g
@@ -134,37 +258,55 @@ export default function ConstellationStars() {
               style={{ "--si": i } as CSSProperties}
               onClick={() => handleStarClick(i)}
             >
-              {/* Hit area (invisible, larger) */}
-              <circle cx={s.x} cy={s.y} r={3.5} fill="transparent" />
+              {/* Hit area */}
+              <circle cx={s.x} cy={s.y} r={6} fill="transparent" />
 
               {/* Collect flash */}
               {isJust && (
                 <circle
-                  cx={s.x} cy={s.y} r={4}
+                  cx={s.x} cy={s.y} r={10}
                   fill="#fff"
                   filter="url(#c-glow-collect)"
                   className="constellation-star-flash"
                 />
               )}
 
-              {/* Outer glow */}
+              {/* Layer 1: Wide bloom — soft atmospheric glow */}
+              <circle
+                cx={s.x} cy={s.y} r={r.bloom}
+                fill={grad}
+                filter="url(#c-bloom)"
+                opacity={isCollected ? 0.04 : 0.35}
+              />
+
+              {/* Layer 2: Outer glow */}
               <circle
                 cx={s.x} cy={s.y} r={r.outer}
-                fill="#4d94ff"
+                fill={grad}
                 filter="url(#c-glow-lg)"
-                opacity={isCollected ? 0.1 : 0.6}
+                opacity={isCollected ? 0.06 : 0.5}
               />
-              {/* Mid glow */}
+
+              {/* Layer 3: Mid glow — bright ring */}
               <circle
                 cx={s.x} cy={s.y} r={r.mid}
-                fill="#8cbfff"
+                fill="#6aadff"
                 filter="url(#c-glow-md)"
-                opacity={isCollected ? 0.15 : 0.85}
+                opacity={isCollected ? 0.08 : 0.65}
               />
-              {/* Core */}
+
+              {/* Layer 4: Inner glow — hot white-blue */}
+              <circle
+                cx={s.x} cy={s.y} r={r.inner}
+                fill="#c0dfff"
+                filter="url(#c-glow-sm)"
+                opacity={isCollected ? 0.1 : 0.85}
+              />
+
+              {/* Layer 5: Core — pure white */}
               <circle
                 cx={s.x} cy={s.y} r={r.core}
-                fill={isCollected ? "#334466" : "#ffffff"}
+                fill={isCollected ? "#2a3a55" : "#ffffff"}
               />
             </g>
           );
