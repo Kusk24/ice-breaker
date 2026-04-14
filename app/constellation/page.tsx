@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import ConstellationBack from "../components/ConstellationBack";
 import ConstellationStars from "../components/ConstellationStars";
+import ScrollLetter from "../components/ScrollLetter";
 
 /* Dense starfield — more stars, varied sizes */
 const bgStars = Array.from({ length: 180 }, (_, i) => ({
@@ -96,6 +97,9 @@ export default function ConstellationPage() {
 
       {/* Back button */}
       <ConstellationBack />
+
+      {/* Scroll letter */}
+      <ScrollLetter />
     </main>
   );
 }

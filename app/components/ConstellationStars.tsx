@@ -5,27 +5,35 @@ import type { CSSProperties } from "react";
 const ENERGY_KEY = "t3-rocket-energy";
 const STARS_KEY = "t3-stars-collected";
 
+/*
+ * Star positions match the GeminiConstellation on the moon page
+ * (original viewBox 0 0 400 480 → scaled to 0 0 100 100)
+ */
 const geminiStars: Array<{ x: number; y: number; size: "lg" | "md" | "sm" }> = [
-  { x: 28, y: 18, size: "lg" },
-  { x: 35, y: 20, size: "md" },
-  { x: 44, y: 24, size: "lg" },
-  { x: 54, y: 28, size: "md" },
-  { x: 60, y: 27, size: "lg" },
-  { x: 25, y: 28, size: "md" },
-  { x: 27, y: 36, size: "sm" },
-  { x: 37, y: 42, size: "md" },
-  { x: 43, y: 46, size: "lg" },
-  { x: 55, y: 52, size: "md" },
-  { x: 56, y: 42, size: "sm" },
-  { x: 50, y: 62, size: "lg" },
+  { x: 27.5,  y: 16.7, size: "lg" },  // 0
+  { x: 40,    y: 18.8, size: "md" },  // 1
+  { x: 55,    y: 24,   size: "lg" },  // 2
+  { x: 70,    y: 29.2, size: "md" },  // 3
+  { x: 82.5,  y: 27.1, size: "lg" },  // 4
+  { x: 21.25, y: 27.1, size: "md" },  // 5
+  { x: 23.75, y: 37.5, size: "md" },  // 6
+  { x: 38.75, y: 43.8, size: "md" },  // 7
+  { x: 50,    y: 46.9, size: "lg" },  // 8
+  { x: 67.5,  y: 52.1, size: "md" },  // 9
+  { x: 70.5,  y: 40.6, size: "md" },  // 10
+  { x: 60,    y: 64.6, size: "lg" },  // 11
 ];
 
 const TOTAL_STARS = geminiStars.length;
 
-const geminiLines = [
-  "M 28,18 L 35,20 L 44,24 L 54,28 L 60,27",
-  "M 28,18 L 25,28 L 27,36 L 37,42 L 43,46 L 55,52",
-  "M 54,28 L 56,42 L 55,52 L 50,62",
+/* Each segment connects two star indices */
+const geminiSegments: Array<[number, number]> = [
+  // Top branch: 0→1→2→3→4
+  [0, 1], [1, 2], [2, 3], [3, 4],
+  // Left branch: 0→5→6→7→8→9
+  [0, 5], [5, 6], [6, 7], [7, 8], [8, 9],
+  // Right branch: 3→10→9→11
+  [3, 10], [10, 9], [9, 11],
 ];
 
 /** Spawn energy stream particles from star to energy bar */
@@ -177,8 +185,8 @@ export default function ConstellationStars() {
       >
         <defs>
           {/* Glow filters — layered for realistic star look */}
-          <filter id="c-bloom" x="-300%" y="-300%" width="700%" height="700%">
-            <feGaussianBlur stdDeviation="4.5" />
+          <filter id="c-bloom" x="-400%" y="-400%" width="900%" height="900%">
+            <feGaussianBlur stdDeviation="6" />
           </filter>
           <filter id="c-glow-lg" x="-200%" y="-200%" width="500%" height="500%">
             <feGaussianBlur stdDeviation="2.5" />
@@ -217,24 +225,42 @@ export default function ConstellationStars() {
           </radialGradient>
         </defs>
 
-        {/* Constellation lines */}
-        {geminiLines.map((d, i) => (
-          <g key={`line-${i}`}>
-            <path
-              d={d}
-              className="constellation-main__line constellation-main__line--glow"
-              style={{ "--li": i } as CSSProperties}
-              pathLength={1}
-              filter="url(#c-glow-line)"
-            />
-            <path
-              d={d}
-              className="constellation-main__line"
-              style={{ "--li": i } as CSSProperties}
-              pathLength={1}
-            />
-          </g>
-        ))}
+        {/* Constellation line segments — draw in on load, fade out when collected */}
+        {geminiSegments.map(([a, b], i) => {
+          const sa = geminiStars[a];
+          const sb = geminiStars[b];
+          const aCollected = collected.includes(a);
+          const bCollected = collected.includes(b);
+          // Lines start visible and fade out as stars are collected
+          const segOpacity = aCollected && bCollected ? 0 : aCollected || bCollected ? 0.35 : 0.85;
+          const delay = `${0.8 + i * 0.12}s`;
+          return (
+            <g
+              key={`seg-${i}`}
+              className="constellation-main__seg"
+              style={{
+                "--seg-d": delay,
+                "--seg-o": segOpacity,
+                opacity: segOpacity,
+                transition: "opacity 0.8s ease",
+              } as CSSProperties}
+            >
+              <line
+                x1={sa.x} y1={sa.y} x2={sb.x} y2={sb.y}
+                className="constellation-main__line constellation-main__line--glow"
+                style={{ "--seg-d": delay } as CSSProperties}
+                filter="url(#c-glow-line)"
+                pathLength={1}
+              />
+              <line
+                x1={sa.x} y1={sa.y} x2={sb.x} y2={sb.y}
+                className="constellation-main__line"
+                style={{ "--seg-d": delay } as CSSProperties}
+                pathLength={1}
+              />
+            </g>
+          );
+        })}
 
         {/* Star nodes — clickable */}
         {geminiStars.map((s, i) => {
@@ -242,9 +268,8 @@ export default function ConstellationStars() {
           const isJust = justCollected === i;
           const grad = s.size === "lg" ? "url(#c-star-glow-lg)" :
                        s.size === "md" ? "url(#c-star-glow-md)" : "url(#c-star-glow-sm)";
-          const r = s.size === "lg" ? { bloom: 10, outer: 6, mid: 3.5, inner: 1.8, core: 0.9 } :
-                    s.size === "md" ? { bloom: 7, outer: 4.5, mid: 2.5, inner: 1.3, core: 0.65 } :
-                                      { bloom: 5.5, outer: 3.5, mid: 2, inner: 1, core: 0.5 };
+          const r = s.size === "lg" ? { bloom: 14, outer: 8, mid: 5, inner: 2.8, core: 1.4 } :
+                                      { bloom: 10, outer: 6, mid: 3.5, inner: 2, core: 1 };
 
           return (
             <g
@@ -258,16 +283,14 @@ export default function ConstellationStars() {
               style={{ "--si": i } as CSSProperties}
               onClick={() => handleStarClick(i)}
             >
-              {/* Hit area */}
-              <circle cx={s.x} cy={s.y} r={6} fill="transparent" />
-
               {/* Collect flash */}
               {isJust && (
                 <circle
-                  cx={s.x} cy={s.y} r={10}
+                  cx={s.x} cy={s.y} r={14}
                   fill="#fff"
                   filter="url(#c-glow-collect)"
                   className="constellation-star-flash"
+                  pointerEvents="none"
                 />
               )}
 
@@ -277,6 +300,7 @@ export default function ConstellationStars() {
                 fill={grad}
                 filter="url(#c-bloom)"
                 opacity={isCollected ? 0.04 : 0.35}
+                pointerEvents="none"
               />
 
               {/* Layer 2: Outer glow */}
@@ -285,6 +309,7 @@ export default function ConstellationStars() {
                 fill={grad}
                 filter="url(#c-glow-lg)"
                 opacity={isCollected ? 0.06 : 0.5}
+                pointerEvents="none"
               />
 
               {/* Layer 3: Mid glow — bright ring */}
@@ -293,6 +318,7 @@ export default function ConstellationStars() {
                 fill="#6aadff"
                 filter="url(#c-glow-md)"
                 opacity={isCollected ? 0.08 : 0.65}
+                pointerEvents="none"
               />
 
               {/* Layer 4: Inner glow — hot white-blue */}
@@ -301,22 +327,26 @@ export default function ConstellationStars() {
                 fill="#c0dfff"
                 filter="url(#c-glow-sm)"
                 opacity={isCollected ? 0.1 : 0.85}
+                pointerEvents="none"
               />
 
               {/* Layer 5: Core — pure white */}
               <circle
                 cx={s.x} cy={s.y} r={r.core}
                 fill={isCollected ? "#2a3a55" : "#ffffff"}
+                pointerEvents="none"
               />
+
+              {/* Hit area — on top of everything for reliable clicks */}
+              <circle cx={s.x} cy={s.y} r={12} fill="transparent" style={{ cursor: "pointer" }} />
             </g>
           );
         })}
 
-        {/* Gemini symbol */}
-        <g className="constellation-main__symbol" transform="translate(50, 78) scale(0.18)">
-          <circle cx="0" cy="0" r="42" fill="none" stroke="#7bb4ff" strokeWidth="1.5" opacity="0.85" />
-          <circle cx="0" cy="0" r="42" fill="none" stroke="#7bb4ff" strokeWidth="3" filter="url(#c-glow-md)" opacity="0.4" />
-          <g stroke="#7bb4ff" strokeWidth="2.5" strokeLinecap="round" fill="none" opacity="0.9">
+        {/* Gemini symbol — tiny inline with title */}
+        <g className="constellation-main__symbol" transform="translate(50, 93) scale(0.055)">
+          <circle cx="0" cy="0" r="42" fill="none" stroke="#7bb4ff" strokeWidth="2.5" opacity="0.4" />
+          <g stroke="#7bb4ff" strokeWidth="3.5" strokeLinecap="round" fill="none" opacity="0.5">
             <path d="M -22 -20 Q 0 -4 22 -20" />
             <path d="M -22 20 Q 0 4 22 20" />
             <line x1="-9" y1="-12" x2="-9" y2="12" />

@@ -40,10 +40,15 @@ body {
 body {
   overflow: hidden;
   background:
-    radial-gradient(circle at 50% 46%, rgba(21, 88, 118, 0.72) 0%, rgba(3, 20, 40, 0.92) 48%, #010611 100%),
+    radial-gradient(circle at 50% 70%, rgba(8, 38, 52, 0.45) 0%, rgba(3, 14, 28, 0.85) 40%, #010611 100%),
     #010611;
   color: #e7fbff;
   font-family: "Trebuchet MS", "Segoe UI", Verdana, sans-serif;
+}
+
+/* Allow scrolling only on constellation page */
+body:has(.constellation-scene) {
+  overflow-y: auto;
 }
 
 /* ─── Scene container ─── */
@@ -349,7 +354,8 @@ body {
 /* ─── Constellation Page ─── */
 .constellation-scene {
   background: radial-gradient(ellipse at 50% 40%, #0a0e2a 0%, #050816 50%, #020408 100%);
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 /* Background stars */
@@ -430,26 +436,35 @@ body {
   pointer-events: auto;
 }
 
-/* Constellation lines */
+/* Constellation line segments */
+.constellation-main__seg {
+  opacity: 0;
+  animation: const-seg-in 0.8s ease-out forwards;
+  animation-delay: var(--seg-d, 0s);
+}
+@keyframes const-seg-in {
+  from { opacity: 0; }
+  to   { opacity: var(--seg-o, 0.85); }
+}
 .constellation-main__line {
   fill: none;
   stroke: #cce0ff;
   stroke-width: 0.25;
   stroke-linecap: round;
   stroke-linejoin: round;
-  opacity: 0.85;
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
-  animation: const-line-draw 2s ease-out calc(0.8s + var(--li) * 0.5s) forwards;
+  animation: const-line-draw 1.2s ease-out forwards;
+  animation-delay: var(--seg-d, 0s);
+}
+@keyframes const-line-draw {
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
 }
 .constellation-main__line--glow {
   stroke: #6ea8ff;
   stroke-width: 0.8;
   opacity: 0.3;
-}
-@keyframes const-line-draw {
-  from { stroke-dashoffset: 1; }
-  to   { stroke-dashoffset: 0; }
 }
 
 /* Star nodes */
@@ -469,7 +484,9 @@ body {
 }
 .constellation-main__star--collected {
   opacity: 1 !important;
-  transition: opacity 0.8s ease-out;
+  transform: scale(1);
+  filter: brightness(0.4);
+  animation: none !important;
 }
 .constellation-main__star--collecting {
   animation: const-star-collect 0.8s ease-out forwards !important;
@@ -485,8 +502,8 @@ body {
 }
 @keyframes const-star-collect {
   0%   { transform: scale(1); filter: brightness(1); }
-  30%  { transform: scale(2.5); filter: brightness(3); }
-  100% { transform: scale(0.8); filter: brightness(0.3); }
+  30%  { transform: scale(2); filter: brightness(3); }
+  100% { transform: scale(1); filter: brightness(0.4); }
 }
 
 /* Star flash effect */
@@ -508,21 +525,22 @@ body {
   to   { opacity: 0.85; }
 }
 
-/* Title */
+/* Title — subtle, paired with symbol */
 .constellation-title {
   position: absolute;
-  bottom: 8%;
+  bottom: 2.5%;
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
   font-family: var(--font-playfair), serif;
-  font-size: clamp(1.8rem, 4vw, 3.2rem);
+  font-size: clamp(0.7rem, 1.2vw, 0.9rem);
   font-weight: 400;
   font-style: italic;
-  color: #b0ccff;
-  letter-spacing: 0.15em;
-  text-shadow: 0 0 20px rgba(120, 170, 255, 0.5), 0 0 60px rgba(80, 130, 255, 0.2);
+  color: rgba(140, 175, 240, 0.4);
+  letter-spacing: 0.25em;
+  text-shadow: 0 0 8px rgba(120, 170, 255, 0.15);
   white-space: nowrap;
+  text-transform: uppercase;
 }
 .constellation-title__char {
   display: inline-block;
@@ -3118,6 +3136,34 @@ body {
 .celebrate-success__sub {
   font-size: 1.1rem !important;
   opacity: 0.75;
+}
+
+/* Navigation buttons */
+.celebrate-nav {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+  animation: cel-form-in 0.65s ease-out 1.4s both;
+}
+.celebrate-nav__btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.85rem;
+  padding: 0.45rem 1.2rem;
+  text-decoration: none;
+  transition: background 0.25s, color 0.25s, transform 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.celebrate-nav__btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  transform: scale(1.06);
 }
 
 /* ─── Dodge speech bubble ─── */
