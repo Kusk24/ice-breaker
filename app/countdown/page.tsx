@@ -7,6 +7,8 @@ import T3Nebula from "@/app/components/T3Nebula";
 
 const isProd = process.env.NODE_ENV === "production";
 const rocketSrc = `${isProd ? "/ice-breaker" : ""}/rocket.svg`;
+const thaethuSrc = `${isProd ? "/ice-breaker" : ""}/thaethu.png`;
+const iwannabeyoursSrc = `${isProd ? "/ice-breaker" : ""}/iwannabeyours.jpg`;
 
 const TOTAL_SECONDS = 30; // TODO: change back to 10 * 60 (10 minutes)
 const STORAGE_KEY = "bomb-countdown-start";
@@ -231,124 +233,115 @@ export default function CountdownPage() {
                 <stop offset="0%"   stopColor="#686868"/>
                 <stop offset="100%" stopColor="#1e1e1e"/>
               </radialGradient>
-              {/* Organic rock-chunk clips — curved bumpy edges like real fragments */}
+              {/* Per-piece rock body outlines — each is its own unique shape */}
+              {/* Piece 0 — chunky wedge with bumpy top */}
               <clipPath id="ast-clip-0">
-                <path d="M 10,5 C 50,-5 110,8 155,2 C 165,25 150,55 162,78 C 148,95 158,125 145,148 C 110,155 70,145 35,150 C 15,130 5,100 8,70 C -2,45 5,20 10,5 Z"/>
+                <path d="M 30,15 C 55,5 95,8 130,12 C 148,18 160,35 155,58 C 150,78 158,100 145,120 C 130,140 105,148 78,145 C 50,142 28,128 18,105 C 8,82 10,52 15,35 C 20,22 25,17 30,15 Z"/>
               </clipPath>
+              {/* Piece 1 — wider flat-ish slab */}
               <clipPath id="ast-clip-1">
-                <path d="M 155,2 C 195,-4 240,5 285,10 C 298,40 290,75 295,108 C 300,135 292,155 280,165 C 250,158 215,168 178,155 C 162,130 170,100 158,78 C 150,55 165,25 155,2 Z"/>
+                <path d="M 25,20 C 58,8 100,12 140,15 C 158,22 168,42 162,65 C 155,88 148,108 135,125 C 115,140 85,145 55,138 C 32,130 15,110 12,85 C 10,60 15,35 25,20 Z"/>
               </clipPath>
+              {/* Piece 2 — taller rough chunk */}
               <clipPath id="ast-clip-2">
-                <path d="M 8,148 C 40,140 80,155 120,145 C 138,165 125,190 135,212 C 145,235 128,260 140,285 C 110,300 65,295 25,290 C 8,265 -2,235 5,205 C 12,180 2,165 8,148 Z"/>
+                <path d="M 35,12 C 60,5 95,10 120,18 C 140,28 152,52 148,80 C 144,108 140,132 125,150 C 105,162 75,165 50,155 C 28,142 15,118 12,90 C 10,62 18,32 35,12 Z"/>
               </clipPath>
+              {/* Piece 3 — angular pointed chunk */}
               <clipPath id="ast-clip-3">
-                <path d="M 165,155 C 200,148 235,162 270,158 C 290,180 295,210 288,240 C 280,265 292,285 275,298 C 240,305 200,295 165,290 C 148,265 155,235 142,212 C 130,190 145,170 165,155 Z"/>
+                <path d="M 40,10 C 68,5 105,15 130,25 C 150,38 158,62 150,90 C 142,115 128,135 108,148 C 82,155 55,148 35,132 C 18,112 10,85 15,58 C 20,35 28,18 40,10 Z"/>
               </clipPath>
             </defs>
           </svg>
 
-          {([0, 1, 2, 3] as const).map((i) => (
+          {([0, 1, 2, 3] as const).map((i) => {
+            const rockShapes = [
+              // Piece 0 — chunky wedge
+              "M 30,15 C 55,5 95,8 130,12 C 148,18 160,35 155,58 C 150,78 158,100 145,120 C 130,140 105,148 78,145 C 50,142 28,128 18,105 C 8,82 10,52 15,35 C 20,22 25,17 30,15 Z",
+              // Piece 1 — wider flat slab
+              "M 25,20 C 58,8 100,12 140,15 C 158,22 168,42 162,65 C 155,88 148,108 135,125 C 115,140 85,145 55,138 C 32,130 15,110 12,85 C 10,60 15,35 25,20 Z",
+              // Piece 2 — taller rough chunk
+              "M 35,12 C 60,5 95,10 120,18 C 140,28 152,52 148,80 C 144,108 140,132 125,150 C 105,162 75,165 50,155 C 28,142 15,118 12,90 C 10,62 18,32 35,12 Z",
+              // Piece 3 — angular pointed chunk
+              "M 40,10 C 68,5 105,15 130,25 C 150,38 158,62 150,90 C 142,115 128,135 108,148 C 82,155 55,148 35,132 C 18,112 10,85 15,58 C 20,35 28,18 40,10 Z",
+            ];
+            const craters: Record<number, Array<{cx:number;cy:number;rx:number;ry:number}>> = {
+              0: [{cx:70,cy:55,rx:22,ry:18},{cx:115,cy:95,rx:14,ry:12},{cx:48,cy:110,rx:10,ry:9}],
+              1: [{cx:85,cy:50,rx:24,ry:20},{cx:55,cy:95,rx:16,ry:13},{cx:125,cy:85,rx:11,ry:10}],
+              2: [{cx:75,cy:60,rx:20,ry:16},{cx:100,cy:110,rx:18,ry:15},{cx:45,cy:125,rx:12,ry:10}],
+              3: [{cx:80,cy:55,rx:22,ry:18},{cx:110,cy:100,rx:15,ry:13},{cx:50,cy:105,rx:11,ry:9}],
+            };
+            const dots: Record<number, Array<{cx:number;cy:number;r:number}>> = {
+              0: [{cx:50,cy:30,r:3},{cx:130,cy:40,r:2.5},{cx:35,cy:85,r:2},{cx:110,cy:125,r:2.5}],
+              1: [{cx:45,cy:35,r:2.5},{cx:130,cy:55,r:3},{cx:70,cy:120,r:2},{cx:110,cy:110,r:2.5}],
+              2: [{cx:55,cy:30,r:2.5},{cx:110,cy:45,r:2},{cx:35,cy:95,r:3},{cx:95,cy:140,r:2}],
+              3: [{cx:65,cy:28,r:2.5},{cx:120,cy:50,r:2},{cx:40,cy:80,r:3},{cx:95,cy:130,r:2}],
+            };
+            const highlights = [
+              "M 30,20 Q 70,10 120,15 Q 140,18 150,30",
+              "M 28,25 Q 75,12 125,18 Q 150,25 160,38",
+              "M 38,18 Q 72,10 105,15 Q 130,22 145,35",
+              "M 42,15 Q 78,10 110,18 Q 135,28 148,42",
+            ];
+            return (
             <div
               key={i}
               className={`asteroid-piece asteroid-piece--${i}${done ? " asteroid-piece--floating" : ""}${zoomedPiece === i ? " asteroid-piece--zoomed" : ""}`}
               onClick={done ? () => setZoomedPiece(zoomedPiece === i ? null : i) : undefined}
               style={done ? { cursor: "pointer" } : undefined}
             >
-              {/* 300×300 viewBox — roughly round rock, cartoon style like reference but black */}
-              <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" className="asteroid-svg">
+              <svg viewBox="0 0 170 170" xmlns="http://www.w3.org/2000/svg" className="asteroid-svg">
                 <g clipPath={`url(#ast-clip-${i})`}>
+                    {/* Rock body */}
+                    <path d={rockShapes[i]} fill="url(#ast-body)" stroke="#2a2a2a" strokeWidth="5" strokeLinejoin="round"/>
+                    <path d={rockShapes[i]} fill="url(#ast-shade)" stroke="none"/>
 
-                    {/* ── Main body — smooth round with 4 gentle edge bumps ── */}
-                    <path
-                      d="
-                        M 150,20
-                        C 172,12 200,14 222,26
-                        C 248,20 272,38 278,64
-                        C 292,84 288,112 276,132
-                        C 280,156 264,178 244,188
-                        C 224,210 194,220 164,220
-                        C 140,228 112,224 90,212
-                        C 66,216 40,202 26,182
-                        C 8,164 6,138 14,116
-                        C 4,96  8,70  22,52
-                        C 28,28 54,14 80,16
-                        C 100,8 128,10 150,20 Z
-                      "
-                      fill="url(#ast-body)"
-                      stroke="#2a2a2a"
-                      strokeWidth="7"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="
-                        M 150,20
-                        C 172,12 200,14 222,26
-                        C 248,20 272,38 278,64
-                        C 292,84 288,112 276,132
-                        C 280,156 264,178 244,188
-                        C 224,210 194,220 164,220
-                        C 140,228 112,224 90,212
-                        C 66,216 40,202 26,182
-                        C 8,164 6,138 14,116
-                        C 4,96  8,70  22,52
-                        C 28,28 54,14 80,16
-                        C 100,8 128,10 150,20 Z
-                      "
-                      fill="url(#ast-shade)"
-                      stroke="none"
-                    />
+                    {/* Craters */}
+                    {craters[i].map((c, ci) => (
+                      <g key={ci}>
+                        <ellipse cx={c.cx} cy={c.cy} rx={c.rx} ry={c.ry} fill="#383838" stroke="#222" strokeWidth="2"/>
+                        <ellipse cx={c.cx} cy={c.cy+2} rx={c.rx*0.75} ry={c.ry*0.75} fill="url(#cr-bowl)"/>
+                        <ellipse cx={c.cx-2} cy={c.cy-1} rx={c.rx*0.3} ry={c.ry*0.3} fill="#888" opacity="0.45"/>
+                      </g>
+                    ))}
 
-                    {/* ── Craters — cartoon bowl style: dark ring + grey inner + outline ── */}
+                    {/* Pockmarks */}
+                    {dots[i].map((d, di) => (
+                      <circle key={di} cx={d.cx} cy={d.cy} r={d.r} fill="#444"/>
+                    ))}
 
-                    {/* Crater 1 — upper-left, large */}
-                    <ellipse cx="92"  cy="80"  rx="34" ry="28" fill="#383838" stroke="#222" strokeWidth="3"/>
-                    <ellipse cx="92"  cy="83"  rx="26" ry="21" fill="url(#cr-bowl)"/>
-                    <ellipse cx="88"  cy="79"  rx="10" ry="8"  fill="#888" opacity="0.45"/>
+                    {/* Highlight */}
+                    <path d={highlights[i]} fill="none" stroke="rgba(200,200,200,0.22)" strokeWidth="6" strokeLinecap="round"/>
 
-                    {/* Crater 2 — upper-right, medium */}
-                    <ellipse cx="200" cy="75"  rx="26" ry="22" fill="#383838" stroke="#222" strokeWidth="3"/>
-                    <ellipse cx="200" cy="78"  rx="20" ry="17" fill="url(#cr-bowl)"/>
-                    <ellipse cx="197" cy="74"  rx="8"  ry="6"  fill="#888" opacity="0.45"/>
-
-                    {/* Crater 3 — center, biggest */}
-                    <ellipse cx="148" cy="160" rx="38" ry="30" fill="#383838" stroke="#222" strokeWidth="3"/>
-                    <ellipse cx="148" cy="163" rx="30" ry="23" fill="url(#cr-bowl)"/>
-                    <ellipse cx="144" cy="158" rx="12" ry="9"  fill="#888" opacity="0.45"/>
-
-                    {/* Crater 4 — left-center, small */}
-                    <ellipse cx="52"  cy="148" rx="18" ry="15" fill="#383838" stroke="#222" strokeWidth="2.5"/>
-                    <ellipse cx="52"  cy="151" rx="13" ry="11" fill="url(#cr-bowl)"/>
-                    <ellipse cx="49"  cy="147" rx="5"  ry="4"  fill="#888" opacity="0.4"/>
-
-                    {/* Crater 5 — right, small */}
-                    <ellipse cx="234" cy="150" rx="16" ry="13" fill="#383838" stroke="#222" strokeWidth="2.5"/>
-                    <ellipse cx="234" cy="153" rx="12" ry="10" fill="url(#cr-bowl)"/>
-                    <ellipse cx="231" cy="149" rx="5"  ry="4"  fill="#888" opacity="0.4"/>
-
-                    {/* ── Small dots / pockmarks ── */}
-                    <circle cx="140" cy="46"  r="4"   fill="#444"/>
-                    <circle cx="170" cy="38"  r="3"   fill="#444"/>
-                    <circle cx="60"  cy="110" r="3.5" fill="#444"/>
-                    <circle cx="240" cy="110" r="3"   fill="#444"/>
-                    <circle cx="110" cy="200" r="3"   fill="#444"/>
-                    <circle cx="190" cy="195" r="3.5" fill="#444"/>
-                    <circle cx="220" cy="55"  r="3"   fill="#444"/>
-                    <circle cx="76"  cy="170" r="2.5" fill="#444"/>
-                    <circle cx="200" cy="175" r="2.5" fill="#444"/>
-
-                    {/* ── Top-left highlight (cartoon cel-shading style) ── */}
-                    <path
-                      d="M 60,30 Q 120,12 188,18 Q 228,22 250,44"
-                      fill="none"
-                      stroke="rgba(200,200,200,0.22)"
-                      strokeWidth="10"
-                      strokeLinecap="round"
-                    />
-
+                    {/* Image + text on piece 0 (top-left) */}
+                    {done && i === 0 && (
+                      <image href={thaethuSrc} x="35" y="10" width="100" height="90" preserveAspectRatio="xMidYMid meet" className="asteroid-piece__img-svg"/>
+                    )}
+                    {zoomedPiece === 0 && i === 0 && (
+                      <foreignObject x="30" y="105" width="115" height="30" className="asteroid-piece__text-fo">
+                        <p className="asteroid-piece__text asteroid-piece__text--label">{siteText.asteroidTextTopRight}</p>
+                      </foreignObject>
+                    )}
+                    {/* Image on piece 1 (top-right) */}
+                    {done && i === 1 && (
+                      <image href={iwannabeyoursSrc} x="25" y="20" width="120" height="115" preserveAspectRatio="xMidYMid meet" className="asteroid-piece__img-svg"/>
+                    )}
+                    {/* Text on piece 2 — centered */}
+                    {zoomedPiece === 2 && i === 2 && (
+                      <foreignObject x="10" y="10" width="150" height="155" className="asteroid-piece__text-fo">
+                        <p className="asteroid-piece__text">{siteText.asteroidTextLeft}</p>
+                      </foreignObject>
+                    )}
+                    {/* Text on piece 3 — centered */}
+                    {zoomedPiece === 3 && i === 3 && (
+                      <foreignObject x="10" y="10" width="145" height="145" className="asteroid-piece__text-fo">
+                        <p className="asteroid-piece__text">{siteText.asteroidTextRight}</p>
+                      </foreignObject>
+                    )}
                   </g>
                 </svg>
               </div>
-            ))}
+            );
+          })}
           </div>
 
         {/* Bomb */}

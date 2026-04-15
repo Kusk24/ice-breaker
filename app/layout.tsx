@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Dancing_Script, Share_Tech_Mono } from "next/font/google";
+import { Playfair_Display, Dancing_Script, Share_Tech_Mono, Caveat } from "next/font/google";
 import "./globals.css";
 import MusicPlayer from "./components/MusicPlayer";
 
@@ -22,6 +22,12 @@ const shareTech = Share_Tech_Mono({
   variable: "--font-digital",
 });
 
+const caveat = Caveat({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-caveat",
+});
+
 export const metadata: Metadata = {
   title: "A Special Gift for Tiny Thae Thu",
   description: "A CSS-animated flower blossoming scene built with Next.js",
@@ -33,7 +39,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`h-full antialiased ${playfair.variable} ${dancing.variable} ${shareTech.variable}`}>
+    <html lang="en" className={`h-full antialiased ${playfair.variable} ${dancing.variable} ${shareTech.variable} ${caveat.variable}`}>
       <body className="min-h-full flex flex-col">
         {children}
         <MusicPlayer />

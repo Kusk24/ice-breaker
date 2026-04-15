@@ -185,22 +185,6 @@ body:has(.constellation-scene) {
   animation: moon-cover-reveal 7s ease-in-out 0.25s forwards;
 }
 
-.moon__portrait {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-  opacity: 0;
-  animation: portrait-appear 2s ease-in-out 6.8s forwards;
-  mix-blend-mode: normal;
-}
-
-@keyframes portrait-appear {
-  from { opacity: 0; }
-  to   { opacity: 0.45; }
-}
 
 .moon-text {
   position: absolute;
@@ -3594,10 +3578,10 @@ body:has(.constellation-scene) {
 }
 
 .scroll-modal__line {
-  font-family: var(--font-dancing, cursive);
-  font-size: 1.1rem;
+  font-family: var(--font-caveat, cursive);
+  font-size: 1.25rem;
   color: #3a2208;
-  line-height: 1.75;
+  line-height: 1.7;
   margin: 0 0 0.55em;
   text-shadow: 0 1px 0 rgba(255, 240, 200, 0.4);
   opacity: 0;
@@ -3729,7 +3713,7 @@ body:has(.constellation-scene) {
 }
 
 .countdown-title {
-  font-family: var(--font-playfair), serif;
+  font-family: var(--font-dancing), cursive;
   font-size: clamp(1.2rem, 3.5vw, 2rem);
   text-align: center;
   color: rgba(220, 235, 255, 0.9);
@@ -3741,7 +3725,7 @@ body:has(.constellation-scene) {
 }
 
 .countdown-title--done {
-  font-family: var(--font-playfair), serif;
+  font-family: var(--font-dancing), cursive;
   background: linear-gradient(120deg, #f9d4ff, #c084fc, #e879f9, #a5b4fc, #f9d4ff);
   background-size: 300% auto;
   -webkit-background-clip: text;
@@ -3946,37 +3930,74 @@ body:has(.constellation-scene) {
   filter: drop-shadow(0 0 18px rgba(200, 200, 255, 0.6));
 }
 
-/* Zoomed piece — enlarge and shift toward center area, staying on its side */
+/* Zoomed piece — enlarge ~6x and shift toward center area, staying on its side */
 .asteroid-piece--zoomed {
   animation: none !important;
   opacity: 1 !important;
   z-index: 25;
-  width: clamp(500px, 70vw, 800px) !important;
-  height: clamp(500px, 70vw, 800px) !important;
+  width: clamp(380px, 50vw, 550px) !important;
+  height: clamp(380px, 50vw, 550px) !important;
   filter: drop-shadow(0 0 30px rgba(200, 200, 255, 0.7)) !important;
   transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
 }
 
 /* Each piece shifts inward toward center on its side */
 .asteroid-piece--zoomed.asteroid-piece--0 {
-  top: 15vh !important;
-  left: 15vw !important;
-  transform: rotate(-5deg) !important;
+  top: 10vh !important;
+  left: 8vw !important;
+  transform: rotate(-3deg) !important;
 }
 .asteroid-piece--zoomed.asteroid-piece--1 {
-  top: 15vh !important;
-  right: 15vw !important;
-  transform: rotate(5deg) !important;
+  top: 10vh !important;
+  right: 8vw !important;
+  transform: rotate(3deg) !important;
 }
 .asteroid-piece--zoomed.asteroid-piece--2 {
-  bottom: 15vh !important;
-  left: 15vw !important;
-  transform: rotate(5deg) !important;
+  bottom: 10vh !important;
+  left: 8vw !important;
+  transform: rotate(3deg) !important;
 }
 .asteroid-piece--zoomed.asteroid-piece--3 {
-  bottom: 15vh !important;
-  right: 15vw !important;
-  transform: rotate(-5deg) !important;
+  bottom: 10vh !important;
+  right: 8vw !important;
+  transform: rotate(-3deg) !important;
+}
+
+/* Image overlays on asteroid pieces (SVG <image> inside clipPath) */
+.asteroid-piece__img-svg {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+.asteroid-piece--zoomed .asteroid-piece__img-svg {
+  opacity: 0.85;
+}
+
+/* Text overlays on asteroid pieces — only rendered when zoomed */
+.asteroid-piece__text-fo {
+  pointer-events: none;
+}
+.asteroid-piece__text {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-dancing), cursive;
+  font-size: 11px;
+  line-height: 1.35;
+  color: #b0b0b0;
+  text-align: center;
+  white-space: pre-line;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+.asteroid-piece__text--label {
+  color: #d0d0d0;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  font-size: 10px;
+  align-items: flex-start;
 }
 
 /* ── Bomb container — fills the stage so children can be placed at stage % ── */
