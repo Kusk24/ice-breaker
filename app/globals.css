@@ -233,6 +233,29 @@ body:has(.constellation-scene) {
 
 .moon-actions__btn {
   margin: 0;
+  background: linear-gradient(135deg,
+    rgba(140, 180, 255, 0.22) 0%,
+    rgba(180, 200, 255, 0.18) 50%,
+    rgba(160, 190, 255, 0.25) 100%);
+  border-color: rgba(180, 210, 255, 0.35);
+  text-shadow: 0 1px 5px rgba(20, 40, 80, 0.55);
+  box-shadow:
+    0 4px 22px rgba(140, 180, 255, 0.35),
+    0 0 40px rgba(160, 200, 255, 0.12),
+    inset 0 1px 0 rgba(200, 220, 255, 0.25);
+  animation:
+    blossom-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards,
+    btn-pulse-moon 3s ease-in-out 1.1s infinite;
+}
+.moon-actions__btn:hover {
+  background: linear-gradient(135deg,
+    rgba(150, 190, 255, 0.32) 0%,
+    rgba(190, 210, 255, 0.28) 50%,
+    rgba(170, 200, 255, 0.35) 100%);
+  box-shadow:
+    0 6px 30px rgba(140, 180, 255, 0.55),
+    0 0 55px rgba(160, 200, 255, 0.22),
+    inset 0 1px 0 rgba(200, 220, 255, 0.35);
 }
 
 .gemini-constellation {
@@ -542,9 +565,19 @@ body:has(.constellation-scene) {
   top: 5%;
   right: 5%;
   z-index: 20;
+  background: linear-gradient(135deg,
+    rgba(140, 180, 255, 0.22) 0%,
+    rgba(180, 200, 255, 0.18) 50%,
+    rgba(160, 190, 255, 0.25) 100%);
+  border-color: rgba(180, 210, 255, 0.35);
+  text-shadow: 0 1px 5px rgba(20, 40, 80, 0.55);
+  box-shadow:
+    0 4px 22px rgba(140, 180, 255, 0.35),
+    0 0 40px rgba(160, 200, 255, 0.12),
+    inset 0 1px 0 rgba(200, 220, 255, 0.25);
   animation:
     blossom-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards,
-    btn-pulse 3s ease-in-out 1.1s infinite;
+    btn-pulse-moon 3s ease-in-out 1.1s infinite;
 }
 
 /* ─── Energy Locator (Constellation Page) ─── */
@@ -2573,13 +2606,11 @@ body:has(.constellation-scene) {
   font-size: clamp(1rem, 2vw, 1.4rem);
   font-weight: 700;
   color: #fff8f0;
-  /* Fairy-tale: soft violet-rose with golden shimmer */
   background: linear-gradient(135deg,
-    #7c3fa8 0%,
-    #b565d0 35%,
-    #e080c0 65%,
-    #c958a8 100%);
-  border: 1px solid rgba(255, 200, 240, 0.25);
+    rgba(255, 200, 60, 0.25) 0%,
+    rgba(255, 180, 80, 0.18) 50%,
+    rgba(255, 220, 120, 0.22) 100%);
+  border: 1px solid rgba(255, 220, 120, 0.35);
   border-radius: 999px;
   cursor: pointer;
   white-space: nowrap;
@@ -2587,34 +2618,33 @@ body:has(.constellation-scene) {
   pointer-events: auto;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-  text-shadow: 0 1px 5px rgba(50, 0, 80, 0.55);
+  text-shadow: 0 1px 5px rgba(80, 50, 0, 0.55);
   box-shadow:
-    0 4px 22px rgba(160, 60, 200, 0.5),
-    0 0 40px rgba(200, 100, 230, 0.15),
-    inset 0 1px 0 rgba(255, 220, 255, 0.22);
+    0 4px 22px rgba(255, 200, 60, 0.4),
+    0 0 40px rgba(255, 220, 80, 0.15),
+    inset 0 1px 0 rgba(255, 248, 200, 0.25);
   opacity: 0;
   animation:
     blossom-in 1s cubic-bezier(0.34, 1.56, 0.64, 1) 10.5s forwards,
-    btn-pulse 3s ease-in-out 11.5s infinite;
+    btn-pulse-firefly 3s ease-in-out 11.5s infinite;
   transition: background 0.25s, box-shadow 0.25s, transform 0.18s;
 }
 
 .hero__btn:hover {
   background: linear-gradient(135deg,
-    #9248c0 0%,
-    #cc78e0 35%,
-    #f098d4 65%,
-    #d868c0 100%);
+    rgba(255, 210, 80, 0.35) 0%,
+    rgba(255, 190, 90, 0.28) 50%,
+    rgba(255, 230, 140, 0.32) 100%);
   box-shadow:
-    0 6px 30px rgba(180, 80, 220, 0.65),
-    0 0 55px rgba(210, 110, 240, 0.25),
-    inset 0 1px 0 rgba(255, 220, 255, 0.3);
+    0 6px 30px rgba(255, 200, 60, 0.6),
+    0 0 55px rgba(255, 220, 80, 0.25),
+    inset 0 1px 0 rgba(255, 248, 200, 0.35);
   transform: scale(1.06) translateY(-2px);
 }
 
 .hero__btn:active {
   transform: scale(0.97) translateY(1px);
-  box-shadow: 0 2px 12px rgba(140, 40, 180, 0.5);
+  box-shadow: 0 2px 12px rgba(200, 150, 30, 0.5);
 }
 
 /* Button materializes from creature energy — smooth fairy-dust coalesce */
@@ -2623,7 +2653,7 @@ body:has(.constellation-scene) {
   animation:
     cage-btn-in 2s cubic-bezier(0.22, 1, 0.36, 1) 0.15s forwards,
     cage-btn-glow 2.4s ease-out 0.15s forwards,
-    btn-pulse 3s ease-in-out 2.6s infinite;
+    btn-pulse-firefly 3s ease-in-out 2.6s infinite;
 }
 
 @keyframes cage-btn-in {
@@ -2654,21 +2684,21 @@ body:has(.constellation-scene) {
 @keyframes cage-btn-glow {
   0%   {
     box-shadow:
-      0 0 80px 40px rgba(220, 160, 255, 0.55),
-      0 0 140px 70px rgba(180, 100, 240, 0.2),
-      inset 0 0 25px rgba(230, 180, 255, 0.35);
+      0 0 80px 40px rgba(255, 230, 120, 0.55),
+      0 0 140px 70px rgba(255, 200, 60, 0.2),
+      inset 0 0 25px rgba(255, 240, 180, 0.35);
   }
   35%  {
     box-shadow:
-      0 0 45px 20px rgba(200, 130, 255, 0.38),
-      0 0 80px 35px rgba(160, 80, 220, 0.15),
-      inset 0 0 12px rgba(220, 170, 255, 0.2);
+      0 0 45px 20px rgba(255, 220, 100, 0.38),
+      0 0 80px 35px rgba(255, 200, 60, 0.15),
+      inset 0 0 12px rgba(255, 240, 180, 0.2);
   }
   100% {
     box-shadow:
-      0 4px 22px rgba(160, 60, 200, 0.5),
-      0 0 40px rgba(200, 100, 230, 0.15),
-      inset 0 1px 0 rgba(255, 220, 255, 0.22);
+      0 4px 22px rgba(255, 200, 60, 0.4),
+      0 0 40px rgba(255, 220, 80, 0.15),
+      inset 0 1px 0 rgba(255, 248, 200, 0.25);
   }
 }
 
@@ -2903,6 +2933,36 @@ body:has(.constellation-scene) {
       0 4px 35px rgba(180, 80, 230, 0.72),
       0 0 60px rgba(210, 110, 245, 0.28),
       inset 0 1px 0 rgba(255, 220, 255, 0.28);
+  }
+}
+
+@keyframes btn-pulse-moon {
+  0%, 100% {
+    box-shadow:
+      0 4px 22px rgba(140, 180, 255, 0.35),
+      0 0 40px rgba(160, 200, 255, 0.12),
+      inset 0 1px 0 rgba(200, 220, 255, 0.25);
+  }
+  50% {
+    box-shadow:
+      0 4px 35px rgba(140, 180, 255, 0.55),
+      0 0 60px rgba(170, 210, 255, 0.25),
+      inset 0 1px 0 rgba(200, 220, 255, 0.35);
+  }
+}
+
+@keyframes btn-pulse-firefly {
+  0%, 100% {
+    box-shadow:
+      0 4px 22px rgba(255, 200, 60, 0.4),
+      0 0 40px rgba(255, 220, 80, 0.15),
+      inset 0 1px 0 rgba(255, 248, 200, 0.25);
+  }
+  50% {
+    box-shadow:
+      0 4px 35px rgba(255, 210, 60, 0.65),
+      0 0 60px rgba(255, 230, 100, 0.3),
+      inset 0 1px 0 rgba(255, 248, 200, 0.35);
   }
 }
 
