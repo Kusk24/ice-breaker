@@ -177,8 +177,8 @@ export default function CountdownPage() {
   }, [done, router]);
 
   const progress = 1 - remaining / TOTAL_SECONDS; // 0 → 1
-  const isWarning = remaining <= 60 && remaining > 30;
-  const isUrgent = remaining <= 30;
+  const isWarning = remaining <= 70 && remaining > 35;
+  const isUrgent = remaining <= 35;
   const isAlmostDone = remaining <= 10;
 
   // Spark position along cubic bezier: M 50,57 C 56,34 72,12 90,4
