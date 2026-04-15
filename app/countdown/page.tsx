@@ -10,7 +10,7 @@ const rocketSrc = `${isProd ? "/ice-breaker" : ""}/rocket.svg`;
 const thaethuSrc = `${isProd ? "/ice-breaker" : ""}/thaethu.png`;
 const iwannabeyoursSrc = `${isProd ? "/ice-breaker" : ""}/iwannabeyours.jpg`;
 
-const TOTAL_SECONDS = 30; // TODO: change back to 10 * 60 (10 minutes)
+const TOTAL_SECONDS = 90; // TODO: change back to 10 * 60 (10 minutes)
 const STORAGE_KEY = "bomb-countdown-start";
 
 const stars = Array.from({ length: 60 }, (_, i) => ({
@@ -177,8 +177,8 @@ export default function CountdownPage() {
   }, [done, router]);
 
   const progress = 1 - remaining / TOTAL_SECONDS; // 0 → 1
-  const isWarning = remaining <= 120 && remaining > 60;
-  const isUrgent = remaining <= 60;
+  const isWarning = remaining <= 60 && remaining > 30;
+  const isUrgent = remaining <= 30;
   const isAlmostDone = remaining <= 10;
 
   // Spark position along cubic bezier: M 50,57 C 56,34 72,12 90,4
@@ -188,7 +188,7 @@ export default function CountdownPage() {
   const sparkY = (1-t)*(1-t)*(1-t)*57 + 3*(1-t)*(1-t)*t*34 + 3*(1-t)*t*t*12 + t*t*t*4;
 
   return (
-    <main className="scene countdown-scene" aria-label="Countdown timer">
+    <main className="scene countdown-scene" aria-label="Countdown timer" onClick={() => zoomedPiece !== null && setZoomedPiece(null)}>
       {/* Screen flash on explosion */}
       {exploding && <div className="explosion-flash" aria-hidden />}
 
@@ -286,7 +286,7 @@ export default function CountdownPage() {
             <div
               key={i}
               className={`asteroid-piece asteroid-piece--${i}${done ? " asteroid-piece--floating" : ""}${zoomedPiece === i ? " asteroid-piece--zoomed" : ""}`}
-              onClick={done ? () => setZoomedPiece(zoomedPiece === i ? null : i) : undefined}
+              onClick={done ? (e) => { e.stopPropagation(); setZoomedPiece(zoomedPiece === i ? null : i); } : undefined}
               style={done ? { cursor: "pointer" } : undefined}
             >
               <svg viewBox="0 0 170 170" xmlns="http://www.w3.org/2000/svg" className="asteroid-svg">

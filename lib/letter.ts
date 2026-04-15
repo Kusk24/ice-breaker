@@ -1,4 +1,4 @@
-export const letter = `Dear Thae Thu (T3),
+export const letter = `Dear Thae Thu (T3 🪱),
 
 You probably didn't expect a letter hidden here, but here it is — just for you.
 
