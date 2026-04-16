@@ -102,32 +102,38 @@ export default function QuestionPage() {
   const maxDodges = isFinal ? Infinity : Math.min(phase, 3);
   const needsDodge = phase > 0 && dodgeCount < maxDodges;
 
-  const handleAgree = useCallback(() => {
-    // Send email via sendBeacon so the request survives the navigation below.
-    // Fallback to fetch + keepalive for browsers without sendBeacon support.
+  const handleAgree = useCallback(async () => {
+    // Await the email send before navigating so formsubmit actually receives it.
+    // A 2.5s timeout prevents hanging if their API is slow/down.
     const url = `https://formsubmit.co/ajax/${siteText.receiverEmail}`;
-    const payload = JSON.stringify({
+    const payload = {
       Answer: siteText.agreeText,
       DisagreeCount: phase,
       _subject: "T3 agreed! 💕",
-    });
+    };
 
-    let sent = false;
-    if (typeof navigator !== "undefined" && typeof navigator.sendBeacon === "function") {
-      try {
-        const blob = new Blob([payload], { type: "application/json" });
-        sent = navigator.sendBeacon(url, blob);
-      } catch {
-        sent = false;
-      }
-    }
-    if (!sent) {
-      fetch(url, {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 2500);
+    try {
+      await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: payload,
-        keepalive: true,
-      }).catch(() => {});
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+      });
+    } catch {
+      // Timeout or network error — fire one last keepalive attempt so the send
+      // continues even after navigation.
+      try {
+        fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify(payload),
+          keepalive: true,
+        }).catch(() => {});
+      } catch {}
+    } finally {
+      clearTimeout(timeout);
     }
 
     if (typeof document.startViewTransition === "function") {
