@@ -765,8 +765,8 @@ body:has(.constellation-scene) {
 
 .rocket-flight {
   position: absolute;
-  left: calc(50vw - 120px);
-  top: calc(50vh - 320px);
+  left: calc(50vw / var(--page-zoom, 1) - 120px);
+  top: calc(50vh / var(--page-zoom, 1) - 320px);
   z-index: 35;
   pointer-events: none;
   opacity: 0;
@@ -1018,14 +1018,14 @@ body:has(.constellation-scene) {
   }
   100% {
     opacity: 1;
-    transform: translate(calc(44vw - 42px), calc(43vh - 42px)) scale(4.8);
+    transform: translate(calc(44vw / var(--page-zoom, 1) - 42px), calc(43vh / var(--page-zoom, 1) - 42px)) scale(4.8);
   }
 }
 
 @keyframes moon-return {
   0% {
     opacity: 1;
-    transform: translate(calc(44vw - 42px), calc(43vh - 42px)) scale(4.8);
+    transform: translate(calc(44vw / var(--page-zoom, 1) - 42px), calc(43vh / var(--page-zoom, 1) - 42px)) scale(4.8);
   }
   94% {
     opacity: 1;
@@ -1098,7 +1098,7 @@ body:has(.constellation-scene) {
 }
 
 @keyframes rocket-fly-in {
-  0%   { opacity: 0; transform: translateX(calc(-75vw - 300px)); }
+  0%   { opacity: 0; transform: translateX(calc(-75vw / var(--page-zoom, 1) - 300px)); }
   8%   { opacity: 1; }
   100% { opacity: 1; transform: translateX(0); }
 }
@@ -1227,8 +1227,8 @@ body:has(.constellation-scene) {
 }
 
 @keyframes moon-implode {
-  0%   { opacity: 1; transform: translate(calc(44vw - 42px), calc(43vh - 42px)) scale(4.8); }
-  100% { opacity: 0; transform: translate(calc(44vw - 42px), calc(43vh - 42px)) scale(0); }
+  0%   { opacity: 1; transform: translate(calc(44vw / var(--page-zoom, 1) - 42px), calc(43vh / var(--page-zoom, 1) - 42px)) scale(4.8); }
+  100% { opacity: 0; transform: translate(calc(44vw / var(--page-zoom, 1) - 42px), calc(43vh / var(--page-zoom, 1) - 42px)) scale(0); }
 }
 
 /* Text drifts down and fades */
@@ -3600,6 +3600,7 @@ body:has(.constellation-scene) {
   position: relative;
   width: min(552px, 95vw);
   max-height: 90vh;
+  max-height: calc(90vh / var(--page-zoom, 1));
   display: flex;
   flex-direction: column;
   align-items: stretch;
