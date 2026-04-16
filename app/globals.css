@@ -47,11 +47,10 @@ body {
 }
 
 /* ─── Responsive zoom: designed at 15" MacBook (~1440×900) ─── */
-/* Scale the whole page down on narrower/shorter screens so every scene */
-/* fits exactly as it does on 15", without touching any internal sizing.*/
-/* Each rule fires when EITHER width OR height drops below a bucket, so */
-/* the smaller dimension controls the zoom and nothing ever overflows.  */
-/* --page-zoom mirrors the zoom value so scenes can compensate 100vh.    */
+/* Uses CSS zoom on html so every pixel, vw, vh, animation keyframe, and   */
+/* absolute offset scales uniformly in a single coordinate system.         */
+/* Each rule fires when EITHER width OR height drops below a bucket, so    */
+/* the smaller dimension controls the zoom and nothing ever overflows.     */
 html { --page-zoom: 1; }
 @media (max-width: 1439px), (max-height: 899px) { html { zoom: 0.95; --page-zoom: 0.95; } }
 @media (max-width: 1366px), (max-height: 860px) { html { zoom: 0.92; --page-zoom: 0.92; } }
