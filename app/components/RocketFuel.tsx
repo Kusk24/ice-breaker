@@ -57,7 +57,7 @@ export default function RocketFuel({ rocketDelay, children }: RocketFuelProps) {
     };
   }, [landMs, hasEnergy]);
 
-  // Block ALL clicks on CTA unless hasEnergy is true
+  // Block ALL clicks on CTA unless hasEnergy is true — always show the alert
   useEffect(() => {
     function intercept(e: MouseEvent) {
       const target = e.target as HTMLElement;
@@ -68,10 +68,8 @@ export default function RocketFuel({ rocketDelay, children }: RocketFuelProps) {
         e.stopPropagation();
         e.stopImmediatePropagation();
 
-        if (energyState === "empty") {
-          setShowAlert(true);
-          setTimeout(() => setShowAlert(false), 3000);
-        }
+        setShowAlert(true);
+        setTimeout(() => setShowAlert(false), 3000);
       }
     }
 
@@ -138,9 +136,9 @@ function applyCtaStyle(el: HTMLElement, hasEnergy: boolean) {
     el.style.removeProperty("cursor");
     el.classList.remove("rocket-cta--no-fuel");
   } else {
-    el.style.setProperty("opacity", "0.4", "important");
-    el.style.setProperty("filter", "grayscale(0.8) brightness(0.7)");
-    el.style.setProperty("cursor", "not-allowed");
+    el.style.removeProperty("opacity");
+    el.style.removeProperty("filter");
+    el.style.setProperty("cursor", "pointer");
     el.classList.add("rocket-cta--no-fuel");
   }
 }

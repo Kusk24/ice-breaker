@@ -7,7 +7,7 @@ export const siteText = {
   footerText: "Made with Next.js",
   buttonOne: "Click Here 💞",
   buttonTwo: "Back To Flowers",
-  buttonThree: "Click Here",
+  buttonThree: "Ride",
   moonText: "You are like a moon, so pretty & so tiny",
   question: `mote srr chin lo website pr yay lite p haha
   mote wal kah py pr lr
@@ -28,11 +28,14 @@ export const siteText = {
   asteroidTextTopRight: "is that T3??? who is that? \n ahh I miss my T3",
   asteroidTextLeft: "It's crazy, but it's true\nThere's nothing I won't do\nI'd risk it all for you\n- Bruno Mars",
   asteroidTextRight: "just wanna make you\nhappiest person in the world\ncuz ur existance\n alone makes me happy",
-  countdownTitle: "Something is about to happen..., I got u bombed 🤔",
-  countdownReady: "Wait is over ✨",
+  countdownTitle: "Oh Asteriod is blocking our way..., let's bomb it🤔",
+  countdownReady: "A Black Hole??? ✨",
   countdownButton: "Let's Goooo !",
   formQuestion: "Haha Gotcha!!!, btw when will you come back? ( ╹ -╹)?",
   formOne: "Date",
   formTwo: "Time",
-  receiverEmail: "winyumg2003a@gmail.com"
+  receiverEmail: "winyumg2003a@gmail.com",
+  blackholeEnter: "Enter",
+  blackholeTooSmall: "blackhole is too small, throw rocks into it",
+  blackholeReady: "blackhole is ready, enter it"
 };

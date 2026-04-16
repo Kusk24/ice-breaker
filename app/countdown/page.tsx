@@ -55,6 +55,13 @@ export default function CountdownPage() {
   const [rocketIncoming, setRocketIncoming] = useState(false);
   const rocketCraftRef = useRef<HTMLDivElement | null>(null);
   const [zoomedPiece, setZoomedPiece] = useState<number | null>(null);
+  const [thrownRocks, setThrownRocks] = useState<Set<number>>(() => new Set());
+  const [throwingRocks, setThrowingRocks] = useState<Set<number>>(() => new Set());
+  const [enterWarn, setEnterWarn] = useState(false);
+  const [absorbing, setAbsorbing] = useState(false);
+  const [shockwaves, setShockwaves] = useState<number[]>([]);
+  const [warping, setWarping] = useState(false);
+  const TOTAL_ROCKS = 5;
 
   // Step 1: detect if we arrived from moon page
   useEffect(() => {
@@ -171,14 +178,53 @@ export default function CountdownPage() {
     };
   }, []);
 
-  const handleGo = useCallback(() => {
+  const blackholeReady = thrownRocks.size >= TOTAL_ROCKS;
+
+  const handleThrow = useCallback((i: number) => {
     if (!done) return;
-    if (typeof document.startViewTransition === "function") {
-      document.startViewTransition(() => router.push("/question"));
-    } else {
-      router.push("/question");
+    if (thrownRocks.has(i) || throwingRocks.has(i)) return;
+    setZoomedPiece(null);
+    setThrowingRocks((prev) => {
+      const n = new Set(prev);
+      n.add(i);
+      return n;
+    });
+    // Absorb impact: shake blackhole + emit shockwave right as rock lands
+    setTimeout(() => {
+      setAbsorbing(true);
+      const id = Date.now() + i;
+      setShockwaves((prev) => [...prev, id]);
+      setTimeout(() => setAbsorbing(false), 600);
+      setTimeout(() => setShockwaves((prev) => prev.filter((x) => x !== id)), 1000);
+    }, 950);
+    // Finalize (rock gone, blackhole grown)
+    setTimeout(() => {
+      setThrownRocks((prev) => {
+        const n = new Set(prev);
+        n.add(i);
+        return n;
+      });
+      setThrowingRocks((prev) => {
+        const n = new Set(prev);
+        n.delete(i);
+        return n;
+      });
+    }, 1100);
+  }, [done, thrownRocks, throwingRocks]);
+
+  const handleEnter = useCallback(() => {
+    if (!done) return;
+    if (!blackholeReady) {
+      setEnterWarn(true);
+      setTimeout(() => setEnterWarn(false), 2400);
+      return;
     }
-  }, [done, router]);
+    // Cool transition: blackhole swallows the entire scene, then navigate
+    setWarping(true);
+    setTimeout(() => {
+      router.push("/question");
+    }, 1150);
+  }, [done, blackholeReady, router]);
 
   const progress = 1 - remaining / TOTAL_SECONDS; // 0 → 1
   const isWarning = remaining <= 70 && remaining > 35;
@@ -192,7 +238,7 @@ export default function CountdownPage() {
   const sparkY = (1-t)*(1-t)*(1-t)*57 + 3*(1-t)*(1-t)*t*34 + 3*(1-t)*t*t*12 + t*t*t*4;
 
   return (
-    <main className="scene countdown-scene" aria-label="Countdown timer" onClick={() => zoomedPiece !== null && setZoomedPiece(null)}>
+    <main className={`scene countdown-scene${warping ? " countdown-scene--warping" : ""}`} aria-label="Countdown timer" onClick={() => zoomedPiece !== null && setZoomedPiece(null)}>
       {/* Screen flash on explosion */}
       {exploding && <div className="explosion-flash" aria-hidden />}
 
@@ -298,9 +344,18 @@ export default function CountdownPage() {
             return (
             <div
               key={i}
-              className={`asteroid-piece asteroid-piece--${i}${done ? " asteroid-piece--floating" : ""}${zoomedPiece === i ? " asteroid-piece--zoomed" : ""}`}
-              onClick={done ? (e) => { e.stopPropagation(); setZoomedPiece(zoomedPiece === i ? null : i); } : undefined}
-              style={done ? { cursor: "pointer" } : undefined}
+              className={`asteroid-piece asteroid-piece--${i}${done ? " asteroid-piece--floating" : ""}${zoomedPiece === i ? " asteroid-piece--zoomed" : ""}${throwingRocks.has(i) ? " asteroid-piece--throwing" : ""}${thrownRocks.has(i) ? " asteroid-piece--thrown" : ""}`}
+              onClick={done && !thrownRocks.has(i) && !throwingRocks.has(i)
+                ? (e) => {
+                    e.stopPropagation();
+                    if (zoomedPiece === i) {
+                      handleThrow(i);
+                    } else {
+                      setZoomedPiece(i);
+                    }
+                  }
+                : undefined}
+              style={done && !thrownRocks.has(i) ? { cursor: "pointer" } : undefined}
             >
               <svg viewBox="0 0 170 170" xmlns="http://www.w3.org/2000/svg" className="asteroid-svg">
                 <g clipPath={`url(#ast-clip-${i})`}>
@@ -493,24 +548,45 @@ export default function CountdownPage() {
         </div>{/* /bomb-wrap */}
       </div>{/* /bomb-stage */}
 
-      {/* Progress bar */}
-      <div className="countdown-bar" aria-hidden>
-        <div className="countdown-bar__fill" style={{ width: `${progress * 100}%` }} />
-      </div>
-
       {/* Nebula residue — appears after explosion */}
       {done && <T3Nebula />}
 
-      {/* CTA Button — only shown after explosion animation */}
+      {/* Black hole — appears after explosion, grows as rocks are thrown */}
+      {done && (
+        <div
+          className={`blackhole blackhole--stage-${thrownRocks.size}${blackholeReady ? " blackhole--ready" : ""}${absorbing ? " blackhole--absorbing" : ""}`}
+          aria-hidden
+        >
+          <div className="blackhole__disk" />
+          <div className="blackhole__disk blackhole__disk--2" />
+          <div className="blackhole__disk blackhole__disk--3" />
+          <div className="blackhole__core" />
+          <div className="blackhole__glow" />
+        </div>
+      )}
+
+      {/* Shockwave rings — one per absorbed rock */}
+      {shockwaves.map((id) => (
+        <div key={`shock-${id}`} className="blackhole-shockwave" aria-hidden />
+      ))}
+
+      {/* Enter button — replaces Let's Go */}
       {done && (
         <button
           type="button"
-          className="countdown-btn countdown-btn--active"
-          onClick={handleGo}
-          aria-label="Proceed to questions"
+          className={`countdown-btn countdown-btn--active blackhole-enter${blackholeReady ? " blackhole-enter--ready" : " blackhole-enter--locked"}`}
+          onClick={handleEnter}
+          aria-label="Enter the blackhole"
         >
-          {siteText.countdownButton}
+          {siteText.blackholeEnter}
         </button>
+      )}
+
+      {/* Warning message when Enter pressed too early */}
+      {done && enterWarn && !blackholeReady && (
+        <div className="blackhole-warn" role="status">
+          {siteText.blackholeTooSmall}
+        </div>
       )}
 
       {/* Rocket flying in from moon page */}
