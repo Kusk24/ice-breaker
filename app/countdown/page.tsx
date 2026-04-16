@@ -12,7 +12,7 @@ const iwannabeyoursSrc = `${isProd ? "/ice-breaker" : ""}/iwannabeyours.jpg`;
 const riskitallSrc = `${isProd ? "/ice-breaker" : ""}/riskitall.jpg`;
 const bestfriendSrc = `${isProd ? "/ice-breaker" : ""}/bestfriend.jpg`;
 
-const TOTAL_SECONDS = 90; // TODO: change back to 10 * 60 (10 minutes)
+const TOTAL_SECONDS = 20;
 const STORAGE_KEY = "bomb-countdown-start";
 
 const stars = Array.from({ length: 60 }, (_, i) => ({
@@ -40,6 +40,18 @@ const EXPLOSION_PARTICLES = Array.from({ length: 48 }, (_, i) => ({
   spin: i % 2 === 0 ? 540 : -540,
 }));
 
+// Energy streams flowing INTO the bomb during the final 10s — streaks of light
+// spawn on an outer ring and race inward to the bomb's center, getting absorbed.
+// Distance uses a CSS length (clamp in vmin) so it's responsive across screens.
+const ENERGY_STREAMS = Array.from({ length: 28 }, (_, i) => ({
+  angle: (i / 28) * 360 + ((i * 13) % 7),
+  distScale: 0.9 + ((i * 53) % 40) / 100, // 0.9–1.3 of base radius
+  dur: 0.9 + ((i * 37) % 70) / 100,        // 0.9–1.6s — snappier
+  delay: ((i * 71) % 180) / 100,           // 0–1.8s stagger
+  color: T3_COLORS[i % T3_COLORS.length],
+  thickness: 2 + (i % 3),
+}));
+
 function formatTime(seconds: number) {
   const m = Math.floor(seconds / 60);
   const s = seconds % 60;
@@ -48,11 +60,9 @@ function formatTime(seconds: number) {
 
 export default function CountdownPage() {
   const router = useRouter();
-  const alreadyExploded = () =>
-    typeof window !== "undefined" && localStorage.getItem("t3-exploded") === "1";
-  const [remaining, setRemaining] = useState(() => (alreadyExploded() ? 0 : TOTAL_SECONDS));
+  const [remaining, setRemaining] = useState(TOTAL_SECONDS);
   const [exploding, setExploding] = useState(false);
-  const [done, setDone] = useState(() => alreadyExploded());
+  const [done, setDone] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [rocketIncoming, setRocketIncoming] = useState(false);
   const rocketCraftRef = useRef<HTMLDivElement | null>(null);
@@ -64,6 +74,14 @@ export default function CountdownPage() {
   const [shockwaves, setShockwaves] = useState<number[]>([]);
   const [warping, setWarping] = useState(false);
   const TOTAL_ROCKS = 5;
+  const rockRefs = useRef<Record<number, HTMLDivElement | null>>({});
+  const blackholeRef = useRef<HTMLDivElement | null>(null);
+  // Rock's viewport-space origin + delta to the blackhole center — set when throw
+  // starts. Fragments render in a fixed-position layer so they escape the floating
+  // rock's rotation and land exactly on the blackhole at any screen size/zoom.
+  const [throwVectors, setThrowVectors] = useState<
+    Record<number, { ox: number; oy: number; dx: number; dy: number }>
+  >({});
 
   // Step 1: detect if we arrived from moon page
   useEffect(() => {
@@ -135,18 +153,11 @@ export default function CountdownPage() {
   }, [rocketIncoming]);
 
   useEffect(() => {
-    // Already exploded — initial state already reflects this; skip bomb logic entirely.
-    if (localStorage.getItem("t3-exploded") === "1") return;
-
-    const today = new Date().toDateString();
-    const storedDay = localStorage.getItem(STORAGE_KEY + "-day");
-    let startTime = Number(localStorage.getItem(STORAGE_KEY));
-
-    if (!startTime || storedDay !== today) {
-      startTime = Date.now();
-      localStorage.setItem(STORAGE_KEY, String(startTime));
-      localStorage.setItem(STORAGE_KEY + "-day", today);
-    }
+    // Always start a fresh 30s countdown on page load — clear any previous state
+    // so the bomb-ignition animation plays every time.
+    localStorage.removeItem("t3-exploded");
+    const startTime = Date.now();
+    localStorage.setItem(STORAGE_KEY, String(startTime));
 
     function tick() {
       const elapsed = Math.floor((Date.now() - startTime) / 1000);
@@ -163,14 +174,8 @@ export default function CountdownPage() {
     tick();
     intervalRef.current = setInterval(tick, 1000);
 
-    function onStorage(e: StorageEvent) {
-      if (e.key === STORAGE_KEY) tick();
-    }
-    window.addEventListener("storage", onStorage);
-
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
-      window.removeEventListener("storage", onStorage);
     };
   }, []);
 
@@ -179,21 +184,55 @@ export default function CountdownPage() {
   const handleThrow = useCallback((i: number) => {
     if (!done) return;
     if (thrownRocks.has(i) || throwingRocks.has(i)) return;
+    // Clear zoom first, then measure on the next frame so the rock is back in
+    // its floating spot before we compute the vector to the blackhole.
     setZoomedPiece(null);
-    setThrowingRocks((prev) => {
-      const n = new Set(prev);
-      n.add(i);
-      return n;
+    requestAnimationFrame(() => {
+      const rockEl = rockRefs.current[i];
+      const bhEl = blackholeRef.current;
+      if (rockEl && bhEl) {
+        const r = rockEl.getBoundingClientRect();
+        const b = bhEl.getBoundingClientRect();
+        const rcx = r.left + r.width / 2;
+        const rcy = r.top + r.height / 2;
+        const bcx = b.left + b.width / 2;
+        const bcy = b.top + b.height / 2;
+        // The page uses `html { zoom }` for responsive scaling. getBoundingClientRect
+        // returns post-zoom pixels, but CSS translate() inside the zoomed tree is
+        // already implicitly scaled by that factor — so divide the raw vector by
+        // zoom to land exactly on the blackhole at any screen size.
+        const zoomVar = getComputedStyle(document.documentElement).getPropertyValue("--page-zoom").trim();
+        const zoom = parseFloat(zoomVar) > 0 ? parseFloat(zoomVar) : 1;
+        // Convert viewport-space pixels back to CSS px by dividing by zoom so the
+        // fixed-position shatter-layer (which is NOT inside the zoomed <html>'s
+        // scaling — wait, it IS: position:fixed still respects html{zoom}) uses
+        // values consistent with its rendering context.
+        setThrowVectors((prev) => ({
+          ...prev,
+          [i]: {
+            ox: rcx / zoom,
+            oy: rcy / zoom,
+            dx: (bcx - rcx) / zoom,
+            dy: (bcy - rcy) / zoom,
+          },
+        }));
+      }
+      setThrowingRocks((prev) => {
+        const n = new Set(prev);
+        n.add(i);
+        return n;
+      });
     });
-    // Absorb impact: shake blackhole + emit shockwave right as rock lands
+    // Absorb impact: shake blackhole + emit shockwave right as the fragment
+    // swarm finishes streaming into the blackhole.
     setTimeout(() => {
       setAbsorbing(true);
       const id = Date.now() + i;
       setShockwaves((prev) => [...prev, id]);
       setTimeout(() => setAbsorbing(false), 600);
       setTimeout(() => setShockwaves((prev) => prev.filter((x) => x !== id)), 1000);
-    }, 950);
-    // Finalize (rock gone, blackhole grown)
+    }, 1550);
+    // Finalize (rock gone, blackhole grown) — a bit after the last fragment lands.
     setTimeout(() => {
       setThrownRocks((prev) => {
         const n = new Set(prev);
@@ -205,7 +244,12 @@ export default function CountdownPage() {
         n.delete(i);
         return n;
       });
-    }, 1100);
+      setThrowVectors((prev) => {
+        const rest = { ...prev };
+        delete rest[i];
+        return rest;
+      });
+    }, 1700);
   }, [done, thrownRocks, throwingRocks]);
 
   const handleEnter = useCallback(() => {
@@ -223,9 +267,9 @@ export default function CountdownPage() {
   }, [done, blackholeReady, router]);
 
   const progress = 1 - remaining / TOTAL_SECONDS; // 0 → 1
-  const isWarning = remaining <= 70 && remaining > 35;
-  const isUrgent = remaining <= 35;
-  const isAlmostDone = remaining <= 10;
+  const isWarning = remaining <= 15 && remaining > 8;
+  const isUrgent = remaining <= 8;
+  const isAlmostDone = remaining <= 3;
 
   // Spark position along cubic bezier: M 50,57 C 56,34 72,12 90,4
   const fuseT = 1 - progress;
@@ -337,11 +381,14 @@ export default function CountdownPage() {
               "M 42,15 Q 78,10 110,18 Q 135,28 148,42",
               "M 40,22 Q 75,12 115,18 Q 138,25 148,40",
             ];
+            const throwing = throwingRocks.has(i);
+            const vec = throwVectors[i];
             return (
             <div
               key={i}
-              className={`asteroid-piece asteroid-piece--${i}${done ? " asteroid-piece--floating" : ""}${zoomedPiece === i ? " asteroid-piece--zoomed" : ""}${throwingRocks.has(i) ? " asteroid-piece--throwing" : ""}${thrownRocks.has(i) ? " asteroid-piece--thrown" : ""}`}
-              onClick={done && !thrownRocks.has(i) && !throwingRocks.has(i)
+              ref={(el) => { rockRefs.current[i] = el; }}
+              className={`asteroid-piece asteroid-piece--${i}${done ? " asteroid-piece--floating" : ""}${zoomedPiece === i ? " asteroid-piece--zoomed" : ""}${throwing ? " asteroid-piece--throwing" : ""}${thrownRocks.has(i) ? " asteroid-piece--thrown" : ""}`}
+              onClick={done && !thrownRocks.has(i) && !throwing
                 ? (e) => {
                     e.stopPropagation();
                     if (zoomedPiece === i) {
@@ -351,7 +398,15 @@ export default function CountdownPage() {
                     }
                   }
                 : undefined}
-              style={done && !thrownRocks.has(i) ? { cursor: "pointer" } : undefined}
+              style={{
+                ...(done && !thrownRocks.has(i) ? { cursor: "pointer" } : {}),
+                ...(throwing && vec
+                  ? ({
+                      "--throw-dx": `${vec.dx}px`,
+                      "--throw-dy": `${vec.dy}px`,
+                    } as CSSProperties)
+                  : {}),
+              }}
             >
               <svg viewBox="0 0 170 170" xmlns="http://www.w3.org/2000/svg" className="asteroid-svg">
                 <g clipPath={`url(#ast-clip-${i})`}>
@@ -412,6 +467,28 @@ export default function CountdownPage() {
 
         {/* Bomb */}
         <div className={`bomb-wrap ${exploding ? "bomb-wrap--exploded" : ""} ${isWarning ? "bomb-wrap--warning" : ""} ${isUrgent ? "bomb-wrap--urgent" : ""} ${isAlmostDone && !exploding ? "bomb-wrap--shake" : ""}`}>
+
+        {/* Energy streams flowing into the bomb — only the last ≤10s */}
+        {!exploding && !done && remaining <= 10 && remaining > 0 && (
+          <div className="bomb-energy" aria-hidden>
+            {ENERGY_STREAMS.map((s, i) => (
+              <span
+                key={`energy-${i}`}
+                className="bomb-energy__streak"
+                style={{
+                  "--cos": Math.cos((s.angle * Math.PI) / 180).toFixed(4),
+                  "--sin": Math.sin((s.angle * Math.PI) / 180).toFixed(4),
+                  "--scale": s.distScale,
+                  "--rot": `${s.angle}deg`,
+                  "--dur": `${s.dur}s`,
+                  "--delay": `${s.delay}s`,
+                  "--color": s.color,
+                  "--thick": `${s.thickness}px`,
+                } as CSSProperties}
+              />
+            ))}
+          </div>
+        )}
 
         {/* Cap + Fuse SVG */}
         {!exploding && !done && (
@@ -550,6 +627,7 @@ export default function CountdownPage() {
       {/* Black hole — appears after explosion, grows as rocks are thrown */}
       {done && (
         <div
+          ref={blackholeRef}
           className={`blackhole blackhole--stage-${thrownRocks.size}${blackholeReady ? " blackhole--ready" : ""}${absorbing ? " blackhole--absorbing" : ""}`}
           aria-hidden
         >
@@ -565,6 +643,46 @@ export default function CountdownPage() {
       {shockwaves.map((id) => (
         <div key={`shock-${id}`} className="blackhole-shockwave" aria-hidden />
       ))}
+
+      {/* Shatter fragments — rendered at scene root so they escape each rock's
+          rotated/floating transform and land on the blackhole at the exact
+          measured viewport position (responsive via --page-zoom). */}
+      {Array.from(throwingRocks).map((i) => {
+        const vec = throwVectors[i];
+        if (!vec) return null;
+        const fragments = Array.from({ length: 14 }, (_, k) => ({
+          angle: (k / 14) * 360 + i * 17,
+          burst: 55 + ((k * 23) % 30),
+          delay: (k * 18) / 1000,
+          size: 16 + (k % 5) * 5,
+        }));
+        return (
+          <span
+            key={`shatter-${i}`}
+            className="shatter-layer"
+            aria-hidden
+            style={{
+              "--throw-dx": `${vec.dx}px`,
+              "--throw-dy": `${vec.dy}px`,
+            } as CSSProperties}
+          >
+            {fragments.map((f, fi) => (
+              <span
+                key={`frag-${i}-${fi}`}
+                className="shatter-frag"
+                style={{
+                  "--frag-origin-x": `${vec.ox}px`,
+                  "--frag-origin-y": `${vec.oy}px`,
+                  "--frag-angle": `${f.angle}deg`,
+                  "--frag-burst": `${f.burst}px`,
+                  "--frag-delay": `${f.delay}s`,
+                  "--frag-size": `${f.size}px`,
+                } as CSSProperties}
+              />
+            ))}
+          </span>
+        );
+      })}
 
       {/* Enter button — replaces Let's Go */}
       {done && (
