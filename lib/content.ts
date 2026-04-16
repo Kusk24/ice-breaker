@@ -36,6 +36,6 @@ export const siteText = {
   formTwo: "Time",
   receiverEmail: "winyumg2003a@gmail.com",
   blackholeEnter: "Enter",
-  blackholeTooSmall: "blackhole is too small, throw rocks into it",
+  blackholeTooSmall: "blackhole is too small, pick and drop rocks to throw into it",
   blackholeReady: "blackhole is ready, enter it"
 };

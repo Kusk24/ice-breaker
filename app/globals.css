@@ -4443,6 +4443,81 @@ body:has(.constellation-scene) {
   animation: cd-fade-in-up 1.2s ease 0.3s forwards;
 }
 
+/* ── Energy streams flowing into the bomb ──
+   Centered on .bomb-wrap's midpoint (50%/50%), which is also where .bomb-body
+   sits. Each streak spawns at (cos·R, sin·R) and races to (0, 0).
+   --energy-radius scales with viewport so the effect fits all screens. */
+.bomb-energy {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1; /* behind bomb body within the .bomb-wrap stacking context */
+  --energy-radius: clamp(160px, 28vmin, 320px);
+}
+
+.bomb-energy__streak {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: clamp(40px, 7vmin, 80px);
+  height: var(--thick);
+  margin-top: calc(var(--thick) / -2);
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--color) 25%, transparent) 20%,
+    var(--color) 75%,
+    #fff 100%
+  );
+  box-shadow:
+    0 0 10px var(--color),
+    0 0 22px color-mix(in srgb, var(--color) 65%, transparent);
+  transform-origin: 100% 50%; /* head (right edge) is the anchor */
+  opacity: 0;
+  animation: energy-flow var(--dur) cubic-bezier(0.45, 0, 0.75, 0.35) var(--delay) infinite;
+  mix-blend-mode: screen;
+  will-change: transform, opacity;
+}
+
+@keyframes energy-flow {
+  0% {
+    opacity: 0;
+    transform:
+      translate(
+        calc(var(--cos) * var(--energy-radius) * var(--scale)),
+        calc(var(--sin) * var(--energy-radius) * var(--scale))
+      )
+      rotate(calc(var(--rot) + 180deg))
+      scaleX(0.4);
+  }
+  12% { opacity: 1; }
+  85% {
+    opacity: 1;
+    transform:
+      translate(
+        calc(var(--cos) * var(--energy-radius) * 0.05),
+        calc(var(--sin) * var(--energy-radius) * 0.05)
+      )
+      rotate(calc(var(--rot) + 180deg))
+      scaleX(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(calc(var(--rot) + 180deg)) scaleX(0.15);
+  }
+}
+
+/* Speed up as the fuse burns down */
+.bomb-wrap--urgent .bomb-energy__streak { animation-duration: calc(var(--dur) * 0.6); }
+.bomb-wrap--shake  .bomb-energy__streak { animation-duration: calc(var(--dur) * 0.35); }
+
+/* Smaller screens — shrink the ring so streaks clearly originate off the bomb
+   but still arrive at its exact center. */
+@media (max-width: 640px) {
+  .bomb-energy { --energy-radius: clamp(120px, 32vmin, 220px); }
+}
+
 /* ── Warning phase (≤70s, >35s left): subtle orange glow, slow pulse ── */
 .bomb-wrap--warning .bomb-body {
   box-shadow:
@@ -5009,51 +5084,112 @@ body:has(.constellation-scene) {
   50%      { transform: scale(1.08); opacity: 1; }
 }
 
-/* ── Throwing rock animation (sucked into the black hole with a spiral + trail) ── */
+/* ── Throwing rock animation — shatters in place, fragments fly into blackhole ──
+   The rock itself shrinks/fades quickly so the fragments (not the whole rock)
+   are what visibly stream toward the blackhole. */
 .asteroid-piece--throwing {
   pointer-events: none;
   z-index: 30;
-  animation: rock-throw 1.1s cubic-bezier(0.45, 0, 0.9, 0.2) forwards !important;
   transform-origin: 50% 50% !important;
-  filter: drop-shadow(0 0 18px rgba(180, 200, 255, 0.85))
-          drop-shadow(0 0 36px rgba(120, 160, 255, 0.45)) !important;
+  filter: drop-shadow(0 0 14px rgba(180, 200, 255, 0.6))
+          drop-shadow(0 0 28px rgba(120, 160, 255, 0.35)) !important;
 }
-.asteroid-piece--throwing::before {
-  content: "";
-  position: absolute;
-  inset: -6px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(200, 220, 255, 0.45) 0%, rgba(120, 160, 255, 0.2) 40%, transparent 75%);
-  filter: blur(8px);
-  animation: rock-trail 1.1s ease-in forwards;
+.asteroid-piece--throwing .asteroid-svg {
+  animation: rock-shatter-fade 0.9s cubic-bezier(0.3, 0, 0.7, 1) forwards;
+  transform-origin: 50% 50%;
+}
+/* Rock shrinks and crumbles in place, revealing fragments beneath it */
+@keyframes rock-shatter-fade {
+  0%   { opacity: 1; transform: scale(1) rotate(0deg);   filter: brightness(1); }
+  20%  { opacity: 1; transform: scale(1.12) rotate(4deg); filter: brightness(1.6); }
+  55%  { opacity: 0.75; transform: scale(0.75) rotate(-6deg); filter: brightness(1.2); }
+  100% { opacity: 0; transform: scale(0.18) rotate(-14deg); filter: brightness(0.9); }
+}
+
+/* Shatter fragments: tiny rock chips that burst outward then curve into blackhole.
+   The layer is position: fixed so it escapes the parent rock's rotation/floating
+   transform — fragments are positioned in raw viewport coordinates. */
+.shatter-layer {
+  position: fixed;
+  inset: 0;
   pointer-events: none;
-  z-index: -1;
+  z-index: 40;
 }
-@keyframes rock-throw {
+.shatter-frag {
+  position: absolute;
+  /* Start at the rock's viewport-space center (set via inline style) */
+  left: var(--frag-origin-x, 50vw);
+  top:  var(--frag-origin-y, 50vh);
+  width: var(--frag-size);
+  height: var(--frag-size);
+  margin-top: calc(var(--frag-size) / -2);
+  margin-left: calc(var(--frag-size) / -2);
+  border-radius: 35% 55% 45% 60% / 50% 40% 60% 50%;
+  background:
+    radial-gradient(circle at 35% 30%, #a8a8a8 0%, #6a6a6a 40%, #2a2a2a 85%, #111 100%);
+  box-shadow:
+    0 0 6px rgba(180, 200, 255, 0.5),
+    0 0 14px rgba(140, 160, 255, 0.25),
+    inset -2px -2px 3px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  animation: shatter-fly 1.5s cubic-bezier(0.35, 0, 0.65, 1) var(--frag-delay) forwards;
+  will-change: transform, opacity;
+}
+/* Fragments burst outward from rock center, hang briefly, then curve into the
+   blackhole. The burst phase is long enough to read as "shattering" before the
+   pieces start streaming toward their target. */
+@keyframes shatter-fly {
   0% {
-    opacity: 1;
+    opacity: 0;
+    transform: translate(0, 0) scale(0.4) rotate(0deg);
   }
-  35% {
+  10% {
     opacity: 1;
+    transform:
+      translate(
+        calc(cos(var(--frag-angle)) * var(--frag-burst) * 0.6),
+        calc(sin(var(--frag-angle)) * var(--frag-burst) * 0.6)
+      )
+      scale(1.05)
+      rotate(20deg);
   }
-  70% {
-    opacity: 0.85;
+  28% {
+    opacity: 1;
+    transform:
+      translate(
+        calc(cos(var(--frag-angle)) * var(--frag-burst)),
+        calc(sin(var(--frag-angle)) * var(--frag-burst))
+      )
+      scale(1)
+      rotate(60deg);
+  }
+  55% {
+    opacity: 1;
+    transform:
+      translate(
+        calc(var(--throw-dx, 0px) * 0.45 + cos(var(--frag-angle)) * var(--frag-burst) * 0.5),
+        calc(var(--throw-dy, 0px) * 0.45 + sin(var(--frag-angle)) * var(--frag-burst) * 0.5)
+      )
+      scale(0.8)
+      rotate(260deg);
+    filter: brightness(1.2);
+  }
+  88% {
+    opacity: 1;
+    transform:
+      translate(calc(var(--throw-dx, 0px) * 0.94), calc(var(--throw-dy, 0px) * 0.94))
+      scale(0.35)
+      rotate(560deg);
+    filter: brightness(1.5);
   }
   100% {
-    top: 50% !important;
-    left: 50% !important;
-    right: auto !important;
-    bottom: auto !important;
-    transform: translate(-50%, -50%) rotate(1080deg) scale(0.02) !important;
     opacity: 0;
-    filter: drop-shadow(0 0 30px rgba(200, 160, 255, 1))
-            drop-shadow(0 0 60px rgba(140, 120, 255, 0.7)) !important;
+    transform:
+      translate(var(--throw-dx, 0px), var(--throw-dy, 0px))
+      scale(0.05)
+      rotate(760deg);
+    filter: brightness(2);
   }
-}
-@keyframes rock-trail {
-  0%   { opacity: 0;   transform: scale(1); }
-  30%  { opacity: 0.8; transform: scale(1.4); }
-  100% { opacity: 0;   transform: scale(2.5); }
 }
 .asteroid-piece--thrown {
   display: none !important;
