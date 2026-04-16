@@ -51,18 +51,20 @@ body {
 /* fits exactly as it does on 15", without touching any internal sizing.*/
 /* Each rule fires when EITHER width OR height drops below a bucket, so */
 /* the smaller dimension controls the zoom and nothing ever overflows.  */
-@media (max-width: 1439px), (max-height: 899px) { html { zoom: 0.95; } }
-@media (max-width: 1366px), (max-height: 860px) { html { zoom: 0.92; } }
-@media (max-width: 1280px), (max-height: 800px) { html { zoom: 0.86; } }
-@media (max-width: 1180px), (max-height: 740px) { html { zoom: 0.80; } }
-@media (max-width: 1080px), (max-height: 680px) { html { zoom: 0.74; } }
-@media (max-width: 980px),  (max-height: 620px) { html { zoom: 0.68; } }
-@media (max-width: 880px),  (max-height: 560px) { html { zoom: 0.62; } }
-@media (max-width: 780px),  (max-height: 500px) { html { zoom: 0.56; } }
-@media (max-width: 680px),  (max-height: 440px) { html { zoom: 0.50; } }
-@media (max-width: 580px),  (max-height: 380px) { html { zoom: 0.44; } }
-@media (max-width: 480px),  (max-height: 320px) { html { zoom: 0.38; } }
-@media (max-width: 380px),  (max-height: 260px) { html { zoom: 0.32; } }
+/* --page-zoom mirrors the zoom value so scenes can compensate 100vh.    */
+html { --page-zoom: 1; }
+@media (max-width: 1439px), (max-height: 899px) { html { zoom: 0.95; --page-zoom: 0.95; } }
+@media (max-width: 1366px), (max-height: 860px) { html { zoom: 0.92; --page-zoom: 0.92; } }
+@media (max-width: 1280px), (max-height: 800px) { html { zoom: 0.86; --page-zoom: 0.86; } }
+@media (max-width: 1180px), (max-height: 740px) { html { zoom: 0.80; --page-zoom: 0.80; } }
+@media (max-width: 1080px), (max-height: 680px) { html { zoom: 0.74; --page-zoom: 0.74; } }
+@media (max-width: 980px),  (max-height: 620px) { html { zoom: 0.68; --page-zoom: 0.68; } }
+@media (max-width: 880px),  (max-height: 560px) { html { zoom: 0.62; --page-zoom: 0.62; } }
+@media (max-width: 780px),  (max-height: 500px) { html { zoom: 0.56; --page-zoom: 0.56; } }
+@media (max-width: 680px),  (max-height: 440px) { html { zoom: 0.50; --page-zoom: 0.50; } }
+@media (max-width: 580px),  (max-height: 380px) { html { zoom: 0.44; --page-zoom: 0.44; } }
+@media (max-width: 480px),  (max-height: 320px) { html { zoom: 0.38; --page-zoom: 0.38; } }
+@media (max-width: 380px),  (max-height: 260px) { html { zoom: 0.32; --page-zoom: 0.32; } }
 
 /* Allow scrolling only on constellation page */
 body:has(.constellation-scene) {
@@ -73,6 +75,7 @@ body:has(.constellation-scene) {
 .scene {
   position: relative;
   min-height: 100vh;
+  min-height: calc(100vh / var(--page-zoom, 1));
   width: 100%;
   overflow: hidden;
   isolation: isolate;
@@ -3104,6 +3107,7 @@ body:has(.constellation-scene) {
   padding: 2rem 1rem;
   gap: 1.5rem;
   min-height: 100vh;
+  min-height: calc(100vh / var(--page-zoom, 1));
 }
 
 .question-content {
@@ -3292,6 +3296,7 @@ body:has(.constellation-scene) {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
+  min-height: calc(100vh / var(--page-zoom, 1));
   padding: 2rem 1rem 3rem;
   gap: 2rem;
   overflow-x: hidden;
@@ -3785,7 +3790,7 @@ body:has(.constellation-scene) {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  min-height: 100dvh;
+  min-height: calc(100dvh / var(--page-zoom, 1));
   gap: 1.8rem;
   padding: 2rem 1rem;
 }
