@@ -48,9 +48,11 @@ function formatTime(seconds: number) {
 
 export default function CountdownPage() {
   const router = useRouter();
-  const [remaining, setRemaining] = useState(TOTAL_SECONDS);
+  const alreadyExploded = () =>
+    typeof window !== "undefined" && localStorage.getItem("t3-exploded") === "1";
+  const [remaining, setRemaining] = useState(() => (alreadyExploded() ? 0 : TOTAL_SECONDS));
   const [exploding, setExploding] = useState(false);
-  const [done, setDone] = useState(false);
+  const [done, setDone] = useState(() => alreadyExploded());
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [rocketIncoming, setRocketIncoming] = useState(false);
   const rocketCraftRef = useRef<HTMLDivElement | null>(null);
@@ -133,14 +135,8 @@ export default function CountdownPage() {
   }, [rocketIncoming]);
 
   useEffect(() => {
-    // Already exploded — skip bomb entirely, show done state.
-    // One-time localStorage read on mount: setState here is intentional.
-    if (localStorage.getItem("t3-exploded") === "1") {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setRemaining(0);
-      setDone(true);
-      return;
-    }
+    // Already exploded — initial state already reflects this; skip bomb logic entirely.
+    if (localStorage.getItem("t3-exploded") === "1") return;
 
     const today = new Date().toDateString();
     const storedDay = localStorage.getItem(STORAGE_KEY + "-day");

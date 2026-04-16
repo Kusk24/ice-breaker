@@ -28,6 +28,30 @@ const stars = Array.from({ length: 50 }, (_, i) => ({
   delay: `${(i % 7) * 0.6}s`,
 }));
 
+// ── Multiverse: bubble universes drifting behind the question ──
+// Each bubble has a position (vw/vh), size (vmin), drift offset & duration,
+// and a hue tint so they don't all look identical.
+// Each palette: core = brightest cloud, mid = secondary cloud, accent = small vivid clump
+const BUBBLE_HUES = [
+  { core: "#6ab8ff", mid: "#a855f7", accent: "#ec4899" }, // blue + violet + pink
+  { core: "#c084fc", mid: "#ec4899", accent: "#60a5fa" }, // violet + pink + blue
+  { core: "#f472b6", mid: "#8b5cf6", accent: "#06b6d4" }, // pink + purple + cyan
+  { core: "#38bdf8", mid: "#818cf8", accent: "#f0abfc" }, // cyan + indigo + fuchsia
+  { core: "#a78bfa", mid: "#f472b6", accent: "#fde047" }, // lavender + pink + gold
+];
+
+const bubbles = [
+  { x: 12,  y: 18, size: 38, driftX: -4, driftY:  3, dur: 22, delay: 0,   hue: 0, spin: 90  },
+  { x: 78,  y: 15, size: 26, driftX:  3, driftY:  5, dur: 18, delay: 1.5, hue: 1, spin: 70  },
+  { x: 88,  y: 62, size: 44, driftX: -5, driftY: -3, dur: 26, delay: 3,   hue: 0, spin: 110 },
+  { x: 8,   y: 72, size: 48, driftX:  4, driftY: -4, dur: 28, delay: 2,   hue: 2, spin: 120 },
+  { x: 48,  y: 8,  size: 20, driftX:  2, driftY:  4, dur: 16, delay: 4.5, hue: 3, spin: 60  },
+  { x: 62,  y: 48, size: 22, driftX: -3, driftY:  2, dur: 17, delay: 2.8, hue: 4, spin: 80  },
+  { x: 30,  y: 55, size: 30, driftX:  3, driftY: -3, dur: 21, delay: 0.8, hue: 1, spin: 95  },
+  { x: 96,  y: 90, size: 14, driftX: -2, driftY: -3, dur: 14, delay: 3.5, hue: 3, spin: 50  },
+  { x: 42,  y: 88, size: 18, driftX:  2, driftY: -2, dur: 15, delay: 1.2, hue: 0, spin: 55  },
+];
+
 const TOTAL = QUESTIONS.length; // 11
 
 // Keep the new random pos far from the old one
@@ -183,6 +207,35 @@ export default function QuestionPage() {
             style={{ "--x": s.x, "--y": s.y, "--delay": s.delay } as CSSProperties}
           />
         ))}
+      </div>
+
+      {/* Multiverse — bubble universes drifting behind the question */}
+      <div className="multiverse" aria-hidden>
+        {bubbles.map((b, i) => {
+          const hue = BUBBLE_HUES[b.hue];
+          return (
+            <div
+              key={i}
+              className="bubble-universe"
+              style={{
+                "--bx": `${b.x}vw`,
+                "--by": `${b.y}vh`,
+                "--bsize": `${b.size}vmin`,
+                "--drift-x": `${b.driftX}vw`,
+                "--drift-y": `${b.driftY}vh`,
+                "--dur": `${b.dur}s`,
+                "--delay": `${b.delay}s`,
+                "--spin": `${b.spin}s`,
+                "--hue-core": hue.core,
+                "--hue-mid": hue.mid,
+                "--hue-accent": hue.accent,
+              } as CSSProperties}
+            >
+              <div className="bubble-universe__stars" />
+              <div className="bubble-universe__rim" />
+            </div>
+          );
+        })}
       </div>
 
       {/* Image — natural flow, above content, no overlap */}

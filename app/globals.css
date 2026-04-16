@@ -3308,8 +3308,179 @@ body:has(.constellation-scene) {
 .question-char {
   display: inline-block;
   opacity: 0;
-  animation: blossom-in 0.75s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  animation-delay: calc(0.3s + var(--qi) * 0.045s);
+  transform-origin: 50% 50%;
+  /* Spiral offset: each char starts slightly pulled toward center + swirled around it */
+  --swirl-angle: calc(var(--qi) * 0.55rad);
+  --swirl-radius: 140px;
+  --swirl-x: calc(cos(var(--swirl-angle)) * var(--swirl-radius) * -1);
+  --swirl-y: calc(sin(var(--swirl-angle)) * var(--swirl-radius) * -1);
+  animation: singularity-out 1s cubic-bezier(0.2, 0.7, 0.2, 1.05) forwards;
+  animation-delay: calc(0.25s + var(--qi) * 0.05s);
+}
+
+@keyframes singularity-out {
+  0% {
+    opacity: 0;
+    transform: translate(var(--swirl-x), var(--swirl-y)) scale(0.05) rotate(-380deg);
+    filter: blur(5px) brightness(2);
+  }
+  45% {
+    opacity: 1;
+    filter: blur(1px) brightness(1.4);
+  }
+  75% {
+    transform: translate(0, 0) scale(1.16) rotate(6deg);
+    filter: blur(0) brightness(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1) rotate(0deg);
+    filter: blur(0) brightness(1);
+  }
+}
+
+/* ── Multiverse: translucent bubble universes with nebula clouds inside ── */
+.multiverse {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.bubble-universe {
+  position: absolute;
+  left: var(--bx);
+  top: var(--by);
+  width: var(--bsize);
+  height: var(--bsize);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  opacity: 0;
+  animation:
+    bubble-fade 1.8s ease-out var(--delay) forwards,
+    bubble-drift var(--dur) ease-in-out var(--delay) infinite alternate;
+  /* Glassy outer glow */
+  filter: drop-shadow(0 0 22px rgba(160, 200, 255, 0.22));
+}
+
+/* Nebula cloud layer — vibrant color clumps, like the reference image */
+.bubble-universe__stars {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  /* Stack: 3 colorful nebula clouds of different shapes + deep-space base */
+  background:
+    /* bright cloud cluster 1 — offset, uses --hue-core */
+    radial-gradient(ellipse 55% 42% at 35% 30%,
+      var(--hue-core) 0%,
+      color-mix(in srgb, var(--hue-core) 60%, transparent) 25%,
+      transparent 55%),
+    /* cloud cluster 2 — uses --hue-mid, bottom-right */
+    radial-gradient(ellipse 50% 60% at 68% 72%,
+      var(--hue-mid) 0%,
+      color-mix(in srgb, var(--hue-mid) 55%, transparent) 30%,
+      transparent 60%),
+    /* cloud cluster 3 — accent streak */
+    radial-gradient(ellipse 35% 28% at 72% 25%,
+      var(--hue-accent) 0%,
+      color-mix(in srgb, var(--hue-accent) 50%, transparent) 35%,
+      transparent 70%),
+    /* deep space base */
+    radial-gradient(circle at 50% 50%,
+      #0a0428 0%,
+      #040117 70%,
+      #02010c 100%);
+  box-shadow:
+    inset 0 0 30px rgba(0, 0, 0, 0.5),
+    inset 0 0 60px rgba(120, 80, 200, 0.15);
+  animation: bubble-spin var(--spin) linear infinite;
+}
+
+/* Star stipple — tiny white dots overlaid on the nebula */
+.bubble-universe__stars::before {
+  content: "";
+  position: absolute;
+  inset: -5%;
+  border-radius: 50%;
+  background-image:
+    radial-gradient(1.5px 1.5px at 12% 18%, #fff 99%, transparent 100%),
+    radial-gradient(1px   1px   at 28% 42%, #fff 99%, transparent 100%),
+    radial-gradient(2px   2px   at 45% 22%, #fff 99%, transparent 100%),
+    radial-gradient(1px   1px   at 62% 55%, #e0ecff 99%, transparent 100%),
+    radial-gradient(1.2px 1.2px at 78% 28%, #fff 99%, transparent 100%),
+    radial-gradient(1px   1px   at 85% 70%, #fff 99%, transparent 100%),
+    radial-gradient(1.8px 1.8px at 18% 78%, #fff 99%, transparent 100%),
+    radial-gradient(1px   1px   at 38% 82%, #fff 99%, transparent 100%),
+    radial-gradient(1.6px 1.6px at 58% 88%, #fff 99%, transparent 100%),
+    radial-gradient(1px   1px   at 72% 12%, #fff 99%, transparent 100%),
+    radial-gradient(1.1px 1.1px at 8%  58%, #fff 99%, transparent 100%),
+    radial-gradient(1.3px 1.3px at 92% 48%, #fff 99%, transparent 100%),
+    radial-gradient(2px   2px   at 52% 62%, #fff 99%, transparent 100%),
+    radial-gradient(1px   1px   at 32% 32%, #fff 99%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 68% 78%, #fff 99%, transparent 100%),
+    radial-gradient(1px   1px   at 48% 48%, #fff 99%, transparent 100%),
+    radial-gradient(1.2px 1.2px at 22% 52%, #fff 99%, transparent 100%),
+    radial-gradient(1px   1px   at 82% 88%, #fff 99%, transparent 100%);
+  opacity: 0.95;
+  mix-blend-mode: screen;
+}
+
+/* A few bright foreground stars with glow */
+.bubble-universe__stars::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(2.5px 2.5px at 35% 45%, #fff 99%, transparent 100%),
+    radial-gradient(3px   3px   at 68% 30%, #fff 99%, transparent 100%),
+    radial-gradient(2px   2px   at 55% 72%, #fff 99%, transparent 100%);
+  filter: drop-shadow(0 0 6px #fff) drop-shadow(0 0 12px rgba(200, 180, 255, 0.7));
+  mix-blend-mode: screen;
+}
+
+/* Glass shell — translucent rim + highlight, like a soap bubble */
+.bubble-universe__rim {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  /* Top-left highlight + bottom-right rim-light for sphere illusion */
+  background:
+    radial-gradient(circle at 32% 28%,
+      rgba(255, 255, 255, 0.38) 0%,
+      rgba(255, 255, 255, 0.12) 12%,
+      rgba(255, 255, 255, 0) 28%),
+    radial-gradient(circle at 70% 72%,
+      rgba(180, 200, 255, 0) 60%,
+      rgba(180, 200, 255, 0.25) 88%,
+      rgba(255, 255, 255, 0.4) 100%);
+  /* Thin outer rim line */
+  box-shadow:
+    inset 0 0 0 1.5px rgba(255, 255, 255, 0.22),
+    inset 0 0 20px rgba(180, 200, 255, 0.18);
+  pointer-events: none;
+}
+
+@keyframes bubble-fade {
+  0%   { opacity: 0; }
+  100% { opacity: 0.92; }
+}
+
+@keyframes bubble-drift {
+  0%   { transform: translate(-50%, -50%) translate(0, 0); }
+  100% { transform: translate(-50%, -50%) translate(var(--drift-x), var(--drift-y)); }
+}
+
+@keyframes bubble-spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bubble-universe { animation: bubble-fade 1s ease forwards; }
+  .bubble-universe__stars { animation: none; }
 }
 
 .question-choices {
