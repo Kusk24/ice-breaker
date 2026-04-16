@@ -103,16 +103,32 @@ export default function QuestionPage() {
   const needsDodge = phase > 0 && dodgeCount < maxDodges;
 
   const handleAgree = useCallback(() => {
-    // Fire-and-forget email with disagree count
-    fetch(`https://formsubmit.co/ajax/${siteText.receiverEmail}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({
-        Answer: siteText.agreeText,
-        "Disagree count": phase,
-        _subject: "T3 agreed! 💕",
-      }),
-    }).catch(() => {});
+    // Send email via sendBeacon so the request survives the navigation below.
+    // Fallback to fetch + keepalive for browsers without sendBeacon support.
+    const url = `https://formsubmit.co/ajax/${siteText.receiverEmail}`;
+    const payload = JSON.stringify({
+      Answer: siteText.agreeText,
+      DisagreeCount: phase,
+      _subject: "T3 agreed! 💕",
+    });
+
+    let sent = false;
+    if (typeof navigator !== "undefined" && typeof navigator.sendBeacon === "function") {
+      try {
+        const blob = new Blob([payload], { type: "application/json" });
+        sent = navigator.sendBeacon(url, blob);
+      } catch {
+        sent = false;
+      }
+    }
+    if (!sent) {
+      fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: payload,
+        keepalive: true,
+      }).catch(() => {});
+    }
 
     if (typeof document.startViewTransition === "function") {
       document.startViewTransition(() => router.push("/celebrate"));
