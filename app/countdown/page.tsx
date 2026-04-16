@@ -9,6 +9,8 @@ const isProd = process.env.NODE_ENV === "production";
 const rocketSrc = `${isProd ? "/ice-breaker" : ""}/rocket.svg`;
 const thaethuSrc = `${isProd ? "/ice-breaker" : ""}/thaethu.png`;
 const iwannabeyoursSrc = `${isProd ? "/ice-breaker" : ""}/iwannabeyours.jpg`;
+const riskitallSrc = `${isProd ? "/ice-breaker" : ""}/riskitall.jpg`;
+const bestfriendSrc = `${isProd ? "/ice-breaker" : ""}/bestfriend.jpg`;
 
 const TOTAL_SECONDS = 90; // TODO: change back to 10 * 60 (10 minutes)
 const STORAGE_KEY = "bomb-countdown-start";
@@ -252,10 +254,14 @@ export default function CountdownPage() {
               <clipPath id="ast-clip-3">
                 <path d="M 40,10 C 68,5 105,15 130,25 C 150,38 158,62 150,90 C 142,115 128,135 108,148 C 82,155 55,148 35,132 C 18,112 10,85 15,58 C 20,35 28,18 40,10 Z"/>
               </clipPath>
+              {/* Piece 4 — rounder boulder */}
+              <clipPath id="ast-clip-4">
+                <path d="M 38,18 C 65,8 102,10 128,20 C 148,32 156,55 152,82 C 148,108 140,130 120,145 C 95,155 65,152 42,140 C 22,125 12,100 14,72 C 18,48 26,28 38,18 Z"/>
+              </clipPath>
             </defs>
           </svg>
 
-          {([0, 1, 2, 3] as const).map((i) => {
+          {([0, 1, 2, 3, 4] as const).map((i) => {
             const rockShapes = [
               // Piece 0 — chunky wedge
               "M 30,15 C 55,5 95,8 130,12 C 148,18 160,35 155,58 C 150,78 158,100 145,120 C 130,140 105,148 78,145 C 50,142 28,128 18,105 C 8,82 10,52 15,35 C 20,22 25,17 30,15 Z",
@@ -265,24 +271,29 @@ export default function CountdownPage() {
               "M 35,12 C 60,5 95,10 120,18 C 140,28 152,52 148,80 C 144,108 140,132 125,150 C 105,162 75,165 50,155 C 28,142 15,118 12,90 C 10,62 18,32 35,12 Z",
               // Piece 3 — angular pointed chunk
               "M 40,10 C 68,5 105,15 130,25 C 150,38 158,62 150,90 C 142,115 128,135 108,148 C 82,155 55,148 35,132 C 18,112 10,85 15,58 C 20,35 28,18 40,10 Z",
+              // Piece 4 — rounder boulder
+              "M 38,18 C 65,8 102,10 128,20 C 148,32 156,55 152,82 C 148,108 140,130 120,145 C 95,155 65,152 42,140 C 22,125 12,100 14,72 C 18,48 26,28 38,18 Z",
             ];
             const craters: Record<number, Array<{cx:number;cy:number;rx:number;ry:number}>> = {
               0: [{cx:70,cy:55,rx:22,ry:18},{cx:115,cy:95,rx:14,ry:12},{cx:48,cy:110,rx:10,ry:9}],
               1: [{cx:85,cy:50,rx:24,ry:20},{cx:55,cy:95,rx:16,ry:13},{cx:125,cy:85,rx:11,ry:10}],
               2: [{cx:75,cy:60,rx:20,ry:16},{cx:100,cy:110,rx:18,ry:15},{cx:45,cy:125,rx:12,ry:10}],
               3: [{cx:80,cy:55,rx:22,ry:18},{cx:110,cy:100,rx:15,ry:13},{cx:50,cy:105,rx:11,ry:9}],
+              4: [{cx:72,cy:52,rx:20,ry:17},{cx:108,cy:98,rx:16,ry:14},{cx:50,cy:115,rx:11,ry:10}],
             };
             const dots: Record<number, Array<{cx:number;cy:number;r:number}>> = {
               0: [{cx:50,cy:30,r:3},{cx:130,cy:40,r:2.5},{cx:35,cy:85,r:2},{cx:110,cy:125,r:2.5}],
               1: [{cx:45,cy:35,r:2.5},{cx:130,cy:55,r:3},{cx:70,cy:120,r:2},{cx:110,cy:110,r:2.5}],
               2: [{cx:55,cy:30,r:2.5},{cx:110,cy:45,r:2},{cx:35,cy:95,r:3},{cx:95,cy:140,r:2}],
               3: [{cx:65,cy:28,r:2.5},{cx:120,cy:50,r:2},{cx:40,cy:80,r:3},{cx:95,cy:130,r:2}],
+              4: [{cx:52,cy:32,r:2.5},{cx:125,cy:48,r:2.8},{cx:40,cy:98,r:2},{cx:105,cy:130,r:2.5}],
             };
             const highlights = [
               "M 30,20 Q 70,10 120,15 Q 140,18 150,30",
               "M 28,25 Q 75,12 125,18 Q 150,25 160,38",
               "M 38,18 Q 72,10 105,15 Q 130,22 145,35",
               "M 42,15 Q 78,10 110,18 Q 135,28 148,42",
+              "M 40,22 Q 75,12 115,18 Q 138,25 148,40",
             ];
             return (
             <div
@@ -327,17 +338,19 @@ export default function CountdownPage() {
                     {done && i === 1 && (
                       <image href={iwannabeyoursSrc} x="25" y="20" width="120" height="115" preserveAspectRatio="xMidYMid meet" className="asteroid-piece__img-svg"/>
                     )}
-                    {/* Text on piece 2 — centered */}
-                    {zoomedPiece === 2 && i === 2 && (
-                      <foreignObject x="10" y="10" width="150" height="155" className="asteroid-piece__text-fo">
-                        <p className="asteroid-piece__text">{siteText.asteroidTextLeft}</p>
-                      </foreignObject>
+                    {/* Image on piece 2 (bottom-left) */}
+                    {done && i === 2 && (
+                      <image href={riskitallSrc} x="37" y="27" width="96" height="96" preserveAspectRatio="xMidYMid meet" className="asteroid-piece__img-svg"/>
                     )}
                     {/* Text on piece 3 — centered */}
                     {zoomedPiece === 3 && i === 3 && (
                       <foreignObject x="10" y="10" width="145" height="145" className="asteroid-piece__text-fo">
                         <p className="asteroid-piece__text">{siteText.asteroidTextRight}</p>
                       </foreignObject>
+                    )}
+                    {/* Image on piece 4 (center) */}
+                    {done && i === 4 && (
+                      <image href={bestfriendSrc} x="37" y="27" width="96" height="96" preserveAspectRatio="xMidYMid meet" className="asteroid-piece__img-svg"/>
                     )}
                   </g>
                 </svg>
