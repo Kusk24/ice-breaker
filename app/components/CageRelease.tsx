@@ -22,14 +22,22 @@ const FIREFLIES = [
   { id: 7, cx: 54, cy: 54, size: 4 },
 ] as const;
 
+function getPageZoom() {
+  if (typeof window === "undefined") return 1;
+  const v = getComputedStyle(document.documentElement).getPropertyValue("--page-zoom").trim();
+  const n = parseFloat(v);
+  return n > 0 ? n : 1;
+}
+
 function getButtonCenter() {
+  const z = getPageZoom();
   const btn = document.querySelector<HTMLElement>(".hero__btn--cage-reveal");
   if (btn) {
     const r = btn.getBoundingClientRect();
-    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+    return { x: (r.left + r.width / 2) / z, y: (r.top + r.height / 2) / z };
   }
   const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-  return { x: window.innerWidth / 2, y: window.innerHeight * 0.12 + 13.5 * rem };
+  return { x: window.innerWidth / z / 2, y: (window.innerHeight / z) * 0.12 + 13.5 * rem };
 }
 
 export default function CageRelease({ onRelease }: { onRelease: () => void }) {
@@ -50,7 +58,14 @@ export default function CageRelease({ onRelease }: { onRelease: () => void }) {
 
     const cage = cageRef.current;
     if (!cage) return;
-    const rect = cage.getBoundingClientRect();
+    const z = getPageZoom();
+    const rawRect = cage.getBoundingClientRect();
+    const rect = {
+      left: rawRect.left / z,
+      top: rawRect.top / z,
+      width: rawRect.width / z,
+      height: rawRect.height / z,
+    };
     const target = getButtonCenter();
 
     const allRefs = [

@@ -1,6 +1,13 @@
 "use client";
 import { useRouter } from "next/navigation";
 
+function getPageZoom() {
+  if (typeof window === "undefined") return 1;
+  const v = getComputedStyle(document.documentElement).getPropertyValue("--page-zoom").trim();
+  const n = parseFloat(v);
+  return n > 0 ? n : 1;
+}
+
 export default function RocketCta({ className, label }: { className?: string; label: string }) {
   const router = useRouter();
 
@@ -23,15 +30,16 @@ export default function RocketCta({ className, label }: { className?: string; la
     const rocketEl = rocketElMaybe;
     const moonWrap = moonWrapMaybe;
 
+    const z = getPageZoom();
     const rRect = rocketEl.getBoundingClientRect();
     const mRect = moonWrap.getBoundingClientRect();
 
-    const moonCX = mRect.left + mRect.width / 2;
-    const moonCY = mRect.top + mRect.height / 2;
-    const rocketCX = rRect.left + rRect.width / 2;
-    const rocketCY = rRect.top + rRect.height / 2;
-    const rW = rRect.width;
-    const rH = rRect.height;
+    const moonCX = (mRect.left + mRect.width / 2) / z;
+    const moonCY = (mRect.top + mRect.height / 2) / z;
+    const rocketCX = (rRect.left + rRect.width / 2) / z;
+    const rocketCY = (rRect.top + rRect.height / 2) / z;
+    const rW = rRect.width / z;
+    const rH = rRect.height / z;
 
     // Move rocket to body — escapes scene's contain:paint layout
     rocketEl.style.animation = "none";
@@ -153,7 +161,7 @@ export default function RocketCta({ className, label }: { className?: string; la
           sky?.classList.add("warp-speed");
         }
 
-        const ny = startTop - e * (window.innerHeight + 500);
+        const ny = startTop - e * (window.innerHeight / z + 500);
         const bright = 1.5 + e * 3.5;
 
         rocketEl.style.top = `${ny}px`;

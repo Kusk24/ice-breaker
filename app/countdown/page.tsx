@@ -70,8 +70,10 @@ export default function CountdownPage() {
     const el: HTMLDivElement = rocketCraftRef.current;
 
     const DUR = 3000;
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
+    const zoomVar = getComputedStyle(document.documentElement).getPropertyValue("--page-zoom").trim();
+    const zoom = parseFloat(zoomVar) > 0 ? parseFloat(zoomVar) : 1;
+    const vw = window.innerWidth / zoom;
+    const vh = window.innerHeight / zoom;
     let rafId: number;
     const startTime = performance.now();
 

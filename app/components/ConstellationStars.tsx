@@ -36,14 +36,22 @@ const geminiSegments: Array<[number, number]> = [
   [3, 10], [10, 9], [9, 11],
 ];
 
+function getPageZoom() {
+  if (typeof window === "undefined") return 1;
+  const v = getComputedStyle(document.documentElement).getPropertyValue("--page-zoom").trim();
+  const n = parseFloat(v);
+  return n > 0 ? n : 1;
+}
+
 /** Spawn energy stream particles from star to energy bar */
 function spawnEnergyStream(starX: number, starY: number) {
   const bar = document.querySelector(".energy-locator");
   if (!bar) return;
 
+  const z = getPageZoom();
   const barRect = bar.getBoundingClientRect();
-  const endX = barRect.left + barRect.width / 2;
-  const endY = barRect.top + barRect.height * 0.45;
+  const endX = (barRect.left + barRect.width / 2) / z;
+  const endY = (barRect.top + barRect.height * 0.45) / z;
 
   const PARTICLE_COUNT = 12;
   const STREAM_DURATION = 900;
@@ -149,7 +157,8 @@ export default function ConstellationStars() {
         const ctm = svg.getScreenCTM();
         if (ctm) {
           const screenPt = pt.matrixTransform(ctm);
-          spawnEnergyStream(screenPt.x, screenPt.y);
+          const z = getPageZoom();
+          spawnEnergyStream(screenPt.x / z, screenPt.y / z);
         }
       }
 
