@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 
 const isProd = process.env.NODE_ENV === "production";
-const src = `${isProd ? "/ice-breaker" : ""}/music/moonlight romance.mp3`;
+const src = `${isProd ? "/ice-breaker" : ""}/music/Love Story (Piano).mp3`;
 const MUSIC_OFF_KEY = "t3-music-off";
 
 export default function MusicPlayer() {
