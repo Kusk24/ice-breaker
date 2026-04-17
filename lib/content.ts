@@ -9,20 +9,20 @@ export const siteText = {
   buttonTwo: "Back To Flowers",
   buttonThree: "Ride",
   moonText: "You are like a moon, so pretty & so tiny",
-  question: `mote srr chin lo website pr yay lite p haha
+  question: `mote srr chin lo website pr yay lite p xD
   mote wal kah py pr lr
    ya lr ma thi woo (づ •. •)?`,
   agreeText: "ya pr tl :0",
   disagreeText: "ma ya buu",
-  questionOne: "br pyit a sin pyay pr tl so",
-  questionTwo: "a ti gyi ma wal kywy phuu pop",
-  questionThree: "aww ma ya pr buu, gone sin hmr pl",
-  questionFour: "ak lo nww thae thu ly, chee htoke pl",
-  questionFive: "mote srr chin tl kid ly pr",
-  questionSix: "grrrrr ma ya phuu pl nhate tok hmr lr",
-  questionSeven: "a chin chin twy ko nww, sy ta nrr ma shi buu pop",
-  questionEight: "hrr lote pyn p, zoot nyin nrr pl",
-  questionNine: "ummm, candy lout so ll a sin pyay hmr pr, ak ll ma ya buu lr?",
+  questionOne: "br pyit a sin pyay pr tl nw",
+  questionTwo: "ummm, candy lout so ll a sin pyay hmr pr, ak ll ma ya buu lr?",
+  questionThree: "a ti gyi ma wal kywy phuu pop",
+  questionFour: "aww ma ya pr buu, gone sin hmr pl",
+  questionFive: "ak lo nww thae thu, chee htoke pl",
+  questionSix: "mote srr chin tl kid ly pr",
+  questionSeven: "grrrrr ma ya buu pl nhate tok hmr lr",
+  questionEight: "a chin chin twy ko nww, sy ta nrr ma shi buu pop",
+  questionNine: "hrr lote pyn p, zoot nyin nrr pl",
   questionTen: "brr lo ll loh, br lo ll loh, friend twy so",
   questionEleven: "wahaha, bl pyay ma ll kwa, ma ya lo ma ya tok buu ly",
   asteroidTextTopRight: "is that T3??? who is that? \n ahh I miss my T3",
@@ -37,5 +37,6 @@ export const siteText = {
   receiverEmail: "winyumg2003a@gmail.com",
   blackholeEnter: "Enter",
   blackholeTooSmall: "blackhole is too small, pick and drop rocks to throw into it",
-  blackholeReady: "blackhole is ready, enter it"
+  blackholeReady: "blackhole is ready, enter it",
+  multiverseLabel: "Every version of me would give the whole multiverse just to have you in my daily life 🌠"
 };
