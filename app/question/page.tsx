@@ -76,6 +76,7 @@ export default function QuestionPage() {
   const [phase, setPhase]           = useState(0);
   const [imgKey, setImgKey]         = useState(0);
   const [noPos, setNoPos]           = useState(() => randPos());
+  const [yesPos, setYesPos]         = useState<{ x: number; y: number } | null>(null);
   const [dodgeCount, setDodgeCount] = useState(0);
   const [dodgeText, setDodgeText]   = useState(siteText.disagreeText);
   const noPosRef = useRef(noPos);
@@ -148,15 +149,18 @@ export default function QuestionPage() {
     setImgKey(k => k + 1);
     setDodgeCount(0);
     setDodgeText(nextDodgeText());
+    setYesPos(null);
     const next = randPos(noPosRef.current);
     noPosRef.current = next;
     setNoPos(next);
   }, []);
 
   const runAway = useCallback(() => {
-    const next = randPos(noPosRef.current);
+    const prev = noPosRef.current;
+    const next = randPos(prev);
     noPosRef.current = next;
     setNoPos(next);
+    setYesPos(prev);
     setDodgeCount(c => c + 1);
     setDodgeText(nextDodgeText());
   }, []);
@@ -184,14 +188,18 @@ export default function QuestionPage() {
     </button>
   );
 
-  // Phase 1+ agree — grows big, stays in content area
+  // Phase 1+ agree — grows big; swaps into disagree's previous spot after each dodge
+  const agreeFloating = yesPos !== null;
   const agreeBtnGrown = (
     <button
       key="agree-grown"
-      className="q-btn q-btn--yes q-btn--grown"
+      className={`q-btn q-btn--yes q-btn--grown${agreeFloating ? " q-btn--floating" : ""}`}
       onClick={handleAgree}
       style={{
         "--agree-scale": agreeScale,
+        ...(agreeFloating
+          ? { left: `${yesPos!.x}vw`, top: `${yesPos!.y}vh` }
+          : {}),
         touchAction: "manipulation",
         WebkitTapHighlightColor: "transparent",
       } as CSSProperties}
@@ -223,6 +231,9 @@ export default function QuestionPage() {
   return (
     <main className="scene question-scene">
       <T3Nebula />
+      <div className="multiverse-label" aria-hidden>
+        <span className="multiverse-label__text">{siteText.multiverseLabel}</span>
+      </div>
       <div className="sky" aria-hidden>
         {stars.map((s, i) => (
           <span key={i} className="star"
@@ -295,9 +306,16 @@ export default function QuestionPage() {
           className={`question-choices${phase > 0 ? " question-choices--reacted" : ""}`}
           style={{ "--agree-scale": agreeScale } as CSSProperties}
         >
-          {phase === 0 ? [agreeBtnInline, disagreeBtnInline] : agreeBtnGrown}
+          {phase === 0
+            ? [agreeBtnInline, disagreeBtnInline]
+            : agreeFloating
+              ? null
+              : agreeBtnGrown}
         </div>
       </div>
+
+      {/* Floating agree — lives outside flow so it can take disagree's old spot */}
+      {phase > 0 && agreeFloating && agreeBtnGrown}
 
       {/* Floating disagree lives outside flow so it can go anywhere */}
       {phase > 0 && disagreeBtnFloat}
