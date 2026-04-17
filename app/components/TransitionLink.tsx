@@ -12,16 +12,7 @@ export default function TransitionLink({ href, children, ...rest }: Props) {
   function navigate() {
     if (navigated) return;
     navigated = true;
-    if (typeof document.startViewTransition !== "function") {
-      router.push(href as string);
-      return;
-    }
-    document.startViewTransition(() => {
-      router.push(href as string);
-      return new Promise<void>((resolve) => {
-        requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
-      });
-    });
+    router.push(href as string);
   }
 
   function handleClick(e: React.MouseEvent<HTMLAnchorElement>) {

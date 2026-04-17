@@ -18,11 +18,7 @@ export default function MoonBackButton({ className }: { className?: string }) {
     if (moonText) moonText.classList.add("fading-out");
 
     const navigate = () => {
-      if (typeof document.startViewTransition === "function") {
-        document.startViewTransition(() => router.push("/"));
-      } else {
-        router.push("/");
-      }
+      router.push("/");
     };
 
     setTimeout(navigate, 3800);

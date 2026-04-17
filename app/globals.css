@@ -155,6 +155,9 @@ body:has(.constellation-scene) {
 .moon-wrap--journey {
   top: 7%;
   left: 6%;
+  --moon-center-dx: 44vw;
+  --moon-center-dy: 43vh;
+  --moon-half-size: 42px;
   z-index: 8;
   opacity: 0;
   will-change: transform, opacity;
@@ -1013,14 +1016,20 @@ body:has(.constellation-scene) {
   }
   100% {
     opacity: 1;
-    transform: translate(calc(44vw / var(--page-zoom, 1) - 42px), calc(43vh / var(--page-zoom, 1) - 42px)) scale(4.8);
+    transform: translate(
+      calc(var(--moon-center-dx) / var(--page-zoom, 1) - var(--moon-half-size)),
+      calc(var(--moon-center-dy) / var(--page-zoom, 1) - var(--moon-half-size))
+    ) scale(4.8);
   }
 }
 
 @keyframes moon-return {
   0% {
     opacity: 1;
-    transform: translate(calc(44vw / var(--page-zoom, 1) - 42px), calc(43vh / var(--page-zoom, 1) - 42px)) scale(4.8);
+    transform: translate(
+      calc(var(--moon-center-dx) / var(--page-zoom, 1) - var(--moon-half-size)),
+      calc(var(--moon-center-dy) / var(--page-zoom, 1) - var(--moon-half-size))
+    ) scale(4.8);
   }
   94% {
     opacity: 1;
@@ -1222,8 +1231,20 @@ body:has(.constellation-scene) {
 }
 
 @keyframes moon-implode {
-  0%   { opacity: 1; transform: translate(calc(44vw / var(--page-zoom, 1) - 42px), calc(43vh / var(--page-zoom, 1) - 42px)) scale(4.8); }
-  100% { opacity: 0; transform: translate(calc(44vw / var(--page-zoom, 1) - 42px), calc(43vh / var(--page-zoom, 1) - 42px)) scale(0); }
+  0%   {
+    opacity: 1;
+    transform: translate(
+      calc(var(--moon-center-dx) / var(--page-zoom, 1) - var(--moon-half-size)),
+      calc(var(--moon-center-dy) / var(--page-zoom, 1) - var(--moon-half-size))
+    ) scale(4.8);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(
+      calc(var(--moon-center-dx) / var(--page-zoom, 1) - var(--moon-half-size)),
+      calc(var(--moon-center-dy) / var(--page-zoom, 1) - var(--moon-half-size))
+    ) scale(0);
+  }
 }
 
 /* Text drifts down and fades */
@@ -3094,6 +3115,11 @@ body:has(.constellation-scene) {
   .moon-wrap {
     top: 5%;
     left: 4%;
+  }
+  .moon-wrap--journey {
+    --moon-center-dx: 46vw;
+    --moon-center-dy: 45vh;
+    --moon-half-size: 28px;
   }
   .moon {
     width: 42px;
