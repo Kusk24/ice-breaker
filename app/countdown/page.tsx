@@ -195,8 +195,13 @@ export default function CountdownPage() {
       const el = timerRef.current;
       if (el) {
         const r = el.getBoundingClientRect();
+        const isIpad = window.matchMedia(
+          "(hover: none) and (pointer: coarse) and (min-width: 768px) and (max-width: 1366px)"
+        ).matches;
         const zoomVar = getComputedStyle(document.documentElement).getPropertyValue("--page-zoom").trim();
-        const zoom = parseFloat(zoomVar) > 0 ? parseFloat(zoomVar) : 1;
+        // iPad: position:fixed ignores html zoom, so streaks live in physical
+        // viewport coords — pass raw rect offset. Laptop divides by zoom.
+        const zoom = isIpad ? 1 : (parseFloat(zoomVar) > 0 ? parseFloat(zoomVar) : 1);
         const cx = (r.left + r.width / 2) / zoom - window.innerWidth / zoom / 2;
         const cy = (r.top + r.height / 2) / zoom - window.innerHeight / zoom / 2;
         setEnergyCenter((prev) =>

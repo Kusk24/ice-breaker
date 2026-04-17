@@ -228,6 +228,35 @@ html { --page-zoom: 1; }
     animation: none !important;
   }
 
+  /* ── Energy streams: cut count further + drop blend + flatten shadows ──
+     Kept one in every 4 (laptop keeps every other one). mix-blend-mode is a
+     known Safari frame-eater; removing it alongside box-shadow recovers most
+     of the "energy collecting" lag reported on iPad. */
+  .bomb-energy__streak:nth-child(3n),
+  .bomb-energy__streak:nth-child(3n+1) { display: none !important; }
+  .bomb-energy__streak {
+    mix-blend-mode: normal !important;
+    box-shadow: none !important;
+    filter: none !important;
+  }
+
+  /* ── Moon journey: center math on iPad ──
+     The laptop keyframe translates by (dx / zoom - halfSize). On iPad
+     position:absolute descendants *do* scale with html zoom, but dividing by
+     zoom inflates the distance (e.g. 44vw/0.80=55vw) and pushes the moon far
+     right of center. Multiply by zoom to cancel the division so the final
+     translate lands on 50vw / 50vh at any zoom bucket. */
+  .moon-wrap--journey {
+    --moon-center-dx: calc(44vw * var(--page-zoom, 1)) !important;
+    --moon-center-dy: calc(43vh * var(--page-zoom, 1)) !important;
+  }
+
+  /* ── Rocket flight: same fix — center without zoom inflation ── */
+  .rocket-flight {
+    left: calc(50vw - 120px) !important;
+    top: calc(50vh - 320px) !important;
+  }
+
   /* ── Fast tap path ─────────────────────────────────────────────────── */
   button, a, .q-btn, .hero__btn {
     touch-action: manipulation;

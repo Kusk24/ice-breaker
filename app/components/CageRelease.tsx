@@ -22,8 +22,19 @@ const FIREFLIES = [
   { id: 7, cx: 54, cy: 54, size: 4 },
 ] as const;
 
+function isIpadViewport() {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia(
+    "(hover: none) and (pointer: coarse) and (min-width: 768px) and (max-width: 1366px)"
+  ).matches;
+}
+
 function getPageZoom() {
   if (typeof window === "undefined") return 1;
+  // iPad Safari: position:fixed elements render in physical viewport coords and
+  // do not honor html { zoom }. Passing raw rect coords keeps flies centered on
+  // the button. Laptop still divides by zoom as before.
+  if (isIpadViewport()) return 1;
   const v = getComputedStyle(document.documentElement).getPropertyValue("--page-zoom").trim();
   const n = parseFloat(v);
   return n > 0 ? n : 1;
