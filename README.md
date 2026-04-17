@@ -1,36 +1,39 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ice Breaker — For T3
 
-## Getting Started
+> *Sometimes things are too vast for words alone, so I wrote them in code instead.*
 
-First, run the development server:
+Well, It really wasn't hard for me to break the ice with everyone else, like you already know I'm an extrovert, I might be good at communication. But I really don't know about how to break an ice wall between you and me it is so bad that I wasn't a first-year student like you and not having many mutuals is a thing that really got me stressed.(gosh you have rulessss T_T, pls I'm not a bad creepy bad boy) sometimes I just wish, I was first-year student again haha, so you could know me better from the start instead of weird intros and stuffs like that. But don't worry no matter what I will find a way to make it work cause we already met somehow, I thought I wouldn't have a chance to talk to you after all in this life. So, I made an ice-breaker website, I hope you like it, I hope we become very comfortable friends though the age gap, year gap, and major gap.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## How It Works
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+A small universe unfolds across six pages, each one a step closer.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### `/` — The Garden
 
-## Learn More
+Where it all begins. A night sky full of twinkling stars, roses blooming at the bottom, and a quiet invitation to **Start**. A cage-release animation sets the first spark free. Tap the button and the journey lifts off.
 
-To learn more about Next.js, take a look at the following resources:
+### `/constellation` — The Letter
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The sky deepens. Shooting stars cross a nebula-dusted canvas while a scroll letter unrolls — words written not to impress, but to be honest. A constellation map traces something familiar overhead. When the letter is read, a path forward appears.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### `/moon` — The Moon
 
-## Deploy on Vercel
+A single moon hangs at the centre, gentle and full. Beneath it, a line of text types itself out: *"You are like a moon, so pretty & so tiny."* A Gemini constellation glows softly nearby. The rocket fuels up — energy particles swirl — and when it's ready, you **Ride**.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### `/countdown` — The Asteroid
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+An obstacle appears: an asteroid blocking the way. A 20-second countdown bomb ticks down while the T3 nebula pulses in the background. Three floating asteroids carry hidden messages — lyrics, confessions, tiny truths. Survive the countdown and a black hole opens the next door.
+
+### `/question` — The Multiverse
+
+Eleven questions drift across a multiverse of bubble-galaxies. Each one is playful, a little nervous, entirely sincere. A "disagree" button dodges your tap (it really doesn't want to be pressed). Photo memories appear between rounds. Answer them all and the final gate unlocks.
+
+### `/celebrate` — The Ending
+
+Confetti rains. Stars shimmer. A form asks one last question: *"When will you come back?"* Pick a date and time, hit send, and the answer flies to an inbox across the internet. The night sky celebrates quietly — it knew the answer all along.
+
+---
+
+Built with **Next.js** and a mass amount of CSS animations, and a mass amount of cares.
