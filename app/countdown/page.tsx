@@ -76,6 +76,10 @@ export default function CountdownPage() {
   const TOTAL_ROCKS = 5;
   const rockRefs = useRef<Record<number, HTMLDivElement | null>>({});
   const blackholeRef = useRef<HTMLDivElement | null>(null);
+  const timerRef = useRef<HTMLDivElement | null>(null);
+  // Offset (in CSS px) from viewport center to the bomb timer's center. Measured
+  // from the DOM so energy streams converge on the timer's colon at every size.
+  const [energyCenter, setEnergyCenter] = useState<{ cx: number; cy: number }>({ cx: 0, cy: 0 });
   // Rock's viewport-space origin + delta to the blackhole center — set when throw
   // starts. Fragments render in a fixed-position layer so they escape the floating
   // rock's rotation and land exactly on the blackhole at any screen size/zoom.
@@ -178,6 +182,32 @@ export default function CountdownPage() {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, []);
+
+  // Track the timer's viewport-space center on every animation frame while
+  // streams are active so they always converge on the live "00:00" position —
+  // even when the bomb is shaking in the final seconds. Offset is expressed
+  // in CSS px relative to viewport center and divided by --page-zoom so it
+  // matches the fixed overlay's rendering space at any breakpoint.
+  useEffect(() => {
+    if (exploding || done || remaining > 10 || remaining <= 0) return;
+    let raf = 0;
+    function tickMeasure() {
+      const el = timerRef.current;
+      if (el) {
+        const r = el.getBoundingClientRect();
+        const zoomVar = getComputedStyle(document.documentElement).getPropertyValue("--page-zoom").trim();
+        const zoom = parseFloat(zoomVar) > 0 ? parseFloat(zoomVar) : 1;
+        const cx = (r.left + r.width / 2) / zoom - window.innerWidth / zoom / 2;
+        const cy = (r.top + r.height / 2) / zoom - window.innerHeight / zoom / 2;
+        setEnergyCenter((prev) =>
+          Math.abs(prev.cx - cx) < 0.5 && Math.abs(prev.cy - cy) < 0.5 ? prev : { cx, cy }
+        );
+      }
+      raf = requestAnimationFrame(tickMeasure);
+    }
+    raf = requestAnimationFrame(tickMeasure);
+    return () => cancelAnimationFrame(raf);
+  }, [exploding, done, remaining]);
 
   const blackholeReady = thrownRocks.size >= TOTAL_ROCKS;
 
@@ -468,28 +498,6 @@ export default function CountdownPage() {
         {/* Bomb */}
         <div className={`bomb-wrap ${exploding ? "bomb-wrap--exploded" : ""} ${isWarning ? "bomb-wrap--warning" : ""} ${isUrgent ? "bomb-wrap--urgent" : ""} ${isAlmostDone && !exploding ? "bomb-wrap--shake" : ""}`}>
 
-        {/* Energy streams flowing into the bomb — only the last ≤10s */}
-        {!exploding && !done && remaining <= 10 && remaining > 0 && (
-          <div className="bomb-energy" aria-hidden>
-            {ENERGY_STREAMS.map((s, i) => (
-              <span
-                key={`energy-${i}`}
-                className="bomb-energy__streak"
-                style={{
-                  "--cos": Math.cos((s.angle * Math.PI) / 180).toFixed(4),
-                  "--sin": Math.sin((s.angle * Math.PI) / 180).toFixed(4),
-                  "--scale": s.distScale,
-                  "--rot": `${s.angle}deg`,
-                  "--dur": `${s.dur}s`,
-                  "--delay": `${s.delay}s`,
-                  "--color": s.color,
-                  "--thick": `${s.thickness}px`,
-                } as CSSProperties}
-              />
-            ))}
-          </div>
-        )}
-
         {/* Cap + Fuse SVG */}
         {!exploding && !done && (
           <svg className="bomb-cap-svg" viewBox="0 0 100 90" xmlns="http://www.w3.org/2000/svg" aria-hidden overflow="visible">
@@ -579,7 +587,7 @@ export default function CountdownPage() {
           <div className="bomb-body">
             <div className="bomb-body__shine" aria-hidden />
             <div className="bomb-body__shine bomb-body__shine--small" aria-hidden />
-            <div className="bomb-timer">
+            <div className="bomb-timer" ref={timerRef}>
               <span className={`bomb-timer__digits ${isUrgent ? "bomb-timer__digits--urgent" : ""}`}>
                 {formatTime(remaining)}
               </span>
@@ -620,6 +628,37 @@ export default function CountdownPage() {
         )}
         </div>{/* /bomb-wrap */}
       </div>{/* /bomb-stage */}
+
+      {/* Energy streams flowing into the bomb — rendered at scene root so they
+          escape .bomb-wrap--shake's transform (which would make position:fixed
+          relative to the shaking wrap, not the viewport). */}
+      {!exploding && !done && remaining <= 10 && remaining > 0 && (
+        <div
+          className="bomb-energy"
+          aria-hidden
+          style={{
+            "--energy-cx": `${energyCenter.cx}px`,
+            "--energy-cy": `${energyCenter.cy}px`,
+          } as CSSProperties}
+        >
+          {ENERGY_STREAMS.map((s, i) => (
+            <span
+              key={`energy-${i}`}
+              className={`bomb-energy__streak${isUrgent ? " bomb-energy__streak--urgent" : ""}${isAlmostDone ? " bomb-energy__streak--shake" : ""}`}
+              style={{
+                "--cos": Math.cos((s.angle * Math.PI) / 180).toFixed(4),
+                "--sin": Math.sin((s.angle * Math.PI) / 180).toFixed(4),
+                "--scale": s.distScale,
+                "--rot": `${s.angle}deg`,
+                "--dur": `${s.dur}s`,
+                "--delay": `${s.delay}s`,
+                "--color": s.color,
+                "--thick": `${s.thickness}px`,
+              } as CSSProperties}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Nebula residue — appears after explosion */}
       {done && <T3Nebula />}

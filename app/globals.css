@@ -670,19 +670,17 @@ body:has(.constellation-scene) {
 }
 .energy-full-msg__text {
   display: inline-block;
-  padding: 14px 28px;
-  border-radius: 16px;
-  background: rgba(10, 20, 50, 0.88);
-  border: 1.5px solid rgba(80, 160, 255, 0.5);
-  color: #b0e0ff;
-  font-family: var(--font-dancing), cursive;
-  font-size: clamp(1rem, 2.5vw, 1.3rem);
-  font-weight: 600;
+  padding: 0.7em 1.4em;
+  border-radius: 999px;
+  background: rgba(30, 20, 60, 0.85);
+  border: 1px solid rgba(200, 160, 255, 0.4);
+  color: #e8e0ff;
+  font-family: var(--font-caveat), cursive;
+  font-size: clamp(1rem, 2.2vw, 1.3rem);
+  letter-spacing: 0.03em;
   text-align: center;
   backdrop-filter: blur(12px);
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.4),
-    0 0 20px rgba(80, 160, 255, 0.2);
+  box-shadow: 0 4px 20px rgba(120, 80, 200, 0.4);
   white-space: nowrap;
 }
 @keyframes energy-full-in {
@@ -3288,6 +3286,34 @@ body:has(.constellation-scene) {
   100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.4) rotate(360deg); }
 }
 
+.multiverse-label {
+  position: fixed;
+  left: 50%;
+  top: 3.5%;
+  transform: translateX(-50%);
+  z-index: 20;
+  pointer-events: none;
+  animation: multiverse-label-in 0.6s ease 0.3s both;
+}
+.multiverse-label__text {
+  display: inline-block;
+  padding: 0.7em 1.4em;
+  border-radius: 999px;
+  background: rgba(30, 20, 60, 0.85);
+  border: 1px solid rgba(200, 160, 255, 0.4);
+  color: #e8e0ff;
+  font-family: var(--font-caveat), cursive;
+  font-size: clamp(1rem, 2.2vw, 1.3rem);
+  letter-spacing: 0.03em;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 20px rgba(120, 80, 200, 0.4);
+  white-space: nowrap;
+}
+@keyframes multiverse-label-in {
+  from { opacity: 0; transform: translate(-50%, -10px); }
+  to   { opacity: 1; transform: translate(-50%, 0);     }
+}
+
 .question-title__line {
   display: block;
   text-align: center;
@@ -3535,6 +3561,23 @@ body:has(.constellation-scene) {
 }
 .q-btn--grown:hover { transform: scale(calc(var(--agree-scale, 1) * 1.06)); }
 .q-btn--grown:active { transform: scale(calc(var(--agree-scale, 1) * 0.96)); }
+
+/* Floating agree — swapped into disagree's old spot */
+.q-btn--grown.q-btn--floating {
+  position: fixed;
+  transform: translate(-50%, -50%) scale(var(--agree-scale, 1));
+  z-index: 150;
+  transition:
+    left 0.35s cubic-bezier(0.34, 1.3, 0.64, 1),
+    top  0.35s cubic-bezier(0.34, 1.3, 0.64, 1),
+    transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.q-btn--grown.q-btn--floating:hover {
+  transform: translate(-50%, -50%) scale(calc(var(--agree-scale, 1) * 1.06));
+}
+.q-btn--grown.q-btn--floating:active {
+  transform: translate(-50%, -50%) scale(calc(var(--agree-scale, 1) * 0.96));
+}
 
 .q-btn--no {
   background: linear-gradient(135deg, #2a3a5c 0%, #3d5280 100%);
@@ -3805,27 +3848,77 @@ body:has(.constellation-scene) {
   position: relative;
   z-index: 1;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.6rem;
-  margin-top: 0.5rem;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+  margin-top: 1.5rem;
+  padding: 1.4rem 1.8rem 1.6rem;
+  border-radius: 28px;
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(200, 160, 255, 0.18), transparent 55%),
+    radial-gradient(ellipse at 80% 100%, rgba(120, 180, 255, 0.15), transparent 55%),
+    rgba(20, 12, 45, 0.55);
+  border: 1px solid rgba(200, 180, 255, 0.22);
+  box-shadow:
+    0 10px 40px rgba(80, 40, 160, 0.35),
+    0 0 40px rgba(120, 100, 220, 0.15) inset;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   animation: cel-form-in 0.65s ease-out 1.4s both;
 }
+.celebrate-nav__prompt {
+  margin: 0;
+  font-family: var(--font-caveat), cursive;
+  font-size: clamp(1.25rem, 2.4vw, 1.7rem);
+  background: linear-gradient(135deg, #ffe8c7 0%, #ffb7d6 45%, #c7b6ff 100%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+  letter-spacing: 0.03em;
+  text-shadow: 0 0 18px rgba(255, 200, 230, 0.15);
+}
+.celebrate-nav__list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.7rem;
+}
 .celebrate-nav__btn {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.10) 0%, rgba(200, 180, 255, 0.10) 100%);
+  border: 1px solid rgba(220, 200, 255, 0.28);
   border-radius: 999px;
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 0.85rem;
-  padding: 0.45rem 1.2rem;
+  color: rgba(245, 240, 255, 0.92);
+  font-family: var(--font-caveat), cursive;
+  font-size: clamp(0.95rem, 1.6vw, 1.1rem);
+  letter-spacing: 0.02em;
+  padding: 0.5rem 1.25rem;
   text-decoration: none;
-  transition: background 0.25s, color 0.25s, transform 0.2s;
+  box-shadow:
+    0 4px 14px rgba(40, 20, 80, 0.35),
+    0 0 0 0 rgba(200, 160, 255, 0);
+  transition:
+    background 0.3s ease,
+    color 0.25s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   -webkit-tap-highlight-color: transparent;
 }
 .celebrate-nav__btn:hover {
-  background: rgba(255, 255, 255, 0.16);
+  background: linear-gradient(135deg, rgba(255, 200, 230, 0.22) 0%, rgba(180, 160, 255, 0.28) 100%);
   color: #fff;
-  transform: scale(1.06);
+  border-color: rgba(255, 210, 240, 0.55);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow:
+    0 10px 26px rgba(120, 60, 200, 0.45),
+    0 0 0 4px rgba(200, 160, 255, 0.12);
+}
+.celebrate-nav__btn:active {
+  transform: translateY(0) scale(0.97);
 }
 
 /* ─── Dodge speech bubble ─── */
@@ -4444,15 +4537,19 @@ body:has(.constellation-scene) {
 }
 
 /* ── Energy streams flowing into the bomb ──
-   Centered on .bomb-wrap's midpoint (50%/50%), which is also where .bomb-body
-   sits. Each streak spawns at (cos·R, sin·R) and races to (0, 0).
+   Fixed to the viewport so streaks converge on the true page center (50vw/50vh)
+   — which is where the bomb and asteroid cluster are visually centered,
+   regardless of container sizing quirks on .bomb-wrap / .bomb-stage.
    --energy-radius scales with viewport so the effect fits all screens. */
 .bomb-energy {
-  position: absolute;
+  position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: -1; /* behind bomb body within the .bomb-wrap stacking context */
+  z-index: 9; /* in front of asteroid (8), behind bomb-wrap (10) */
   --energy-radius: clamp(160px, 28vmin, 320px);
+  /* --energy-cx/cy are set inline from JS: the measured offset of the bomb
+     body's visual center from viewport center. This stays pixel-accurate at
+     every screen size without fragile per-breakpoint guessing. */
 }
 
 .bomb-energy__streak {
@@ -4462,6 +4559,7 @@ body:has(.constellation-scene) {
   width: clamp(40px, 7vmin, 80px);
   height: var(--thick);
   margin-top: calc(var(--thick) / -2);
+  margin-left: calc(-1 * clamp(40px, 7vmin, 80px)); /* head (right edge) at viewport center */
   border-radius: 999px;
   background: linear-gradient(
     90deg,
@@ -4475,7 +4573,7 @@ body:has(.constellation-scene) {
     0 0 22px color-mix(in srgb, var(--color) 65%, transparent);
   transform-origin: 100% 50%; /* head (right edge) is the anchor */
   opacity: 0;
-  animation: energy-flow var(--dur) cubic-bezier(0.45, 0, 0.75, 0.35) var(--delay) infinite;
+  animation: energy-flow var(--dur) cubic-bezier(0.45, 0, 0.75, 0.35) var(--delay) infinite backwards;
   mix-blend-mode: screen;
   will-change: transform, opacity;
 }
@@ -4485,8 +4583,8 @@ body:has(.constellation-scene) {
     opacity: 0;
     transform:
       translate(
-        calc(var(--cos) * var(--energy-radius) * var(--scale)),
-        calc(var(--sin) * var(--energy-radius) * var(--scale))
+        calc(var(--energy-cx, 0px) + var(--cos) * var(--energy-radius) * var(--scale)),
+        calc(var(--energy-cy, 0px) + var(--sin) * var(--energy-radius) * var(--scale))
       )
       rotate(calc(var(--rot) + 180deg))
       scaleX(0.4);
@@ -4496,21 +4594,24 @@ body:has(.constellation-scene) {
     opacity: 1;
     transform:
       translate(
-        calc(var(--cos) * var(--energy-radius) * 0.05),
-        calc(var(--sin) * var(--energy-radius) * 0.05)
+        calc(var(--energy-cx, 0px) + var(--cos) * var(--energy-radius) * 0.05),
+        calc(var(--energy-cy, 0px) + var(--sin) * var(--energy-radius) * 0.05)
       )
       rotate(calc(var(--rot) + 180deg))
       scaleX(1.1);
   }
   100% {
     opacity: 0;
-    transform: translate(0, 0) rotate(calc(var(--rot) + 180deg)) scaleX(0.15);
+    transform:
+      translate(var(--energy-cx, 0px), var(--energy-cy, 0px))
+      rotate(calc(var(--rot) + 180deg))
+      scaleX(0.15);
   }
 }
 
 /* Speed up as the fuse burns down */
-.bomb-wrap--urgent .bomb-energy__streak { animation-duration: calc(var(--dur) * 0.6); }
-.bomb-wrap--shake  .bomb-energy__streak { animation-duration: calc(var(--dur) * 0.35); }
+.bomb-energy__streak--urgent { animation-duration: calc(var(--dur) * 0.6); }
+.bomb-energy__streak--shake  { animation-duration: calc(var(--dur) * 0.35); }
 
 /* Smaller screens — shrink the ring so streaks clearly originate off the bomb
    but still arrive at its exact center. */
