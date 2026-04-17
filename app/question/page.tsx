@@ -137,16 +137,7 @@ export default function QuestionPage() {
       clearTimeout(timeout);
     }
 
-    if (typeof document.startViewTransition === "function") {
-      document.startViewTransition(() => {
-        router.push("/celebrate");
-        return new Promise<void>((resolve) => {
-          requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
-        });
-      });
-    } else {
-      router.push("/celebrate");
-    }
+    router.push("/celebrate");
   }, [router, phase]);
 
   const handleDisagree = useCallback(() => {
