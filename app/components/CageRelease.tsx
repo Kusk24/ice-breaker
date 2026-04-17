@@ -50,14 +50,15 @@ function getButtonCenter() {
   if (isIpadViewport()) {
     // Button not yet in DOM — anchor to .hero element which is always present.
     // getBoundingClientRect() returns visual-viewport coords on iPad (position:fixed space).
+    // Use hero's own rect center (hero has left:0,right:0 so width = physical viewport width)
+    // to avoid window.innerWidth ambiguity under html{zoom}.
     const hero = document.querySelector<HTMLElement>(".hero");
-    const x = window.innerWidth / 2;
     if (hero) {
       const r = hero.getBoundingClientRect();
       // ~65 px covers button margin-top (2.2em) + half button height in visual pixels
-      return { x, y: r.bottom + 65 };
+      return { x: r.left + r.width / 2, y: r.bottom + 65 };
     }
-    return { x, y: window.innerHeight * 0.30 };
+    return { x: window.innerWidth / 2, y: window.innerHeight * 0.30 };
   }
   const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
   return { x: window.innerWidth / z / 2, y: (window.innerHeight / z) * 0.12 + 13.5 * rem };

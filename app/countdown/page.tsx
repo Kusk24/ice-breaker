@@ -104,9 +104,13 @@ export default function CountdownPage() {
 
     const DUR = 3000;
     const zoomVar = getComputedStyle(document.documentElement).getPropertyValue("--page-zoom").trim();
-    const zoom = parseFloat(zoomVar) > 0 ? parseFloat(zoomVar) : 1;
-    const vw = window.innerWidth / zoom;
-    const vh = window.innerHeight / zoom;
+    const isIpadIncoming = window.matchMedia(
+      "(hover: none) and (pointer: coarse) and (min-width: 768px) and (max-width: 1366px)"
+    ).matches;
+    // iPad: fixed elements ignore html{zoom} — use physical viewport directly.
+    const zoom = isIpadIncoming ? 1 : (parseFloat(zoomVar) > 0 ? parseFloat(zoomVar) : 1);
+    const vw = isIpadIncoming ? (window.visualViewport?.width ?? window.innerWidth) : window.innerWidth / zoom;
+    const vh = isIpadIncoming ? (window.visualViewport?.height ?? window.innerHeight) : window.innerHeight / zoom;
     let rafId: number;
     const startTime = performance.now();
 
@@ -200,10 +204,13 @@ export default function CountdownPage() {
         ).matches;
         const zoomVar = getComputedStyle(document.documentElement).getPropertyValue("--page-zoom").trim();
         // iPad: position:fixed ignores html zoom, so streaks live in physical
-        // viewport coords — pass raw rect offset. Laptop divides by zoom.
+        // viewport coords — use visualViewport.width/height for accurate center
+        // (window.innerWidth can be CSS layout space under html{zoom}, not physical).
         const zoom = isIpad ? 1 : (parseFloat(zoomVar) > 0 ? parseFloat(zoomVar) : 1);
-        const cx = (r.left + r.width / 2) / zoom - window.innerWidth / zoom / 2;
-        const cy = (r.top + r.height / 2) / zoom - window.innerHeight / zoom / 2;
+        const vw = isIpad ? (window.visualViewport?.width ?? window.innerWidth) : window.innerWidth;
+        const vh = isIpad ? (window.visualViewport?.height ?? window.innerHeight) : window.innerHeight;
+        const cx = (r.left + r.width / 2) / zoom - vw / zoom / 2;
+        const cy = (r.top + r.height / 2) / zoom - vh / zoom / 2;
         setEnergyCenter((prev) =>
           Math.abs(prev.cx - cx) < 0.5 && Math.abs(prev.cy - cy) < 0.5 ? prev : { cx, cy }
         );
