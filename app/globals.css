@@ -97,7 +97,7 @@ body:has(.constellation-scene) {
   box-shadow: 0 0 4px rgba(137, 244, 255, 0.7);
   animation: twinkle 3.8s ease-in-out infinite;
   animation-delay: var(--delay);
-  will-change: opacity;
+  will-change: opacity, transform;
 }
 
 /* ─── Crescent Moon ─── */
@@ -1437,6 +1437,7 @@ body:has(.constellation-scene) {
   animation-iteration-count: 1, infinite;
   animation-fill-mode: both, none;
   animation-delay: var(--grow-delay, 0s), calc(var(--grow-delay, 0s) + 1.2s);
+  will-change: transform, opacity;
 }
 
 /* Blade 1: very tall curved left-leaning */
@@ -1562,6 +1563,7 @@ body:has(.constellation-scene) {
   bottom: 0;
   background: transparent;
   transform-origin: bottom center;
+  will-change: transform;
 }
 
 .spread-grass__blade--1 {
@@ -1638,6 +1640,7 @@ body:has(.constellation-scene) {
   bottom: 0;
   background: transparent;
   transform-origin: bottom center;
+  will-change: transform;
 }
 
 /* Blade 1: tall left-curving arc */
@@ -1974,6 +1977,7 @@ body:has(.constellation-scene) {
   transform: translateX(calc(-50% + var(--offset))) rotate(var(--angle));
   transform-origin: bottom center;
   animation: rose-sway 3.9s ease-in-out infinite;
+  will-change: transform;
 }
 
 .rose--1 {
@@ -2185,6 +2189,7 @@ body:has(.constellation-scene) {
   animation: light-float 4s linear infinite backwards;
   animation-delay: var(--ld, 0s);
   z-index: 10;
+  will-change: transform, opacity;
 }
 
 .light-particle--warm {
@@ -2214,6 +2219,7 @@ body:has(.constellation-scene) {
   animation-duration: var(--duration);
   animation-timing-function: linear;
   animation-iteration-count: infinite;
+  will-change: transform, opacity;
 }
 
 .particle--petal {
@@ -2252,17 +2258,14 @@ body:has(.constellation-scene) {
   0% {
     opacity: 0;
     transform: rotate(var(--sway-from, 0deg)) scaleY(0);
-    filter: blur(1.5px);
   }
   70% {
     opacity: 1;
     transform: rotate(var(--sway-from, 0deg)) scaleY(1.08);
-    filter: blur(0);
   }
   100% {
     opacity: 1;
     transform: rotate(var(--sway-from, 0deg)) scaleY(1);
-    filter: blur(0);
   }
 }
 
@@ -2270,17 +2273,14 @@ body:has(.constellation-scene) {
   0% {
     opacity: 0;
     transform: translateX(-50%) scale(var(--scale)) scaleY(0);
-    filter: blur(1.5px);
   }
   72% {
     opacity: 1;
     transform: translateX(-50%) scale(var(--scale)) scaleY(1.08);
-    filter: blur(0);
   }
   100% {
     opacity: 1;
     transform: translateX(-50%) scale(var(--scale)) scaleY(1);
-    filter: blur(0);
   }
 }
 
@@ -2288,17 +2288,14 @@ body:has(.constellation-scene) {
   0% {
     opacity: 0;
     transform: translateX(-50%) scale(var(--gs)) scaleY(0);
-    filter: blur(1.5px);
   }
   72% {
     opacity: 1;
     transform: translateX(-50%) scale(var(--gs)) scaleY(1.08);
-    filter: blur(0);
   }
   100% {
     opacity: 1;
     transform: translateX(-50%) scale(var(--gs)) scaleY(1);
-    filter: blur(0);
   }
 }
 
@@ -2563,12 +2560,10 @@ body:has(.constellation-scene) {
   75% {
     opacity: 0.6;
     transform: translateY(-90px) translateX(-4px);
-    filter: blur(0.5px);
   }
   100% {
     opacity: 0;
     transform: translateY(-130px) translateX(2px);
-    filter: blur(2px);
   }
 }
 
@@ -2664,6 +2659,7 @@ body:has(.constellation-scene) {
     blossom-in 1s cubic-bezier(0.34, 1.56, 0.64, 1) 10.5s forwards,
     btn-pulse-firefly 3s ease-in-out 11.5s infinite;
   transition: background 0.25s, box-shadow 0.25s, transform 0.18s;
+  will-change: transform, opacity;
 }
 
 .hero__btn:hover {
@@ -2686,56 +2682,17 @@ body:has(.constellation-scene) {
 /* Button materializes from creature energy — smooth fairy-dust coalesce */
 .hero__btn--cage-reveal {
   opacity: 0;
+  will-change: transform, opacity;
   animation:
-    cage-btn-in 2s cubic-bezier(0.22, 1, 0.36, 1) 0.15s forwards,
-    cage-btn-glow 2.4s ease-out 0.15s forwards,
-    btn-pulse-firefly 3s ease-in-out 2.6s infinite;
+    cage-btn-in 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.15s forwards,
+    btn-pulse-firefly 3s ease-in-out 1.6s infinite;
 }
 
 @keyframes cage-btn-in {
-  0%   {
-    opacity: 0;
-    transform: scale(0.4);
-    filter: blur(18px) brightness(2.5);
-  }
-  30%  {
-    opacity: 0.55;
-    transform: scale(0.82);
-    filter: blur(8px) brightness(1.8);
-  }
-  60%  {
-    opacity: 0.88;
-    transform: scale(1.06);
-    filter: blur(2px) brightness(1.25);
-  }
-  78%  {
-    opacity: 1;
-    transform: scale(0.97);
-    filter: blur(0) brightness(1.05);
-  }
-  90%  { transform: scale(1.02); filter: blur(0) brightness(1); }
-  100% { opacity: 1; transform: scale(1); filter: blur(0) brightness(1); }
-}
-
-@keyframes cage-btn-glow {
-  0%   {
-    box-shadow:
-      0 0 80px 40px rgba(255, 230, 120, 0.55),
-      0 0 140px 70px rgba(255, 200, 60, 0.2),
-      inset 0 0 25px rgba(255, 240, 180, 0.35);
-  }
-  35%  {
-    box-shadow:
-      0 0 45px 20px rgba(255, 220, 100, 0.38),
-      0 0 80px 35px rgba(255, 200, 60, 0.15),
-      inset 0 0 12px rgba(255, 240, 180, 0.2);
-  }
-  100% {
-    box-shadow:
-      0 4px 22px rgba(255, 200, 60, 0.4),
-      0 0 40px rgba(255, 220, 80, 0.15),
-      inset 0 1px 0 rgba(255, 248, 200, 0.25);
-  }
+  0%   { opacity: 0; transform: scale(0.35); }
+  60%  { opacity: 1; transform: scale(1.07); }
+  80%  { transform: scale(0.97); }
+  100% { opacity: 1; transform: scale(1); }
 }
 
 /* ─── Cage & creatures ─── */
@@ -2866,6 +2823,7 @@ body:has(.constellation-scene) {
   transform: translate(-50%, -50%);
   z-index: 200;
   animation: fly-bob 1.8s ease-in-out infinite alternate;
+  will-change: transform, opacity;
 }
 .fly-butterfly__wing--l,
 .fly-butterfly__wing--r {
@@ -2950,6 +2908,7 @@ body:has(.constellation-scene) {
     0 0 6px 3px rgba(255, 235, 120, 0.6),
     0 0 16px 6px rgba(255, 200, 60, 0.2);
   animation: firefly-pulse 1.8s ease-in-out infinite alternate;
+  will-change: transform, opacity;
 }
 @keyframes firefly-pulse {
   0%   { opacity: 0.5; transform: translate(-50%, -50%) scale(0.7); }
@@ -2988,18 +2947,8 @@ body:has(.constellation-scene) {
 }
 
 @keyframes btn-pulse-firefly {
-  0%, 100% {
-    box-shadow:
-      0 4px 22px rgba(255, 200, 60, 0.4),
-      0 0 40px rgba(255, 220, 80, 0.15),
-      inset 0 1px 0 rgba(255, 248, 200, 0.25);
-  }
-  50% {
-    box-shadow:
-      0 4px 35px rgba(255, 210, 60, 0.65),
-      0 0 60px rgba(255, 230, 100, 0.3),
-      inset 0 1px 0 rgba(255, 248, 200, 0.35);
-  }
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.72; }
 }
 
 @keyframes blossom-in {

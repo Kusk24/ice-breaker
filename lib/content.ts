@@ -5,7 +5,7 @@ export const siteText = {
   subtitle: "Thae Thu",
   buttonLabel: "Start",
   footerText: "Made with Next.js",
-  buttonOne: "Click Here 💞",
+  buttonOne: "Enter 🌝",
   buttonTwo: "Back To Flowers",
   buttonThree: "Ride",
   moonText: "You are like a moon, so pretty & so tiny",

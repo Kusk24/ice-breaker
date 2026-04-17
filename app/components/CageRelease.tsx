@@ -121,33 +121,51 @@ export default function CageRelease({ onRelease }: { onRelease: () => void }) {
     }, 420);
   }, [phase, onRelease]);
 
-  // Orbit rAF
+  // Orbit rAF — uses transform (GPU composited) instead of left/top (layout)
   useEffect(() => {
     if (phase !== "orbiting") return;
     const total = BUTTERFLIES.length + FIREFLIES.length;
     const start = performance.now();
+    let setupDone = false;
 
     function tick(now: number) {
       const t = now - start;
       const center = getButtonCenter();
 
+      if (!setupDone) {
+        setupDone = true;
+        // Disable CSS transform animations (fly-bob, firefly-pulse) so our
+        // JS-set transform is not overridden. Wing animations on child
+        // elements are unaffected. Bake bob/pulse into the JS calculation below.
+        [...bfRefs.current, ...ffRefs.current].forEach(el => {
+          if (!el) return;
+          el.style.animation = "none";
+          el.style.left = "0px";
+          el.style.top = "0px";
+          el.style.transition = "none";
+        });
+      }
+
       bfRefs.current.forEach((el, i) => {
         if (!el) return;
-        el.style.transition = "none";
         const angle = (i / total) * Math.PI * 2 + t * (0.00045 + i * 0.00008);
         const r = 70 + (i % 3) * 22 + Math.sin(t * 0.0008 + i) * 8;
-        el.style.left = `${center.x + Math.cos(angle) * r}px`;
-        el.style.top  = `${center.y + Math.sin(angle) * r * 0.48}px`;
+        const x = center.x + Math.cos(angle) * r;
+        const bob = Math.sin(t * 0.0022 + i) * 4; // replaces fly-bob CSS animation
+        const y = center.y + Math.sin(angle) * r * 0.48 + bob;
+        el.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
       });
 
       ffRefs.current.forEach((el, i) => {
         if (!el) return;
-        el.style.transition = "none";
         const oi = BUTTERFLIES.length + i;
         const angle = (oi / total) * Math.PI * 2 + t * (0.00038 + i * 0.00006);
         const r = 42 + (i % 4) * 14 + Math.sin(t * 0.001 + i * 1.3) * 6;
-        el.style.left = `${center.x + Math.cos(angle) * r}px`;
-        el.style.top  = `${center.y + Math.sin(angle) * r * 0.5}px`;
+        const x = center.x + Math.cos(angle) * r;
+        const y = center.y + Math.sin(angle) * r * 0.5;
+        el.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
+        // Replicate firefly-pulse opacity (was CSS animation)
+        el.style.opacity = String(0.5 + Math.abs(Math.sin(t * 0.00087 + i * 2.1)) * 0.5);
       });
 
       rafRef.current = requestAnimationFrame(tick);
