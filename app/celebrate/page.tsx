@@ -157,11 +157,15 @@ export default function CelebratePage() {
       </div>
 
       {/* Navigation buttons */}
-      <nav className="celebrate-nav" aria-label="Explore other pages">
-        <Link href="/" className="celebrate-nav__btn">Flowers</Link>
-        <Link href="/moon" className="celebrate-nav__btn">Moon</Link>
-        <Link href="/constellation" className="celebrate-nav__btn">Stars</Link>
-        <Link href="/question" className="celebrate-nav__btn">Question</Link>
+      <nav className="celebrate-nav" aria-label="Revisit a page">
+        <p className="celebrate-nav__prompt">Wanna revisit somewhere? ✨</p>
+        <div className="celebrate-nav__list">
+          <Link href="/" className="celebrate-nav__btn">🌹 Back to the flowers</Link>
+          <Link href="/moon" className="celebrate-nav__btn">🌕 Visit the moon</Link>
+          <Link href="/constellation" className="celebrate-nav__btn">✨ Collect the stars</Link>
+          <Link href="/countdown" className="celebrate-nav__btn">🕳️ Into the black hole</Link>
+          <Link href="/question" className="celebrate-nav__btn">💭 Re-read the question</Link>
+        </div>
       </nav>
     </main>
   );
