@@ -18,6 +18,9 @@ export default function TransitionLink({ href, children, ...rest }: Props) {
     }
     document.startViewTransition(() => {
       router.push(href as string);
+      return new Promise<void>((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+      });
     });
   }
 

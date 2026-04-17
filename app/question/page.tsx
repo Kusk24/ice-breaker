@@ -138,7 +138,12 @@ export default function QuestionPage() {
     }
 
     if (typeof document.startViewTransition === "function") {
-      document.startViewTransition(() => router.push("/celebrate"));
+      document.startViewTransition(() => {
+        router.push("/celebrate");
+        return new Promise<void>((resolve) => {
+          requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+        });
+      });
     } else {
       router.push("/celebrate");
     }

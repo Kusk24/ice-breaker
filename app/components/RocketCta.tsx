@@ -17,7 +17,12 @@ export default function RocketCta({ className, label }: { className?: string; la
     sessionStorage.removeItem("t3-rocket-energy");
     sessionStorage.removeItem("t3-stars-collected");
     if (typeof document.startViewTransition === "function") {
-      document.startViewTransition(() => router.push("/countdown"));
+      document.startViewTransition(() => {
+        router.push("/countdown");
+        return new Promise<void>((resolve) => {
+          requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+        });
+      });
     } else {
       router.push("/countdown");
     }
