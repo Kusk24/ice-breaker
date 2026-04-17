@@ -65,68 +65,97 @@ html { --page-zoom: 1; }
 /* ─── iPad tuning (11" & 13") — leaves laptop rules above untouched ─── */
 /* Keyed on (hover:none) + (pointer:coarse): laptops (incl. touchscreen PCs) */
 /* report hover:hover via their mouse/trackpad, so only tablets match here.  */
-/* The width cap (≤1366px landscape) rules out larger desktops.              */
+/* The width cap (≤1366px) rules out larger desktops in both orientations.   */
 
-/* iPad 11" / Air 11" landscape — ~1180–1210 × 820–834 */
-@media (hover: none) and (pointer: coarse) and (orientation: landscape) and (min-width: 1100px) and (max-width: 1215px) {
-  html { zoom: 0.82 !important; --page-zoom: 0.82 !important; }
-}
-
-/* iPad Pro 13" / Air 13" landscape — 1366 × 1024 */
-@media (hover: none) and (pointer: coarse) and (orientation: landscape) and (min-width: 1216px) and (max-width: 1366px) {
-  html { zoom: 0.95 !important; --page-zoom: 0.95 !important; }
-}
-
-/* iPad portrait — site is designed for a landscape laptop aspect, so prompt */
-/* a rotation instead of stretching everything to a tall narrow viewport.    */
-@media (hover: none) and (pointer: coarse) and (orientation: portrait) and (min-width: 768px) and (max-width: 1366px) {
-  html { zoom: 1 !important; --page-zoom: 1 !important; }
-
-  body::before {
-    content: "🌙  Please rotate your device to landscape";
-    position: fixed;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    background: radial-gradient(circle at 50% 50%, rgba(14, 38, 66, 0.95) 0%, #010611 75%);
-    color: #e7fbff;
-    font-family: var(--font-playfair), "Trebuchet MS", sans-serif;
-    font-size: 1.5rem;
-    letter-spacing: 0.02em;
-    text-align: center;
-    line-height: 1.55;
-    z-index: 9999;
+/* iPad hard-lock: no scroll anywhere, viewport clamped to visible area. */
+@media (hover: none) and (pointer: coarse) and (min-width: 768px) and (max-width: 1366px) {
+  html, body {
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    min-height: 100dvh !important;
+    overflow: hidden !important;
+    overscroll-behavior: none !important;
+    -webkit-overflow-scrolling: auto !important;
   }
+  /* Constellation normally scrolls on laptop; on iPad the letter is modal,  */
+  /* so no body scroll is needed and any overflow would expose empty gaps    */
+  /* from the zoom math.                                                     */
+  body:has(.constellation-scene) { overflow: hidden !important; }
+  main.scene {
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+    max-height: 100dvh !important;
+  }
+}
 
-  main.scene,
-  .music-toggle,
-  .site-credit { visibility: hidden !important; }
+/* iPad 11" / Air 11" landscape — 1180×820 (1194×834 on Air 5th gen).        */
+/* 0.80 keeps the 1440-wide design inside 1180 with no horizontal scroll.    */
+@media (hover: none) and (pointer: coarse) and (orientation: landscape)
+       and (min-width: 1100px) and (max-width: 1215px) {
+  html { zoom: 0.80 !important; --page-zoom: 0.80 !important; }
+}
+
+/* iPad Pro 13" / Air 13" landscape — 1366×1024 */
+@media (hover: none) and (pointer: coarse) and (orientation: landscape)
+       and (min-width: 1216px) and (max-width: 1366px) {
+  html { zoom: 0.92 !important; --page-zoom: 0.92 !important; }
+}
+
+/* iPad PORTRAIT → CSS-rotate the body so the site always renders landscape, */
+/* regardless of how the device is held. Layout is identical to landscape;   */
+/* body is rotated 90° around its top-left corner then pinned so the rotated */
+/* box covers the portrait viewport. Trade-off: animations using vw/vh (e.g. */
+/* moon flight distance) may look slightly different from a real landscape   */
+/* iPad because vw/vh still read the physical portrait viewport.             */
+@media (hover: none) and (pointer: coarse) and (orientation: portrait)
+       and (min-width: 768px) and (max-width: 1366px) {
+  html {
+    zoom: 0.80 !important;
+    --page-zoom: 0.80 !important;
+    overflow: hidden !important;
+  }
+  body {
+    position: fixed !important;
+    top: 100%;
+    left: 0;
+    width: 100vh;
+    height: 100vw;
+    transform-origin: 0 0;
+    transform: rotate(-90deg);
+    overflow: hidden !important;
+  }
 }
 
 /* iPad performance (both orientations): lighter blurs + fewer GPU layers. */
 /* Only structure/opacity — no animation timings or logic are changed.     */
 @media (hover: none) and (pointer: coarse) and (min-width: 768px) and (max-width: 1366px) {
-  .t3-nebula__gas--pink        { filter: blur(28px) !important; }
-  .t3-nebula__gas--blue        { filter: blur(32px) !important; }
-  .t3-nebula__gas--orange      { filter: blur(30px) !important; }
-  .constellation-nebula__cloud { filter: blur(18px) !important; }
-  .mist                        { filter: blur(20px) !important; }
+  .t3-nebula__gas--pink        { filter: blur(18px) !important; opacity: 0.55 !important; }
+  .t3-nebula__gas--blue        { filter: blur(22px) !important; opacity: 0.55 !important; }
+  .t3-nebula__gas--orange      { filter: blur(20px) !important; opacity: 0.55 !important; }
+  .constellation-nebula__cloud { filter: blur(12px) !important; }
+  .mist                        { filter: blur(12px) !important; }
 
-  /* Thin the starfield so Safari has fewer animated nodes to composite */
-  .star:nth-child(3n),
-  .constellation-bg__star:nth-child(3n) { display: none; }
+  /* Halve the starfield so Safari has fewer animated nodes to composite. */
+  .star:nth-child(2n),
+  .constellation-bg__star:nth-child(2n) { display: none; }
 
-  /* Drop will-change from decorative elements — Safari keeps a layer for  */
-  /* every `will-change` hint, and with dozens of them the compositor      */
-  /* thrashes. Animations still run; they just share a layer.              */
+  /* Drop will-change everywhere decorative — Safari keeps a layer for every */
+  /* `will-change` hint, and dozens of them make the compositor thrash.      */
   .star,
   .rose__petal,
   .rose__leaf,
   .light-particle,
   .particle,
-  .constellation-bg__star { will-change: auto !important; }
+  .constellation-bg__star,
+  .bubble-universe,
+  .bubble-universe__stars,
+  .bubble-universe__rim { will-change: auto !important; }
+
+  /* Make every tap-target use the fast path (kills the 300ms tap delay). */
+  button, a, .q-btn, .hero__btn {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
 }
 
 /* Allow scrolling only on constellation page */

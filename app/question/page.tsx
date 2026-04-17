@@ -218,7 +218,16 @@ export default function QuestionPage() {
       } as CSSProperties}
       onClick={needsDodge ? undefined : handleDisagree}
       onMouseEnter={needsDodge ? runAway : undefined}
-      onTouchStart={needsDodge ? runAway : undefined}
+      onTouchStart={
+        needsDodge
+          ? (e) => {
+              // iPad fix: block the synthetic click that would otherwise fire
+              // on the agree button which runAway just swapped into this spot.
+              e.preventDefault();
+              runAway();
+            }
+          : undefined
+      }
     >
       {siteText.disagreeText}
     </button>
