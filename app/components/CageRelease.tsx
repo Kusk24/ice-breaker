@@ -47,6 +47,18 @@ function getButtonCenter() {
     const r = btn.getBoundingClientRect();
     return { x: (r.left + r.width / 2) / z, y: (r.top + r.height / 2) / z };
   }
+  if (isIpadViewport()) {
+    // Button not yet in DOM — anchor to .hero element which is always present.
+    // getBoundingClientRect() returns visual-viewport coords on iPad (position:fixed space).
+    const hero = document.querySelector<HTMLElement>(".hero");
+    const x = window.innerWidth / 2;
+    if (hero) {
+      const r = hero.getBoundingClientRect();
+      // ~65 px covers button margin-top (2.2em) + half button height in visual pixels
+      return { x, y: r.bottom + 65 };
+    }
+    return { x, y: window.innerHeight * 0.30 };
+  }
   const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
   return { x: window.innerWidth / z / 2, y: (window.innerHeight / z) * 0.12 + 13.5 * rem };
 }

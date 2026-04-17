@@ -1,8 +1,18 @@
 "use client";
 import { useRouter } from "next/navigation";
 
+function isIpadViewport() {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia(
+    "(hover: none) and (pointer: coarse) and (min-width: 768px) and (max-width: 1366px)"
+  ).matches;
+}
+
 function getPageZoom() {
   if (typeof window === "undefined") return 1;
+  // iPad Safari: position:fixed coords are in physical viewport space;
+  // getBoundingClientRect() already returns visual coords — no zoom division needed.
+  if (isIpadViewport()) return 1;
   const v = getComputedStyle(document.documentElement).getPropertyValue("--page-zoom").trim();
   const n = parseFloat(v);
   return n > 0 ? n : 1;

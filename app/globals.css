@@ -228,12 +228,9 @@ html { --page-zoom: 1; }
     animation: none !important;
   }
 
-  /* ── Energy streams: cut count further + drop blend + flatten shadows ──
-     Kept one in every 4 (laptop keeps every other one). mix-blend-mode is a
-     known Safari frame-eater; removing it alongside box-shadow recovers most
-     of the "energy collecting" lag reported on iPad. */
-  .bomb-energy__streak:nth-child(3n),
-  .bomb-energy__streak:nth-child(3n+1) { display: none !important; }
+  /* ── Energy streams: drop blend + flatten shadows (count halved by 2n rule above) ──
+     mix-blend-mode is a known Safari frame-eater; removing it alongside
+     box-shadow recovers most of the "energy collecting" lag on iPad. */
   .bomb-energy__streak {
     mix-blend-mode: normal !important;
     box-shadow: none !important;
@@ -256,6 +253,21 @@ html { --page-zoom: 1; }
     left: calc(50vw - 120px) !important;
     top: calc(50vh - 320px) !important;
   }
+
+  /* ── Constellation: drop expensive SVG blur layers ─────────────────── */
+  /* feGaussianBlur with stdDeviation≥2.5 re-rasterizes every frame on Safari.
+     Removing the two widest bloom layers (stdDev 6 + 2.5) while keeping
+     mid/inner/core keeps stars visually bright with far less GPU work.    */
+  .constellation-star-bloom,
+  .constellation-star-outer { display: none !important; }
+
+  /* Hover pulse uses filter:drop-shadow each frame — on iPad touch persists. */
+  .constellation-main__star--clickable:hover {
+    animation: const-star-pop 0.6s ease-out calc(0.3s + var(--si) * 0.15s) forwards !important;
+  }
+
+  /* Shooting stars: fewer, no complex filter */
+  .constellation-shooting__star:nth-child(2n) { display: none !important; }
 
   /* ── Fast tap path ─────────────────────────────────────────────────── */
   button, a, .q-btn, .hero__btn {

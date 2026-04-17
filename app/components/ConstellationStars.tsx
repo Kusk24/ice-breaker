@@ -70,6 +70,8 @@ function spawnEnergyStream(starX: number, starY: number) {
       top: ${starY}px;
       width: ${size}px;
       height: ${size}px;
+      margin-left: ${-size / 2}px;
+      margin-top: ${-size / 2}px;
       border-radius: 50%;
       pointer-events: none;
       z-index: 999;
@@ -77,6 +79,7 @@ function spawnEnergyStream(starX: number, starY: number) {
       box-shadow: 0 0 ${size * 2}px ${size}px rgba(80,160,255,0.5),
                   0 0 ${size * 4}px ${size * 1.5}px rgba(60,120,255,0.2);
       opacity: 0;
+      will-change: transform, opacity;
     `;
     document.body.appendChild(p);
 
@@ -108,10 +111,11 @@ function spawnEnergyStream(starX: number, starY: number) {
       // Shrink near end
       const scale = t > 0.7 ? 1 - (t - 0.7) / 0.3 * 0.6 : 1;
 
-      p.style.left = `${x}px`;
-      p.style.top = `${y}px`;
+      // Use transform instead of left/top to avoid layout recalc every frame
+      const tx = x - starX;
+      const ty = y - starY;
       p.style.opacity = String(opacity * 0.9);
-      p.style.transform = `translate(-50%, -50%) scale(${scale})`;
+      p.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
 
       if (t < 1) {
         requestAnimationFrame(animate);
@@ -310,6 +314,7 @@ export default function ConstellationStars() {
                 filter="url(#c-bloom)"
                 opacity={isCollected ? 0.04 : 0.35}
                 pointerEvents="none"
+                className="constellation-star-bloom"
               />
 
               {/* Layer 2: Outer glow */}
@@ -319,6 +324,7 @@ export default function ConstellationStars() {
                 filter="url(#c-glow-lg)"
                 opacity={isCollected ? 0.06 : 0.5}
                 pointerEvents="none"
+                className="constellation-star-outer"
               />
 
               {/* Layer 3: Mid glow — bright ring */}

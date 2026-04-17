@@ -232,16 +232,15 @@ export default function CountdownPage() {
         const rcy = r.top + r.height / 2;
         const bcx = b.left + b.width / 2;
         const bcy = b.top + b.height / 2;
-        // The page uses `html { zoom }` for responsive scaling. getBoundingClientRect
-        // returns post-zoom pixels, but CSS translate() inside the zoomed tree is
-        // already implicitly scaled by that factor — so divide the raw vector by
-        // zoom to land exactly on the blackhole at any screen size.
+        // The shatter-layer is position:fixed — its coordinate space is the
+        // physical/visual viewport (unaffected by html zoom on iPad Safari).
+        // getBoundingClientRect() already returns visual-viewport coords, so
+        // no zoom division is needed on iPad. On laptop (no html zoom) zoom=1.
+        const isIpad = window.matchMedia(
+          "(hover: none) and (pointer: coarse) and (min-width: 768px) and (max-width: 1366px)"
+        ).matches;
         const zoomVar = getComputedStyle(document.documentElement).getPropertyValue("--page-zoom").trim();
-        const zoom = parseFloat(zoomVar) > 0 ? parseFloat(zoomVar) : 1;
-        // Convert viewport-space pixels back to CSS px by dividing by zoom so the
-        // fixed-position shatter-layer (which is NOT inside the zoomed <html>'s
-        // scaling — wait, it IS: position:fixed still respects html{zoom}) uses
-        // values consistent with its rendering context.
+        const zoom = isIpad ? 1 : (parseFloat(zoomVar) > 0 ? parseFloat(zoomVar) : 1);
         setThrowVectors((prev) => ({
           ...prev,
           [i]: {
