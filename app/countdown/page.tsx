@@ -189,27 +189,33 @@ export default function CountdownPage() {
     };
   }, []);
 
-  // Track the timer's viewport-space center on every animation frame while
-  // streams are active so they always converge on the live "00:00" position —
-  // even when the bomb is shaking in the final seconds. Offset is expressed
-  // in CSS px relative to viewport center and divided by --page-zoom so it
-  // matches the fixed overlay's rendering space at any breakpoint.
+  // Energy target while streams are active:
+  // - iPad: lock to exact viewport center (0,0 offset) so transformed tablet
+  //   layout/zoom rules cannot drift the target.
+  // - laptop/desktop: track timer center every frame so streaks keep landing
+  //   on the live "00:00" position during shake.
   useEffect(() => {
     if (exploding || done || remaining > 10 || remaining <= 0) return;
+    const isIpad = window.matchMedia(
+      "(hover: none) and (pointer: coarse) and (min-width: 768px) and (max-width: 1366px)"
+    ).matches;
+    if (isIpad) {
+      const rafCenter = requestAnimationFrame(() => {
+        setEnergyCenter((prev) =>
+          Math.abs(prev.cx) < 0.5 && Math.abs(prev.cy) < 0.5 ? prev : { cx: 0, cy: 0 }
+        );
+      });
+      return () => cancelAnimationFrame(rafCenter);
+    }
     let raf = 0;
     function tickMeasure() {
       const el = timerRef.current;
       if (el) {
         const r = el.getBoundingClientRect();
-        const isIpad = window.matchMedia(
-          "(hover: none) and (pointer: coarse) and (min-width: 768px) and (max-width: 1366px)"
-        ).matches;
         const zoomVar = getComputedStyle(document.documentElement).getPropertyValue("--page-zoom").trim();
-        // getBoundingClientRect() and window.innerWidth are both in CSS pixels —
-        // use them consistently so the offset stays in the same coordinate space
-        // as the CSS translate(). On iPad, zoom=1 because fixed elements ignore
-        // html{zoom}, but CSS px space is the same for both getBCR and innerWidth.
-        const zoom = isIpad ? 1 : (parseFloat(zoomVar) > 0 ? parseFloat(zoomVar) : 1);
+        // getBoundingClientRect() and window.innerWidth are both in CSS pixels.
+        // Desktop uses --page-zoom scaling; iPad is handled above.
+        const zoom = parseFloat(zoomVar) > 0 ? parseFloat(zoomVar) : 1;
         const vw = window.innerWidth;
         const vh = window.innerHeight;
         const cx = (r.left + r.width / 2) / zoom - vw / zoom / 2;
