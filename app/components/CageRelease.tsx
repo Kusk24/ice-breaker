@@ -29,12 +29,19 @@ function isIpadViewport() {
   ).matches;
 }
 
+function isIpad13Landscape() {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia(
+    "(hover: none) and (pointer: coarse) and (orientation: landscape) and (min-width: 1216px) and (max-width: 1366px)"
+  ).matches;
+}
+
 function getPageZoom() {
   if (typeof window === "undefined") return 1;
   // iPad Safari: position:fixed elements render in physical viewport coords and
   // do not honor html { zoom }. Passing raw rect coords keeps flies centered on
   // the button. Laptop still divides by zoom as before.
-  if (isIpadViewport()) return 1;
+  if (isIpadViewport() && !isIpad13Landscape()) return 1;
   const v = getComputedStyle(document.documentElement).getPropertyValue("--page-zoom").trim();
   const n = parseFloat(v);
   return n > 0 ? n : 1;
