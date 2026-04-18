@@ -55,8 +55,11 @@ export default function RocketCta({ className, label }: { className?: string; la
     rocketEl.style.position = "fixed";
     rocketEl.style.margin = "0";
     rocketEl.style.zIndex = "1000";
-    rocketEl.style.left = `${rocketCX - rW / 2}px`;
-    rocketEl.style.top  = `${rocketCY - rH / 2}px`;
+    // Use setProperty 'important' to override the iPad CSS !important rule
+    // (.rocket-flight { left/top: !important }) which would otherwise block
+    // every inline style.left/top update and freeze the orbit in place.
+    rocketEl.style.setProperty("left", `${rocketCX - rW / 2}px`, "important");
+    rocketEl.style.setProperty("top",  `${rocketCY - rH / 2}px`, "important");
     rocketEl.style.width  = `${rW}px`;
     rocketEl.style.height = `${rH}px`;
 
@@ -103,8 +106,8 @@ export default function RocketCta({ className, label }: { className?: string; la
       const y = moonCY + Math.sin(angle) * radius * shrink;
       const rot = angle * (180 / Math.PI) + 90;
 
-      rocketEl.style.left = `${x - rW / 2}px`;
-      rocketEl.style.top  = `${y - rH / 2}px`;
+      rocketEl.style.setProperty("left", `${x - rW / 2}px`, "important");
+      rocketEl.style.setProperty("top",  `${y - rH / 2}px`, "important");
       rocketEl.style.transform = `rotate(${rot}deg)`;
       // Gradually brighten during orbit
       rocketEl.style.filter = `brightness(${1 + eased * 0.5})`;
@@ -114,7 +117,7 @@ export default function RocketCta({ className, label }: { className?: string; la
       } else {
         // Smoothly rotate to straight-up over 300ms before launching
         const finalAngle = (startAngle + LOOPS * 2 * Math.PI) * (180 / Math.PI) + 90;
-        const currentTop = parseFloat(rocketEl.style.top);
+        const currentTop = parseFloat(rocketEl.style.getPropertyValue("top"));
         const ALIGN_MS = 300;
         const alignStart = performance.now();
 
@@ -170,7 +173,7 @@ export default function RocketCta({ className, label }: { className?: string; la
         const ny = startTop - e * (window.innerHeight / z + 500);
         const bright = 1.5 + e * 3.5;
 
-        rocketEl.style.top = `${ny}px`;
+        rocketEl.style.setProperty("top", `${ny}px`, "important");
         rocketEl.style.filter = `brightness(${bright})`;
 
         if (p < 1) {
