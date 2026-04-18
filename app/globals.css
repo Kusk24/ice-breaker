@@ -321,6 +321,16 @@ html { --page-zoom: 1; }
   }
 }
 
+/* iPad 13" final positioning override (must come after iPad performance block) */
+@media (hover: none) and (pointer: coarse)
+       and (min-width: 1024px) and (max-width: 1366px)
+       and (min-height: 1024px) and (max-height: 1366px) {
+  .rocket-flight {
+    left: calc(50vw - 130px) !important;
+    top: calc(50vh - 365px) !important;
+  }
+}
+
 /* Allow scrolling only on constellation page */
 body:has(.constellation-scene) {
   overflow-y: auto;

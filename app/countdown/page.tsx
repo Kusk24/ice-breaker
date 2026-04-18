@@ -52,10 +52,10 @@ const ENERGY_STREAMS = Array.from({ length: 28 }, (_, i) => ({
   thickness: 2 + (i % 3),
 }));
 
-function isIpad13Landscape() {
+function isIpad13Viewport() {
   if (typeof window === "undefined") return false;
   return window.matchMedia(
-    "(hover: none) and (pointer: coarse) and (orientation: landscape) and (min-width: 1216px) and (max-width: 1366px)"
+    "(hover: none) and (pointer: coarse) and (min-width: 1024px) and (max-width: 1366px) and (min-height: 1024px) and (max-height: 1366px)"
   ).matches;
 }
 
@@ -117,7 +117,7 @@ export default function CountdownPage() {
     // Use CSS pixels throughout: window.innerWidth matches getBCR and style.left/top.
     // On iPad, zoom=1 because fixed elements ignore html{zoom}, but the CSS px
     // coordinate space is the same as window.innerWidth at all breakpoints.
-    const zoom = isIpadIncoming && !isIpad13Landscape()
+    const zoom = isIpadIncoming && !isIpad13Viewport()
       ? 1
       : (parseFloat(zoomVar) > 0 ? parseFloat(zoomVar) : 1);
     const vw = window.innerWidth / zoom;
@@ -265,7 +265,7 @@ export default function CountdownPage() {
           "(hover: none) and (pointer: coarse) and (min-width: 768px) and (max-width: 1366px)"
         ).matches;
         const zoomVar = getComputedStyle(document.documentElement).getPropertyValue("--page-zoom").trim();
-        const zoom = isIpad && !isIpad13Landscape()
+        const zoom = isIpad && !isIpad13Viewport()
           ? 1
           : (parseFloat(zoomVar) > 0 ? parseFloat(zoomVar) : 1);
         setThrowVectors((prev) => ({
