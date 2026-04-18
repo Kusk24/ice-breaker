@@ -326,7 +326,7 @@ html { --page-zoom: 1; }
        and (min-width: 1024px) and (max-width: 1366px)
        and (min-height: 1024px) and (max-height: 1366px) {
   .rocket-flight {
-    left: calc(50vw - 130px) !important;
+    left: calc(50vw - 108px) !important;
     top: calc(50vh - 365px) !important;
   }
 }
