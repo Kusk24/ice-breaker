@@ -99,6 +99,12 @@ html { --page-zoom: 1; }
 @media (hover: none) and (pointer: coarse) and (orientation: landscape)
        and (min-width: 1216px) and (max-width: 1366px) {
   html { zoom: 0.92 !important; --page-zoom: 0.92 !important; }
+
+  /* Rocket: the 320px offset at 50vh gives 18.7% from top on 1024px — too low
+     on the squarer 13" aspect ratio. 365px gives 14.4% (matching laptop). */
+  .rocket-flight {
+    top: calc(50vh - 365px) !important;
+  }
 }
 
 /* iPad PORTRAIT → CSS-rotate the body so the site always renders landscape, */
