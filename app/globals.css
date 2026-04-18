@@ -206,13 +206,35 @@ html { --page-zoom: 1; }
     box-shadow: 0 0 6px 2px rgba(255, 235, 120, 0.5) !important;
   }
 
-  /* ── Grass / ferns / edge-grass: freeze ambient sway ─────────────── */
-  .grass-tuft,
-  .tuft-blade,
-  .edge-grass,
-  .edge-grass__blade,
-  .grass-fern,
-  .spread-grass__group           { animation: none !important; }
+  /* ── Grass / ferns: keep one-shot bloom-in, kill only infinite sway ──
+     The blanket animation:none hid everything (bloom sets opacity 0→1).
+     Now each class gets only its infinite loops removed. */
+
+  /* tuft-blades: only have sway — freeze at base rotation */
+  .tuft-blade                    { animation: none !important; }
+  .tuft-blade--1                 { transform: rotate(var(--base-rot, -8deg))  !important; }
+  .tuft-blade--2                 { transform: rotate(var(--base-rot,  6deg))  !important; }
+  .tuft-blade--3                 { transform: rotate(var(--base-rot, 12deg))  !important; }
+  .tuft-blade--4                 { transform: rotate(var(--base-rot, -4deg))  !important; }
+
+  /* edge-grass blades: keep bloom-in entrance, strip sway loop */
+  .edge-grass__blade             { animation-name: edge-grass-bloom !important;
+                                   animation-iteration-count: 1 !important;
+                                   animation-fill-mode: both !important; }
+
+  /* spread-grass blades: only have infinite sway — freeze at base rotation */
+  .spread-grass__blade           { animation: none !important; }
+
+  /* grass-ferns: keep grow-in entrance, strip sway loop */
+  .grass-fern--1                 { animation: element-grow-in 1s calc(var(--cluster-delay, 0s) + 2s)   backwards !important; }
+  .grass-fern--2                 { animation: element-grow-in 1s calc(var(--cluster-delay, 0s) + 2.2s) backwards !important; }
+
+  /* ── Particles: flatten double box-shadows → single (one fewer layer) ── */
+  .particle--petal               { box-shadow: 0 0 10px rgba(255, 121, 146, 0.85) !important; }
+  .particle--green               { box-shadow: 0 0 10px rgba(123, 255, 154, 0.75) !important; }
+  .light-particle--warm          { box-shadow: 0 0 6px rgba(255, 251, 0, 0.75)    !important; }
+  .light-particle--cool          { box-shadow: 0 0 6px rgba(35, 240, 255, 0.75)   !important; }
+  .light-particle                { filter: none !important; }
 
   /* ── Asteroids: keep entrance, drop the infinite float loop ─────── */
   .asteroid-wrap--done .asteroid-piece--0 { animation: ast-appear 0.6s ease forwards !important; }
