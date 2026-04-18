@@ -255,8 +255,14 @@ export default function CountdownPage() {
         const isIpad = window.matchMedia(
           "(hover: none) and (pointer: coarse) and (min-width: 768px) and (max-width: 1366px)"
         ).matches;
+        // iPad 13" (iOS 26+) honors html{zoom} on position:fixed elements, so
+        // throw vectors must be divided by the actual zoom there. iPad 11 keeps
+        // the legacy raw-coords path.
+        const isIpad13 = window.matchMedia(
+          "(hover: none) and (pointer: coarse) and (orientation: landscape) and (min-width: 1216px) and (max-width: 1366px)"
+        ).matches;
         const zoomVar = getComputedStyle(document.documentElement).getPropertyValue("--page-zoom").trim();
-        const zoom = isIpad ? 1 : (parseFloat(zoomVar) > 0 ? parseFloat(zoomVar) : 1);
+        const zoom = (isIpad && !isIpad13) ? 1 : (parseFloat(zoomVar) > 0 ? parseFloat(zoomVar) : 1);
         setThrowVectors((prev) => ({
           ...prev,
           [i]: {

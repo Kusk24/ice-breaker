@@ -5986,3 +5986,14 @@ body:has(.constellation-scene) {
   from { width: 0%; }
   to   { width: 100%; }
 }
+
+/* ─── iPad 13" / 12.9" landscape — overrides for centering math ───
+   The iPad block above was tuned for iPad 11" (zoom 0.80). At zoom 0.92 the
+   rocket on the moon page lands off-center. Use the laptop formula here. */
+@media (hover: none) and (pointer: coarse) and (orientation: landscape)
+       and (min-width: 1216px) and (max-width: 1366px) {
+  .rocket-flight {
+    left: calc(50vw / var(--page-zoom, 1) - 130px) !important;
+    top: calc(50vh / var(--page-zoom, 1) - 320px) !important;
+  }
+}

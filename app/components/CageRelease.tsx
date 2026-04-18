@@ -29,12 +29,19 @@ function isIpadViewport() {
   ).matches;
 }
 
+function isIpad13Viewport() {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia(
+    "(hover: none) and (pointer: coarse) and (orientation: landscape) and (min-width: 1216px) and (max-width: 1366px)"
+  ).matches;
+}
+
 function getPageZoom() {
   if (typeof window === "undefined") return 1;
-  // iPad Safari: position:fixed elements render in physical viewport coords and
-  // do not honor html { zoom }. Passing raw rect coords keeps flies centered on
-  // the button. Laptop still divides by zoom as before.
-  if (isIpadViewport()) return 1;
+  // iPad 11 Safari: position:fixed elements render in physical viewport coords
+  // and do not honor html { zoom }. iPad 13 (iOS 26+) DOES honor zoom on fixed
+  // elements, so divide by the actual zoom there. Laptop also divides.
+  if (isIpadViewport() && !isIpad13Viewport()) return 1;
   const v = getComputedStyle(document.documentElement).getPropertyValue("--page-zoom").trim();
   const n = parseFloat(v);
   return n > 0 ? n : 1;
@@ -47,7 +54,7 @@ function getButtonCenter() {
     const r = btn.getBoundingClientRect();
     return { x: (r.left + r.width / 2) / z, y: (r.top + r.height / 2) / z };
   }
-  if (isIpadViewport()) {
+  if (isIpadViewport() && !isIpad13Viewport()) {
     // Button not yet in DOM — anchor to .hero element which is always present.
     // getBoundingClientRect() returns visual-viewport coords on iPad (position:fixed space).
     // Use hero's own rect center (hero has left:0,right:0 so width = physical viewport width)
