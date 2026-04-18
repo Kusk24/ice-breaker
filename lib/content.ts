@@ -25,7 +25,7 @@ export const siteText = {
   questionNine: "hrr lote pyn p, zoot nyin nrr pl",
   questionTen: "brr lo ll loh, br lo ll loh, friend twy so",
   questionEleven: "wahaha, bl pyay ma ll kwa, ma ya lo ma ya tok buu ly",
-  asteroidTextTopRight: "is that T3??? who is that? \n ahh I miss my T3",
+  asteroidTextTopRight: "is that T3??? who is that? \n ahh I miss little T3",
   asteroidTextLeft: "It's crazy, but it's true\nThere's nothing I won't do\nI'd risk it all for you\n- Bruno Mars",
   asteroidTextRight: "just wanna make you\nhappiest person in the world\ncuz ur existance\n alone makes me happy",
   countdownTitle: "Oh Asteriod is blocking our way..., let's bomb it🤔",
