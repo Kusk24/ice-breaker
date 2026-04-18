@@ -5,6 +5,18 @@ import { useRouter } from "next/navigation";
 import { siteText } from "@/lib/content";
 import T3Nebula from "@/app/components/T3Nebula";
 
+const AGREE_HEARTS = Array.from({ length: 16 }, (_, i) => {
+  const angle = (i / 16) * 360;
+  const dist = 90 + (i % 4) * 35;
+  return {
+    hx: Math.round(Math.cos((angle * Math.PI) / 180) * dist),
+    hy: Math.round(Math.sin((angle * Math.PI) / 180) * dist),
+    delay: i * 0.055,
+    size: 1.1 + (i % 3) * 0.45,
+    emoji: ["❤️", "💕", "✨", "💫", "🌟", "💖", "💗", "🎀"][i % 8],
+  };
+});
+
 const isProd = process.env.NODE_ENV === "production";
 const base = isProd ? "/ice-breaker" : "";
 
@@ -79,8 +91,10 @@ export default function QuestionPage() {
   const [yesPos, setYesPos]         = useState<{ x: number; y: number } | null>(null);
   const [dodgeCount, setDodgeCount] = useState(0);
   const [dodgeText, setDodgeText]   = useState(siteText.disagreeText);
-  const noPosRef = useRef(noPos);
-  const deckRef = useRef<string[]>([]);
+  const [agreeAlert, setAgreeAlert] = useState(false);
+  const noPosRef   = useRef(noPos);
+  const deckRef    = useRef<string[]>([]);
+  const lastSwapMs = useRef(0);
 
   function nextDodgeText() {
     if (deckRef.current.length === 0) {
@@ -103,41 +117,25 @@ export default function QuestionPage() {
   const maxDodges = isFinal ? Infinity : Math.min(phase, 3);
   const needsDodge = phase > 0 && dodgeCount < maxDodges;
 
-  const handleAgree = useCallback(async () => {
-    // Await the email send before navigating so formsubmit actually receives it.
-    // A 2.5s timeout prevents hanging if their API is slow/down.
+  const handleAgree = useCallback(() => {
+    // Guard: ignore accidental taps within 600ms of a button swap (iPad only)
+    if (Date.now() - lastSwapMs.current < 600) return;
+
+    // Show the beautiful alert immediately
+    setAgreeAlert(true);
+
+    // Fire email in background — keepalive so it survives navigation
     const url = `https://formsubmit.co/ajax/${siteText.receiverEmail}`;
-    const payload = {
-      Answer: siteText.agreeText,
-      DisagreeCount: phase,
-      _subject: "T3 agreed! 💕",
-    };
+    const payload = { Answer: siteText.agreeText, DisagreeCount: phase, _subject: "T3 agreed! 💕" };
+    fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify(payload),
+      keepalive: true,
+    }).catch(() => {});
 
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 2500);
-    try {
-      await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify(payload),
-        signal: controller.signal,
-      });
-    } catch {
-      // Timeout or network error — fire one last keepalive attempt so the send
-      // continues even after navigation.
-      try {
-        fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", Accept: "application/json" },
-          body: JSON.stringify(payload),
-          keepalive: true,
-        }).catch(() => {});
-      } catch {}
-    } finally {
-      clearTimeout(timeout);
-    }
-
-    router.push("/celebrate");
+    // Navigate after the alert animation (2.6s)
+    setTimeout(() => router.push("/celebrate"), 2600);
   }, [router, phase]);
 
   const handleDisagree = useCallback(() => {
@@ -152,6 +150,7 @@ export default function QuestionPage() {
   }, []);
 
   const runAway = useCallback(() => {
+    lastSwapMs.current = Date.now(); // guard agree btn against post-swap phantom tap
     const prev = noPosRef.current;
     const next = randPos(prev);
     noPosRef.current = next;
@@ -334,6 +333,37 @@ export default function QuestionPage() {
         >
           {dodgeText}
         </span>
+      )}
+
+      {/* Agree alert — shown on all devices when agree is clicked */}
+      {agreeAlert && (
+        <div className="agree-alert" aria-live="assertive" role="status">
+          <div className="agree-alert__card">
+            {/* Burst hearts */}
+            {AGREE_HEARTS.map((h, i) => (
+              <span
+                key={i}
+                className="agree-alert__heart"
+                aria-hidden
+                style={{
+                  "--hx": `${h.hx}px`,
+                  "--hy": `${h.hy}px`,
+                  "--hd": `${h.delay}s`,
+                  fontSize: `${h.size}rem`,
+                } as CSSProperties}
+              >
+                {h.emoji}
+              </span>
+            ))}
+            <div className="agree-alert__glow" aria-hidden />
+            <p className="agree-alert__emoji" aria-hidden>🥺💕</p>
+            <p className="agree-alert__title">{siteText.agreeText}</p>
+            <p className="agree-alert__sub">taking you somewhere special ✨</p>
+            <div className="agree-alert__bar" aria-hidden>
+              <div className="agree-alert__bar-fill" />
+            </div>
+          </div>
+        </div>
       )}
     </main>
   );

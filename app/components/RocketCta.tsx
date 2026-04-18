@@ -74,14 +74,17 @@ export default function RocketCta({ className, label }: { className?: string; la
     const sky = document.querySelector<HTMLElement>(".moon-scene .sky");
     const scene = document.querySelector<HTMLElement>(".moon-scene");
 
-    // Pre-clone stars before animation starts to avoid mid-animation layout thrash
+    // Pre-clone stars before animation starts to avoid mid-animation layout thrash.
+    // On iPad only one offset row is cloned (half the DOM nodes) since the warp
+    // animation is already GPU-optimised there and extra elements add rAF cost.
     if (sky) {
       const existing = sky.querySelectorAll<HTMLElement>(".star");
+      const offsets = isIpadViewport() ? [-70] : [-70, -140];
       const fragment = document.createDocumentFragment();
       existing.forEach((s) => {
         const yStr = s.style.getPropertyValue("--y");
         const origY = parseFloat(yStr || "30");
-        for (const offset of [-70, -140]) {
+        for (const offset of offsets) {
           const clone = s.cloneNode(true) as HTMLElement;
           clone.style.setProperty("--y", String(origY + offset));
           fragment.appendChild(clone);
