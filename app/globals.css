@@ -206,13 +206,6 @@ html { --page-zoom: 1; }
     box-shadow: 0 0 6px 2px rgba(255, 235, 120, 0.5) !important;
   }
 
-  /* ── Cage (idle) — freeze infinite SVG wing flap + sway + hint pulse.
-     6 butterflies × 2 wings flapping at 0.3s each caused first-page lag
-     on iPad 11/13. The entrance (cage-entrance) still plays; only loops
-     are stripped. Wings are still drawn, just static. */
-  .bf-wing-l, .bf-wing-r         { animation: none !important; }
-  .cage-wrap--visible .cage      { animation: cage-entrance 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards !important; }
-  .cage__hint                    { animation: none !important; opacity: 0.7 !important; }
 
   /* ── Grass / ferns: keep one-shot bloom-in, kill only infinite sway ──
      The blanket animation:none hid everything (bloom sets opacity 0→1).
