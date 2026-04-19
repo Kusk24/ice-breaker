@@ -26,14 +26,13 @@ const confetti = Array.from({ length: 70 }, (_, i) => ({
 
 export default function CelebratePage() {
   const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
 
   async function handleSubmit(e: { preventDefault(): void }) {
     e.preventDefault();
-    if (!date || !time) return;
+    if (!date) return;
     setSending(true);
     setError("");
     try {
@@ -47,8 +46,7 @@ export default function CelebratePage() {
           },
           body: JSON.stringify({
             [siteText.formOne]: date,
-            [siteText.formTwo]: time,
-            _subject: "Ice Breaker 💕",
+            _subject: "Ice Breaker 🧊💕",
           }),
         }
       );
@@ -132,25 +130,14 @@ export default function CelebratePage() {
               />
             </label>
 
-            <label className="celebrate-field">
-              <span className="celebrate-field__label">{siteText.formTwo}</span>
-              <input
-                type="time"
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-                className="celebrate-input"
-                required
-              />
-            </label>
-
             {error && <p className="celebrate-error">{error}</p>}
 
             <button
               type="submit"
               className="celebrate-submit"
-              disabled={sending || !date || !time}
+              disabled={sending || !date}
             >
-              {sending ? "Sending…" : "Send 💌"}
+              {sending ? "Sending…" : "Send 🗣️💌"}
             </button>
           </form>
         )}

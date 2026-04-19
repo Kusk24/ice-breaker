@@ -126,7 +126,7 @@ export default function QuestionPage() {
 
     // Fire email in background — keepalive so it survives navigation
     const url = `https://formsubmit.co/ajax/${siteText.receiverEmail}`;
-    const payload = { Answer: siteText.agreeText, DisagreeCount: phase, _subject: "T3 agreed! 💕" };
+    const payload = { Answer: siteText.agreeText, DisagreeCount: phase, _subject: "T3 agreed! 🥳" };
     fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json", Accept: "application/json" },

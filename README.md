@@ -32,7 +32,7 @@ Eleven questions drift across a multiverse of bubble-galaxies. Each one is playf
 
 ### `/celebrate` — The Ending
 
-Confetti rains. Stars shimmer. A form asks one last question: *"When will you come back?"* Pick a date and time, hit send, and the answer flies to an inbox across the internet. The night sky celebrates quietly — it knew the answer all along.
+Confetti rains. Stars shimmer. A form asks one last question: *"When will you come back?"* Pick a date, hit send, and the answer flies to an inbox across the internet. The night sky celebrates quietly — it knew the answer all along.
 
 ---
 
