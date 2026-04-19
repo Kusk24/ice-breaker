@@ -127,9 +127,14 @@ export default function CageRelease({ onRelease }: { onRelease: () => void }) {
       el.style.transition = "none";
     });
 
-    // After cage open flash (400ms), fly creatures to orbit spread positions
+    // After cage open flash (400ms), fly creatures to orbit spread positions.
+    // iPad: animate transform (compositor-only) instead of left/top (layout
+    // each frame × 14 elements = the flight lag). Also silence fly-bob /
+    // fly-glow / firefly-pulse loops during the flight so they don't fight
+    // with the transform transition. Laptop path unchanged.
+    const ipad = isIpadViewport();
     setTimeout(() => {
-      allRefs.forEach(({ el, orbitIdx, total, isButterfly }, i) => {
+      allRefs.forEach(({ el, sx, sy, orbitIdx, total, isButterfly }, i) => {
         if (!el) return;
         const angle = (orbitIdx / total) * Math.PI * 2;
         const r = isButterfly ? 70 + (orbitIdx % 3) * 22 : 42 + (orbitIdx % 4) * 14;
@@ -137,9 +142,18 @@ export default function CageRelease({ onRelease }: { onRelease: () => void }) {
         const destY = target.y + Math.sin(angle) * r * 0.48;
         const delay = i * 120;
         const dur   = 2400 + (i % 5) * 180;
-        el.style.transition = `left ${dur}ms cubic-bezier(0.22,0.68,0,1.2) ${delay}ms, top ${dur}ms cubic-bezier(0.22,0.68,0,1.2) ${delay}ms`;
-        el.style.left = `${destX}px`;
-        el.style.top  = `${destY}px`;
+        if (ipad) {
+          const dx = destX - sx;
+          const dy = destY - sy;
+          el.style.animation = "none";
+          el.style.willChange = "transform";
+          el.style.transition = `transform ${dur}ms cubic-bezier(0.22,0.68,0,1.2) ${delay}ms`;
+          el.style.transform = `translate3d(${dx}px, ${dy}px, 0) translate(-50%, -50%)`;
+        } else {
+          el.style.transition = `left ${dur}ms cubic-bezier(0.22,0.68,0,1.2) ${delay}ms, top ${dur}ms cubic-bezier(0.22,0.68,0,1.2) ${delay}ms`;
+          el.style.left = `${destX}px`;
+          el.style.top  = `${destY}px`;
+        }
       });
 
       // When last one lands, switch to orbit + reveal button
@@ -158,26 +172,10 @@ export default function CageRelease({ onRelease }: { onRelease: () => void }) {
     const total = BUTTERFLIES.length + FIREFLIES.length;
     const start = performance.now();
     let setupDone = false;
-    // iPad: skip every other frame (~30fps) + cache center (button is fixed,
-    // iPad body overflow is locked so it never moves). Cuts per-frame work
-    // roughly in half on iPad 11/13 without visibly changing the orbit.
-    const ipad = isIpadViewport();
-    let cachedCenter: { x: number; y: number } | null = null;
-    let skipFrame = false;
 
     function tick(now: number) {
       const t = now - start;
-
-      if (ipad && skipFrame) {
-        skipFrame = false;
-        rafRef.current = requestAnimationFrame(tick);
-        return;
-      }
-      skipFrame = true;
-
-      const center = ipad
-        ? (cachedCenter ??= getButtonCenter())
-        : getButtonCenter();
+      const center = getButtonCenter();
 
       if (!setupDone) {
         setupDone = true;
@@ -211,12 +209,8 @@ export default function CageRelease({ onRelease }: { onRelease: () => void }) {
         const x = center.x + Math.cos(angle) * r;
         const y = center.y + Math.sin(angle) * r * 0.5;
         el.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
-        // Replicate firefly-pulse opacity (was CSS animation). Skip on iPad —
-        // CSS already sets static opacity:0.9, paint-only updates here are
-        // wasted work since the whole element is already GPU-composited.
-        if (!ipad) {
-          el.style.opacity = String(0.5 + Math.abs(Math.sin(t * 0.00087 + i * 2.1)) * 0.5);
-        }
+        // Replicate firefly-pulse opacity (was CSS animation)
+        el.style.opacity = String(0.5 + Math.abs(Math.sin(t * 0.00087 + i * 2.1)) * 0.5);
       });
 
       rafRef.current = requestAnimationFrame(tick);
