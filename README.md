@@ -14,15 +14,15 @@ A small universe unfolds across six pages, each one a step closer.
 
 Where it all begins. A night sky full of twinkling stars, roses blooming at the bottom, and a quiet invitation to **Start**. A cage-release animation sets the first spark free. Tap the button and the journey lifts off.
 
-### `/constellation` — The Letter
-
-The sky deepens. Shooting stars cross a nebula-dusted canvas while a scroll letter unrolls — words written not to impress, but to be honest. A constellation map traces something familiar overhead. When the letter is read, a path forward appears.
-
 ### `/moon` — The Moon
 
 A single moon hangs at the centre, gentle and full. Beneath it, a line of text types itself out: *"You are like a moon, so pretty & so tiny."* A Gemini constellation glows softly nearby. The rocket fuels up — energy particles swirl — and when it's ready, you **Ride**.
 
-### `/countdown` — The Asteroid
+### `/constellation` — The Gemini Constellation
+
+The sky deepens. Shooting stars cross a nebula-dusted canvas while a scroll letter unrolls — words written not to impress, but to be honest. A constellation map traces something familiar overhead. When the letter is read, a path forward appears.
+
+### `/countdown` — The Asteroid & Blackhole
 
 An obstacle appears: an asteroid blocking the way. A 20-second countdown bomb ticks down while the T3 nebula pulses in the background. Three floating asteroids carry hidden messages — lyrics, confessions, tiny truths. Survive the countdown and a black hole opens the next door.
 
