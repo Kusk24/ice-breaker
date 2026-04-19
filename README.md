@@ -20,7 +20,7 @@ A single moon hangs at the centre, gentle and full. Beneath it, a line of text t
 
 ### `/constellation` — The Gemini Constellation
 
-The sky deepens. Shooting stars cross a nebula-dusted canvas while a scroll letter unrolls — words written not to impress, but to be honest. A constellation map traces something familiar overhead. When the letter is read, a path forward appears.
+The sky deepens. Shooting stars cross a nebula-dusted canvas while a scroll letter opens — words written not to impress, but to be honest. Above it, an interactive Gemini constellation waits to be collected, and the energy meter fills as each star is claimed. When the letter is read and the constellation is complete, the path forward opens.
 
 ### `/countdown` — The Asteroid & Blackhole
 
