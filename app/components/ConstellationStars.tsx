@@ -392,7 +392,7 @@ export default function ConstellationStars() {
       {energyFull && (
         <div className="energy-full-msg">
           <span className="energy-full-msg__text">
-            Energy Charged! Return to the rocket &#128640;
+            Energy Charged! Click back button to return to the rocket &#128640;
           </span>
         </div>
       )}
