@@ -8,11 +8,18 @@ function isIpadViewport() {
   ).matches;
 }
 
+function isIpad13Viewport() {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia(
+    "(hover: none) and (pointer: coarse) and (orientation: landscape) and (min-width: 1216px) and (max-width: 1366px)"
+  ).matches;
+}
+
 function getPageZoom() {
   if (typeof window === "undefined") return 1;
-  // iPad Safari: position:fixed coords are in physical viewport space;
-  // getBoundingClientRect() already returns visual coords — no zoom division needed.
-  if (isIpadViewport()) return 1;
+  // iPad 13" uses laptop-style coords (unzoomed space) for .rocket-flight, so
+  // writes must be divided by zoom. iPad 11" positions rocket in visual space.
+  if (isIpadViewport() && !isIpad13Viewport()) return 1;
   const v = getComputedStyle(document.documentElement).getPropertyValue("--page-zoom").trim();
   const n = parseFloat(v);
   return n > 0 ? n : 1;
