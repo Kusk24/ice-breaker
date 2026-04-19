@@ -101,29 +101,42 @@ html { --page-zoom: 1; }
   html { zoom: 0.92 !important; --page-zoom: 0.92 !important; }
 }
 
-/* iPad PORTRAIT → CSS-rotate the body so the site always renders landscape, */
-/* regardless of how the device is held. Layout is identical to landscape;   */
-/* body is rotated 90° around its top-left corner then pinned so the rotated */
-/* box covers the portrait viewport. Trade-off: animations using vw/vh (e.g. */
-/* moon flight distance) may look slightly different from a real landscape   */
-/* iPad because vw/vh still read the physical portrait viewport.             */
+/* iPad PORTRAIT → force landscape via full-screen overlay prompting rotate. */
+/* Keeps vw/vh math intact (no body rotation) so the site only ever runs in  */
+/* true landscape. Overlay is injected purely in CSS via body::before/after. */
 @media (hover: none) and (pointer: coarse) and (orientation: portrait)
        and (min-width: 768px) and (max-width: 1366px) {
-  html {
-    zoom: 0.80 !important;
-    --page-zoom: 0.80 !important;
-    overflow: hidden !important;
+  body > *:not(.site-credit) { visibility: hidden !important; }
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    z-index: 2147483646;
+    background:
+      radial-gradient(circle at 50% 45%, rgba(18, 58, 92, 0.55) 0%, rgba(3, 14, 28, 0.96) 55%, #010611 100%),
+      #010611;
   }
-  body {
-    position: fixed !important;
-    top: 100%;
-    left: 0;
-    width: 100vh;
-    height: 100vw;
-    transform-origin: 0 0;
-    transform: rotate(-90deg);
-    overflow: hidden !important;
+  body::after {
+    content: "🌙  Please turn your iPad  ✨\A sideways to watch the stars align";
+    white-space: pre;
+    position: fixed; inset: 0;
+    z-index: 2147483647;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 0 10vw;
+    font-family: var(--font-dancing), "Dancing Script", cursive;
+    font-size: clamp(28px, 5.2vw, 56px);
+    font-weight: 600;
+    line-height: 1.35;
+    letter-spacing: 0.5px;
+    color: #eaf6ff;
+    text-shadow: 0 0 18px rgba(120, 190, 255, 0.55), 0 0 38px rgba(80, 150, 220, 0.35);
+    animation: ipad-rotate-breathe 3.2s ease-in-out infinite;
   }
+}
+
+@keyframes ipad-rotate-breathe {
+  0%, 100% { opacity: 0.85; transform: scale(1); }
+  50%      { opacity: 1;    transform: scale(1.03); }
 }
 
 /* ─── iPad performance (aggressive) ───────────────────────────────────── */
