@@ -96,10 +96,23 @@ export default function RocketCta({ className, label }: { className?: string; la
     const ORBIT_MS = 1600;
     const LOOPS = 1.5;
     let startTime: number | null = null;
+    // iPad 11/13: skip per-frame filter + throttle orbit to ~30fps. Filter
+    // changes re-rasterize the craft each frame; iPad already flattens the
+    // craft's drop-shadow so the brightness ramp is barely visible anyway.
+    const ipad = isIpadViewport();
+    let orbitSkip = false;
 
     function orbitFrame(ts: number) {
       if (!startTime) startTime = ts;
       const t = Math.min((ts - startTime) / ORBIT_MS, 1);
+
+      if (ipad && orbitSkip && t < 1) {
+        orbitSkip = false;
+        requestAnimationFrame(orbitFrame);
+        return;
+      }
+      orbitSkip = true;
+
       // Smooth ease-in-out for orbit
       const eased = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
 
@@ -112,8 +125,10 @@ export default function RocketCta({ className, label }: { className?: string; la
       rocketEl.style.setProperty("left", `${x - rW / 2}px`, "important");
       rocketEl.style.setProperty("top",  `${y - rH / 2}px`, "important");
       rocketEl.style.transform = `rotate(${rot}deg)`;
-      // Gradually brighten during orbit
-      rocketEl.style.filter = `brightness(${1 + eased * 0.5})`;
+      if (!ipad) {
+        // Gradually brighten during orbit
+        rocketEl.style.filter = `brightness(${1 + eased * 0.5})`;
+      }
 
       if (t < 1) {
         requestAnimationFrame(orbitFrame);
@@ -158,10 +173,20 @@ export default function RocketCta({ className, label }: { className?: string; la
       const launchStart = performance.now();
       const startTop = rocketTop;
       let warpTriggered = false;
+      // iPad: ~30fps + skip rocket filter updates. The warp-speed stars +
+      // scene translate already dominate the frame budget on iPad 11/13.
+      let launchSkip = false;
 
       function launchFrame(ts: number) {
         const elapsed = ts - launchStart;
         const p = Math.min(elapsed / TOTAL_DUR, 1);
+
+        if (ipad && launchSkip && p < 1) {
+          launchSkip = false;
+          requestAnimationFrame(launchFrame);
+          return;
+        }
+        launchSkip = true;
 
         // Smooth exponential acceleration
         const e = (Math.exp(4 * p) - 1) / (Math.E * Math.E * Math.E * Math.E - 1);
@@ -174,10 +199,11 @@ export default function RocketCta({ className, label }: { className?: string; la
         }
 
         const ny = startTop - e * (window.innerHeight / z + 500);
-        const bright = 1.5 + e * 3.5;
 
         rocketEl.style.setProperty("top", `${ny}px`, "important");
-        rocketEl.style.filter = `brightness(${bright})`;
+        if (!ipad) {
+          rocketEl.style.filter = `brightness(${1.5 + e * 3.5})`;
+        }
 
         if (p < 1) {
           requestAnimationFrame(launchFrame);

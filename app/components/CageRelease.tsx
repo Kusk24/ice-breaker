@@ -158,10 +158,26 @@ export default function CageRelease({ onRelease }: { onRelease: () => void }) {
     const total = BUTTERFLIES.length + FIREFLIES.length;
     const start = performance.now();
     let setupDone = false;
+    // iPad: skip every other frame (~30fps) + cache center (button is fixed,
+    // iPad body overflow is locked so it never moves). Cuts per-frame work
+    // roughly in half on iPad 11/13 without visibly changing the orbit.
+    const ipad = isIpadViewport();
+    let cachedCenter: { x: number; y: number } | null = null;
+    let skipFrame = false;
 
     function tick(now: number) {
       const t = now - start;
-      const center = getButtonCenter();
+
+      if (ipad && skipFrame) {
+        skipFrame = false;
+        rafRef.current = requestAnimationFrame(tick);
+        return;
+      }
+      skipFrame = true;
+
+      const center = ipad
+        ? (cachedCenter ??= getButtonCenter())
+        : getButtonCenter();
 
       if (!setupDone) {
         setupDone = true;
@@ -195,8 +211,12 @@ export default function CageRelease({ onRelease }: { onRelease: () => void }) {
         const x = center.x + Math.cos(angle) * r;
         const y = center.y + Math.sin(angle) * r * 0.5;
         el.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
-        // Replicate firefly-pulse opacity (was CSS animation)
-        el.style.opacity = String(0.5 + Math.abs(Math.sin(t * 0.00087 + i * 2.1)) * 0.5);
+        // Replicate firefly-pulse opacity (was CSS animation). Skip on iPad —
+        // CSS already sets static opacity:0.9, paint-only updates here are
+        // wasted work since the whole element is already GPU-composited.
+        if (!ipad) {
+          el.style.opacity = String(0.5 + Math.abs(Math.sin(t * 0.00087 + i * 2.1)) * 0.5);
+        }
       });
 
       rafRef.current = requestAnimationFrame(tick);
