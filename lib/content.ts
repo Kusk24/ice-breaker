@@ -36,7 +36,7 @@ export const siteText = {
   formOne: "Date",
   receiverEmail: "winyumg2003a@gmail.com",
   blackholeEnter: "Enter 🪐",
-  blackholeTooSmall: "blackhole is too small, pick and drop rocks to throw into it",
+  blackholeTooSmall: "blackhole is too small, pick and reclick to drop rocks to throw into it",
   blackholeReady: "blackhole is ready, enter it",
   multiverseLabel: "Every version of me would give the whole multiverse just to have you in my daily life 🌠"
 };
