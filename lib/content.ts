@@ -9,7 +9,8 @@ export const siteText = {
   buttonTwo: "Back To Flowers",
   buttonThree: "Ride 🚀",
   moonText: "You are like a moon, so pretty & so tiny",
-  question: `T3 wal kywy tk mote srr chin lo website pr yay lite p
+  question: `T3 wal kywy tk mote srr chin lo 
+  website pr yy lite p
   mote wal kah py pr lr xD
   ya lr ma thi woo (づ •. •)?`,
   agreeText: "ya pr tl :0",
