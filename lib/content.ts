@@ -16,7 +16,7 @@ export const siteText = {
   agreeText: "ya pr tl :0",
   disagreeText: "ma ya buu",
   questionOne: "br pyit a sin pyay pr tl nw",
-  questionTwo: "ummm, candy lout so ll a sin pyay hmr pr, ak ll ma ya buu lr?",
+  questionTwo: "ummm, candy lout so ll a sin pyay hmr pr",
   questionThree: "a ti gyi ma wal kywy phuu pop",
   questionFour: "aww ma ya pr buu, gone sin hmr pl",
   questionFive: "ak lo nww thae thu, chee htoke pl",

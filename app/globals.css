@@ -3069,7 +3069,7 @@ body:has(.constellation-scene) {
   left: 50%;
   transform: translateX(-50%);
   font-family: var(--font-dancing), cursive;
-  font-size: clamp(0.6rem, 1.2vw, 0.85rem);
+  font-size: clamp(0.9rem, 1.8vw, 1.275rem);
   color: rgba(255, 220, 150, 0.7);
   white-space: nowrap;
   letter-spacing: 0.4px;

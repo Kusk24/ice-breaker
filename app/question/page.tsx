@@ -358,7 +358,7 @@ export default function QuestionPage() {
             <div className="agree-alert__glow" aria-hidden />
             <p className="agree-alert__emoji" aria-hidden>🥳</p>
             <p className="agree-alert__title">{siteText.agreeText}</p>
-            <p className="agree-alert__sub">Thank youuuuuu T3 ✨</p>
+            <p className="agree-alert__sub">Thank youuuuuu T3, btw no preesure for you I&apos;m just teasing hahaha✨</p>
             <div className="agree-alert__bar" aria-hidden>
               <div className="agree-alert__bar-fill" />
             </div>
