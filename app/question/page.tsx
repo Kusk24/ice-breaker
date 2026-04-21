@@ -134,8 +134,8 @@ export default function QuestionPage() {
       keepalive: true,
     }).catch(() => {});
 
-    // Navigate after the alert animation (2.6s)
-    setTimeout(() => router.push("/celebrate"), 2600);
+    // Navigate after the alert animation (5s)
+    setTimeout(() => router.push("/celebrate"), 5000);
   }, [router, phase]);
 
   const handleDisagree = useCallback(() => {
