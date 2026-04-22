@@ -4075,6 +4075,66 @@ body:has(.constellation-scene) {
 .celebrate-submit:hover:not(:disabled) { opacity: 0.88; transform: scale(1.05); }
 .celebrate-submit:disabled { opacity: 0.45; cursor: default; }
 
+.celebrate-rating-card {
+  align-items: center;
+  text-align: center;
+  gap: 0.9rem;
+}
+.celebrate-rating__prompt {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 1rem;
+  margin: 0;
+}
+.celebrate-rating__stars {
+  display: flex;
+  gap: 0.35rem;
+  justify-content: center;
+}
+.celebrate-rating__star {
+  background: none;
+  border: none;
+  padding: 0.15rem 0.25rem;
+  font-size: 2.1rem;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: transform 0.15s, color 0.15s, text-shadow 0.15s;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.celebrate-rating__star:hover { transform: scale(1.15); }
+.celebrate-rating__star.is-active {
+  color: #ffd93d;
+  text-shadow: 0 0 12px rgba(255, 217, 61, 0.7);
+}
+.celebrate-rating__thanks {
+  color: #ffd1ec;
+  margin: 0;
+  font-size: 1rem;
+}
+.celebrate-feedback {
+  width: 100%;
+  min-height: 4.5rem;
+  resize: vertical;
+  font-family: inherit;
+  text-align: left;
+}
+.celebrate-github {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #4d96ff 0%, #a29bfe 100%);
+  color: #fff;
+  text-decoration: none;
+  padding: 0.65rem 1.4rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: opacity 0.2s, transform 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.celebrate-github:hover { opacity: 0.9; transform: scale(1.04); }
+
 /* "Other" row — centred below the 2-col grid */
 .celebrate-other-wrap {
   display: flex;

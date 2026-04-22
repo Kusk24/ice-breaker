@@ -25,14 +25,15 @@ const confetti = Array.from({ length: 70 }, (_, i) => ({
 }));
 
 export default function CelebratePage() {
-  const [date, setDate] = useState("");
+  const [rating, setRating] = useState(0);
+  const [hover, setHover] = useState(0);
+  const [feedback, setFeedback] = useState("");
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
 
-  async function handleSubmit(e: { preventDefault(): void }) {
-    e.preventDefault();
-    if (!date) return;
+  async function handleRate() {
+    if (!rating) return;
     setSending(true);
     setError("");
     try {
@@ -45,8 +46,9 @@ export default function CelebratePage() {
             Accept: "application/json",
           },
           body: JSON.stringify({
-            [siteText.formOne]: date,
-            _subject: "Ice Breaker 🧊💕",
+            Rating: `${rating} / 5`,
+            Feedback: feedback || "(no message)",
+            _subject: `T3 rated the walk-thru ${rating}/5 ⭐`,
           }),
         }
       );
@@ -108,39 +110,74 @@ export default function CelebratePage() {
         ))}
       </div>
 
-      {/* Form / success */}
+      {/* Rating + GitHub */}
       <div className="celebrate-form-wrap">
-        {sent ? (
-          <div className="celebrate-success">
-            <p>Sent! 💌</p>
-            <p className="celebrate-success__sub">See you soon 🌙</p>
+        <div className="celebrate-form celebrate-rating-card">
+          <h2 className="celebrate-form__title">
+            Hope you enjoyed this T3 universe walk-thru ✨
+          </h2>
+          <p className="celebrate-rating__prompt">How would you rate it?</p>
+          <div
+            className="celebrate-rating__stars"
+            onMouseLeave={() => setHover(0)}
+            role="radiogroup"
+            aria-label="Rate this experience"
+          >
+            {[1, 2, 3, 4, 5].map((n) => {
+              const active = (hover || rating) >= n;
+              return (
+                <button
+                  key={n}
+                  type="button"
+                  className={`celebrate-rating__star${active ? " is-active" : ""}`}
+                  onMouseEnter={() => setHover(n)}
+                  onFocus={() => setHover(n)}
+                  onBlur={() => setHover(0)}
+                  onClick={() => setRating(n)}
+                  aria-label={`${n} star${n === 1 ? "" : "s"}`}
+                  aria-checked={rating === n}
+                  role="radio"
+                >
+                  ★
+                </button>
+              );
+            })}
           </div>
-        ) : (
-          <form className="celebrate-form" onSubmit={handleSubmit}>
-            <h2 className="celebrate-form__title">{siteText.formQuestion}</h2>
-
-            <label className="celebrate-field">
-              <span className="celebrate-field__label">{siteText.formOne}</span>
-              <input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="celebrate-input"
-                required
+          {sent ? (
+            <p className="celebrate-rating__thanks">
+              Sent! 💬 Thank youuu 🥳
+            </p>
+          ) : (
+            <>
+              <textarea
+                className="celebrate-input celebrate-feedback"
+                placeholder="Any feedback? (optional)"
+                value={feedback}
+                onChange={(e) => setFeedback(e.target.value)}
+                rows={3}
               />
-            </label>
+              {error && <p className="celebrate-error">{error}</p>}
+              <button
+                type="button"
+                className="celebrate-submit"
+                onClick={handleRate}
+                disabled={sending || rating === 0}
+              >
+                {sending ? "Sending…" : "Rate 💬"}
+              </button>
+            </>
+          )}
 
-            {error && <p className="celebrate-error">{error}</p>}
-
-            <button
-              type="submit"
-              className="celebrate-submit"
-              disabled={sending || !date}
-            >
-              {sending ? "Sending…" : "Send 🗣️💌"}
-            </button>
-          </form>
-        )}
+          <a
+            href="https://github.com/Kusk24/ice-breaker"
+            target="_blank"
+            rel="noreferrer noopener"
+            className="celebrate-github"
+          >
+            <span aria-hidden>⭐</span>
+            <span>Take a look on GitHub</span>
+          </a>
+        </div>
       </div>
 
       {/* Navigation buttons */}
