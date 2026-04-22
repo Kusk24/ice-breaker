@@ -3530,14 +3530,15 @@ body:has(.constellation-scene) {
 .multiverse-label {
   position: fixed;
   left: 50%;
-  top: 3.5%;
+  top: calc(env(safe-area-inset-top, 0px) + clamp(10px, 2.2vh, 28px));
   transform: translateX(-50%);
   z-index: 20;
   pointer-events: none;
+  width: min(92vw, 920px);
   animation: multiverse-label-in 0.6s ease 0.3s both;
 }
 .multiverse-label__text {
-  display: inline-block;
+  display: block;
   padding: 0.7em 1.4em;
   border-radius: 999px;
   background: rgba(30, 20, 60, 0.85);
@@ -3548,7 +3549,11 @@ body:has(.constellation-scene) {
   letter-spacing: 0.03em;
   backdrop-filter: blur(12px);
   box-shadow: 0 4px 20px rgba(120, 80, 200, 0.4);
-  white-space: nowrap;
+  max-width: 100%;
+  text-align: center;
+  line-height: 1.35;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 @keyframes multiverse-label-in {
   from { opacity: 0; transform: translate(-50%, -10px); }
@@ -3558,15 +3563,15 @@ body:has(.constellation-scene) {
 .multiverse-bottom-label {
   position: fixed;
   left: 50%;
-  bottom: 3.5%;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(10px, 2.2vh, 28px));
   transform: translateX(-50%);
   z-index: 20;
   pointer-events: none;
-  max-width: 92vw;
+  width: min(92vw, 920px);
   animation: multiverse-label-in 0.6s ease 0.5s both;
 }
 .multiverse-bottom-label__text {
-  display: inline-block;
+  display: block;
   padding: 0.7em 1.4em;
   border-radius: 22px;
   background: rgba(30, 20, 60, 0.85);
@@ -3580,6 +3585,8 @@ body:has(.constellation-scene) {
   text-align: center;
   line-height: 1.35;
   white-space: pre-line;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 .question-title__line {
