@@ -126,7 +126,7 @@ export default function QuestionPage() {
 
     // Fire email in background — keepalive so it survives navigation
     const url = `https://formsubmit.co/ajax/${siteText.receiverEmail}`;
-    const payload = { Answer: siteText.agreeText, DisagreeCount: phase, _subject: "T3 agreed! 🥳" };
+    const payload = { Answer: siteText.agreeText, DisagreeCount: phase, _subject: "T3 responded! 🥳" };
     fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json", Accept: "application/json" },
@@ -356,15 +356,18 @@ export default function QuestionPage() {
               </span>
             ))}
             <div className="agree-alert__glow" aria-hidden />
-            <p className="agree-alert__emoji" aria-hidden>🥳</p>
-            <p className="agree-alert__title">{siteText.agreeText}</p>
-            <p className="agree-alert__sub">Thank youuuuuu T3, btw no preesure for you I&apos;m just teasing hahaha✨</p>
+            <p className="agree-alert__emoji" aria-hidden>yayyy🥳</p>
+            <p className="agree-alert__title">T3 said {siteText.agreeText}</p>
+            <p className="agree-alert__sub">Thank youuuuuu, btw no preesure nww, I&apos;m just teasing you hahaha✨</p>
             <div className="agree-alert__bar" aria-hidden>
               <div className="agree-alert__bar-fill" />
             </div>
           </div>
         </div>
       )}
+      <div className="multiverse-bottom-label" aria-hidden>
+        <span className="multiverse-bottom-label__text">{siteText.multiverseBottomLabel}</span>
+      </div>
     </main>
   );
 }

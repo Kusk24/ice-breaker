@@ -50,7 +50,7 @@ export default function RootLayout({
           className="site-credit"
         >
           <span className="site-credit__name">By WinYu</span>
-          <span className="site-credit__sub">made with much much &lt;3</span>
+          <span className="site-credit__sub">Made with deep sincerity</span>
         </a>
       </body>
     </html>

@@ -38,5 +38,6 @@ export const siteText = {
   blackholeEnter: "Enter 🪐",
   blackholeTooSmall: "Black hole is too small, pick and click again to drop rocks into it",
   blackholeReady: "Black hole is ready, enter it",
-  multiverseLabel: "Every version of me would give the whole multiverse just to have you in my daily life 🌠"
+  multiverseLabel: "Every version of me would give the whole multiverse just to have you in my daily life 🌠",
+  multiverseBottomLabel: "No matter how distant you can become,\n you'll always be the type of person that I would like to keep in my circle"
 };
