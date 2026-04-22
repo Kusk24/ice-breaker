@@ -1,8 +1,9 @@
 "use client";
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import type { CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 import { siteText } from "@/lib/content";
+import { preloadImages } from "@/lib/preload";
 import T3Nebula from "@/app/components/T3Nebula";
 
 const AGREE_HEARTS = Array.from({ length: 16 }, (_, i) => {
@@ -85,6 +86,18 @@ function randPos(prev?: { x: number; y: number }) {
 
 export default function QuestionPage() {
   const router = useRouter();
+
+  useEffect(() => {
+    preloadImages([
+      ...IMAGE_FILES.map((f) => `${base}/reactions/${f}`),
+      `${base}/reactions/20.JPG`,
+      `${base}/reactions/21.JPG`,
+      `${base}/reactions/22.JPG`,
+      `${base}/reactions/23.JPG`,
+      `${base}/reactions/24.JPG`,
+    ]);
+  }, []);
+
   const [phase, setPhase]           = useState(0);
   const [imgKey, setImgKey]         = useState(0);
   const [noPos, setNoPos]           = useState(() => randPos());

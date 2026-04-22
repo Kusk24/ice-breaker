@@ -1,8 +1,9 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { CSSProperties } from "react";
 import Link from "next/link";
 import { siteText } from "@/lib/content";
+import { preloadImages } from "@/lib/preload";
 
 const isProd = process.env.NODE_ENV === "production";
 const base = isProd ? "/ice-breaker" : "";
@@ -25,6 +26,10 @@ const confetti = Array.from({ length: 70 }, (_, i) => ({
 }));
 
 export default function CelebratePage() {
+  useEffect(() => {
+    preloadImages(PHOTOS.map((f) => `${base}/reactions/${f}`));
+  }, []);
+
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
   const [feedback, setFeedback] = useState("");

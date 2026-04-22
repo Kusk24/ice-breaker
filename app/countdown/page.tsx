@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import type { CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 import { siteText } from "@/lib/content";
+import { preloadImages } from "@/lib/preload";
 import T3Nebula from "@/app/components/T3Nebula";
 
 const isProd = process.env.NODE_ENV === "production";
@@ -173,6 +174,9 @@ export default function CountdownPage() {
       const elapsed = Math.floor((Date.now() - startTime) / 1000);
       const left = Math.max(TOTAL_SECONDS - elapsed, 0);
       setRemaining(left);
+      if (left <= 15) {
+        preloadImages([thaethuSrc, iwannabeyoursSrc, riskitallSrc, bestfriendSrc]);
+      }
       if (left <= 0) {
         if (intervalRef.current) clearInterval(intervalRef.current);
         localStorage.setItem("t3-exploded", "1");
