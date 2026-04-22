@@ -474,11 +474,12 @@ body:has(.constellation-scene) {
 
 .moon-text {
   position: absolute;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(18px, 5vh, 74px));
-  left: 0;
-  right: 0;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(28px, 7vh, 112px));
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(94vw, 1080px);
   z-index: 20;
-  padding-inline: clamp(12px, 2.5vw, 28px);
+  padding-inline: clamp(10px, 2.2vw, 24px);
   text-align: center;
   font-family: var(--font-dancing), cursive;
   font-size: clamp(1.05rem, 2.5vw, 2rem);
@@ -489,11 +490,24 @@ body:has(.constellation-scene) {
     0 0 40px rgba(250, 214, 120, 0.35),
     0 2px 6px rgba(0, 0, 0, 0.6);
   pointer-events: none;
-  line-height: 1.55;
+  line-height: 1.45;
 }
 
 .moon-text__line {
   display: block;
+  max-width: 100%;
+  margin-inline: auto;
+  overflow-wrap: anywhere;
+}
+
+@media (hover: none) and (pointer: coarse) and (orientation: landscape)
+       and (min-width: 1024px) and (max-width: 1366px) {
+  .moon-text {
+    width: min(92vw, 980px);
+    bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(34px, 8vh, 126px));
+    font-size: clamp(0.98rem, 2vw, 1.55rem);
+    line-height: 1.4;
+  }
 }
 
 .moon-text.fading-out {
