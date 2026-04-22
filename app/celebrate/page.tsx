@@ -188,7 +188,7 @@ export default function CelebratePage() {
           <Link href="/moon" className="celebrate-nav__btn">🌕 Visit the moon</Link>
           <Link href="/constellation" className="celebrate-nav__btn">✨ Collect the stars</Link>
           <Link href="/countdown" className="celebrate-nav__btn">🕳️ Into the black hole</Link>
-          <Link href="/question" className="celebrate-nav__btn">💭 Re-read the question</Link>
+          <Link href="/question" className="celebrate-nav__btn">💭 Through the multiverse veil</Link>
         </div>
       </nav>
     </main>
