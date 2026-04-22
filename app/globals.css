@@ -474,13 +474,14 @@ body:has(.constellation-scene) {
 
 .moon-text {
   position: absolute;
-  bottom: 8%;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(18px, 5vh, 74px));
   left: 0;
   right: 0;
   z-index: 20;
+  padding-inline: clamp(12px, 2.5vw, 28px);
   text-align: center;
   font-family: var(--font-dancing), cursive;
-  font-size: clamp(1.2rem, 3vw, 2.2rem);
+  font-size: clamp(1.05rem, 2.5vw, 2rem);
   font-weight: 600;
   color: #fdeea5;
   text-shadow:
@@ -488,7 +489,7 @@ body:has(.constellation-scene) {
     0 0 40px rgba(250, 214, 120, 0.35),
     0 2px 6px rgba(0, 0, 0, 0.6);
   pointer-events: none;
-  line-height: 1.7;
+  line-height: 1.55;
 }
 
 .moon-text__line {
